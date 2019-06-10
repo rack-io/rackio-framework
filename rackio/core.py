@@ -10,7 +10,7 @@ import concurrent.futures
 from ._singleton import Singleton
 from .controls import ControlManager
 from .workers import ControlWorker, APIWorker, _ContinousWorker
-from .api import TagResource
+from .api import TagResource, TagCollectionResource
 
 
 class Rackio(Singleton):
@@ -52,8 +52,10 @@ class Rackio(Singleton):
 
         self._api = falcon.API()
 
-        _tags = TagResource()
+        _tag = TagResource()
+        _tags = TagCollectionResource()
 
+        self._api.add_route('/api/tags/{tag_id}', _tag)
         self._api.add_route('/api/tags', _tags)
 
     def append_rule(self, rule):

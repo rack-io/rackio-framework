@@ -154,6 +154,10 @@ class CVTEngine(Singleton):
 
         self._cvt.set_tag(name, _type)
 
+    def get_tags(self):
+
+        return self._cvt.get_tags()
+
     def write_tag(self, name, value):
         """Writes a new value for a defined tag, in thread-safe mechanism.
         
