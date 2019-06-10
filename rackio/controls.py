@@ -147,6 +147,80 @@ class Condition:
             return False
 
 
+class OrCondition:
+
+    """Condition class.
+
+    This class defines a mechanism to apply conditions
+    on tags values
+
+    # Example
+    
+    ```python
+    >>> from rackio.controls import Condition, OrCondition
+    >>> cond1 = Condition("T1",">=", "T2")
+    >>> cond2 = Condition("T4","<=", "T5")
+    >>> cond3 = OrCondition([cond1, cond2])
+    ```
+
+    # Parameters
+    conditions (list):
+        List of other condition objects
+
+    """
+
+    def __init__(self, conditions):
+
+        self._conditions = conditions
+
+    def evaluate(self):
+
+        result = False
+
+        for _condition in self._conditions:
+
+            result = result or _condition.evaluate()
+
+        return result
+
+
+class AndCondition:
+
+    """Condition class.
+
+    This class defines a mechanism to apply conditions
+    on tags values
+
+    # Example
+    
+    ```python
+    >>> from rackio.controls import Condition, AndCondition
+    >>> cond1 = Condition("T1",">=", "T2")
+    >>> cond2 = Condition("T4","<=", "T5")
+    >>> cond3 = AndCondition([cond1, cond2])
+    ```
+
+    # Parameters
+    conditions (list):
+        List of other condition objects
+
+    """
+
+    def __init__(self, conditions):
+
+        self._conditions = conditions
+
+    def evaluate(self):
+
+        result = True
+
+        for _condition in self._conditions:
+
+            result = result and _condition.evaluate()
+
+        return result
+
+
 class Control:
 
     """Control class.
