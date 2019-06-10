@@ -7,13 +7,13 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Rackio",
-    version="0.0.2",
+    version="0.0.3",
     author="Nelson Carrasquel",
     author_email="rackio.framework@outlook.com",
     description="A modern Python Framework for microboard automation and control applications development",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/rackio-framework",
+    url="https://github.com/rack-io/rackio-framework",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
