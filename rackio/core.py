@@ -4,11 +4,13 @@
 This module implements the core app class and methods for Rackio.
 """
 
+import falcon
 import concurrent.futures
 
 from ._singleton import Singleton
 from .controls import ControlManager
-from .workers import ControlWorker, _ContinousWorker
+from .workers import ControlWorker, APIWorker, _ContinousWorker
+from .api import TagResource
 
 
 class Rackio(Singleton):
@@ -47,6 +49,12 @@ class Rackio(Singleton):
         self._worker_functions = list()
         self._continous_functions = list()
         self._control_manager = ControlManager()
+
+        self._api = falcon.API()
+
+        _tags = TagResource()
+
+        self._api.add_route('/api/tags', _tags)
 
     def append_rule(self, rule):
         """Append a rule to the control manager.
@@ -136,8 +144,10 @@ class Rackio(Singleton):
         """
 
         _control_worker = ControlWorker(self._control_manager)
-
+        _api_worker = APIWorker(self._api)
+        
         _control_worker.start()
+        _api_worker.start()
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
             

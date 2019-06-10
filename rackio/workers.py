@@ -5,6 +5,8 @@ This module implements all thread classes for workers.
 """
 import time
 from threading import Thread
+from wsgiref.simple_server import make_server
+
 from .controls import ControlManager
 from .engine import CVTEngine
 
@@ -86,4 +88,19 @@ class _ContinousWorker:
             else:
                 self._f()
 
-        
+class APIWorker(BaseWorker):
+
+    def __init__(self, app):
+
+        super(APIWorker, self).__init__()
+
+        self._api_app = app
+
+    def run(self):
+        print("Start serving")
+
+        with make_server('', 8000, self._api_app) as httpd:
+            print('Serving on port 8000...')
+
+            # Serve until process is killed
+            httpd.serve_forever()
