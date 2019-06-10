@@ -38,13 +38,11 @@ class Rackio(Singleton):
 
     """
 
-    def __init__(self, host=None, port=None, context=None):
+    def __init__(self, context=None):
 
         super(Rackio, self).__init__()
         
         self._context = context
-        self._host = host
-        self._port = port
 
         self._worker_functions = list()
         self._continous_functions = list()
@@ -132,7 +130,7 @@ class Rackio(Singleton):
 
             return wrapper
 
-    def run(self):
+    def run(self, port=8000):
 
         """Runs the main execution for the application to start serving.
         
@@ -146,7 +144,7 @@ class Rackio(Singleton):
         """
 
         _control_worker = ControlWorker(self._control_manager)
-        _api_worker = APIWorker(self._api)
+        _api_worker = APIWorker(self._api, port)
         
         _control_worker.start()
         _api_worker.start()

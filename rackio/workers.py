@@ -90,17 +90,17 @@ class _ContinousWorker:
 
 class APIWorker(BaseWorker):
 
-    def __init__(self, app):
+    def __init__(self, app, port=8000):
 
         super(APIWorker, self).__init__()
 
         self._api_app = app
+        self._port = port
 
     def run(self):
-        print("Start serving")
 
-        with make_server('', 8000, self._api_app) as httpd:
-            print('Serving on port 8000...')
+        with make_server('', self._port, self._api_app) as httpd:
+            print('Serving on port {}...'.format(self._port))
 
             # Serve until process is killed
             httpd.serve_forever()
