@@ -13,8 +13,12 @@ setuptools.setup(
     description="A modern Python Framework for microboard automation and control applications development",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    license="MIT",
     url="https://github.com/rack-io/rackio-framework",
     packages=setuptools.find_packages(),
+    install_requires=[
+        'falcon',
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
