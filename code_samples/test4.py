@@ -2,7 +2,7 @@ import time
 
 from rackio import Rackio, TagEngine
 from rackio.models import Tag
-from rackio.controls import ValueAction, Condition, Control
+from rackio.controls import MathAction, Condition, Control
 
 from random import random
 
@@ -25,8 +25,8 @@ cond2 = Condition("T1","<", "T2")
 
 # Actions definitions
 
-act1 = ValueAction("T3", 40)
-act2 = ValueAction("T3", 80)
+act1 = MathAction("T3", "T1 + T2")
+act2 = MathAction("T3", "2 * T2 - T1")
 
 # Controls Definitions
 
@@ -72,28 +72,23 @@ def writer2():
         value = 48 + 2 * random()
         tag_egine.write_tag("RAND2", value)
 
-@app.rackit(1)
+@app.rackit_on(period=1)
 def reader():
 
-    while True:
-
-        time.sleep(1)
-
-        rand1 = tag_egine.read_tag("RAND1")
-        rand2 = tag_egine.read_tag("RAND2")
-        T1 = tag_egine.read_tag("T1")
-        T2 = tag_egine.read_tag("T2")
-        T3 = tag_egine.read_tag("T3")
+    rand1 = tag_egine.read_tag("RAND1")
+    rand2 = tag_egine.read_tag("RAND2")
+    T1 = tag_egine.read_tag("T1")
+    T2 = tag_egine.read_tag("T2")
+    T3 = tag_egine.read_tag("T3")
         
-        print("")
-        print("RAND1: {}".format(rand1))
-        print("RAND2: {}".format(rand2))
-        print("T1   : {}".format(T1))
-        print("T2   : {}".format(T2))
-        print("T3   : {}".format(T3))
+    print("")
+    print("RAND1: {}".format(rand1))
+    print("RAND2: {}".format(rand2))
+    print("T1   : {}".format(T1))
+    print("T2   : {}".format(T2))
+    print("T3   : {}".format(T3))
         
 
 if __name__ == "__main__":
 
     app.run()
-

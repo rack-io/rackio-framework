@@ -1,1 +1,2 @@
 falcon==2.0.0
+pyBigParser==2.1

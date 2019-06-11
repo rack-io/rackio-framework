@@ -8,22 +8,24 @@ import queue
 
 from threading import Thread
 
+from pybigparser.evaluator import get_vars, MathParser
+
 from .engine import CVTEngine
 from .models import TagObserver
 
 
-class Action:
+class ValueAction:
 
-    """Action class.
+    """ValueAction class.
 
-    This class defines a mechanism to apply actions
-    on tags values
+    This class defines a mechanism to apply defined values
+    as actions on tags values
 
     # Example
     
     ```python
-    >>> from rackio.controls import Action
-    >>> act1 = Action("T3", 40)
+    >>> from rackio.controls import ValueAction
+    >>> act1 = ValueAction("T3", 40)
     ```
 
     # Parameters
@@ -55,6 +57,56 @@ class Action:
         
         _cvt.request(query)
         _cvt.response()
+
+
+class MathAction:
+
+    """MathAction class.
+
+    This class defines a mechanism to apply 
+    mathematical expressions as actions on 
+    tags values
+
+    # Example
+    
+    ```python
+    >>> from rackio.controls import MathAction
+    >>> act1 = MathAction("T3", "T1 + 2 * T2")
+    ```
+
+    # Parameters
+    tag_name (str):
+        tag name in which action will occur
+    expression (str):
+        Mathematical expression to be parsed once the action is executed
+    
+    """
+
+    def __init__(self, tag_name, expression):
+
+        self.tag_name = tag_name
+        self._expression = expression
+
+        self._parser = MathParser()
+        self._parser.set_function(self._expression)
+
+    def trigger(self):
+
+        _cvt = CVTEngine()
+
+        name = self.tag_name
+        
+        tags = get_vars(self._expression)
+
+        values = [_cvt.read_tag(tag) for tag in tags]
+
+        for tag, value in zip(tags, values):
+
+            self._parser.add_sub(tag, value)
+
+        _value = self._parser.evaluate()
+
+        _cvt.write_tag(name, _value)
 
 
 class Condition:

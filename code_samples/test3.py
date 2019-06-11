@@ -2,7 +2,7 @@ import time
 
 from rackio import Rackio, TagEngine
 from rackio.models import Tag
-from rackio.controls import Action, Condition, Control
+from rackio.controls import ValueAction, Condition, Control
 
 from random import random
 
@@ -25,8 +25,8 @@ cond2 = Condition("T1","<", "T2")
 
 # Actions definitions
 
-act1 = Action("T3", 40)
-act2 = Action("T3", 80)
+act1 = ValueAction("T3", 40)
+act2 = ValueAction("T3", 80)
 
 # Controls Definitions
 

@@ -2,7 +2,7 @@ import time
 
 from rackio import Rackio, TagEngine
 from rackio.models import Tag
-from rackio.controls import Action, Condition, Control
+from rackio.controls import ValueAction, Condition, Control
 
 from random import random
 

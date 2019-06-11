@@ -5,6 +5,8 @@ A modern Python Framework for microboard automation and control applications dev
 ## Requirements
 
 Python 3.6+
+falcon 
+pyBigParser
 
 # Installation
 

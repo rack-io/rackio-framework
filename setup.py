@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Rackio",
-    version="0.0.7",
+    version="0.0.8",
     author="Nelson Carrasquel",
     author_email="rackio.framework@outlook.com",
     description="A modern Python Framework for microboard automation and control applications development",
@@ -18,6 +18,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=[
         'falcon',
+        'pyBigParser',
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
