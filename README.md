@@ -40,7 +40,14 @@ if __name__ == "__main__":
 
 Rackio comes with some built-in features that let you start creating rapid and fast coding prototypes.
 
-## Adding some controls
+# Adding controls
+
+Controls are objects that interact with the tags, changing their values accordingly to a condition
+
+### Value Actions
+
+These actions only change tags values with a defined constant value.
+
 ```python
 # Conditions definitions
 
@@ -49,8 +56,32 @@ cond2 = Condition("T1","<", "T2")
 
 # Actions definitions
 
-act1 = Action("T3", 40)
-act2 = Action("T3", 80)
+act1 = ValueAction("T3", 40)
+act2 = ValueAction("T3", 80)
+
+# Controls Definitions
+
+control1 = Control("C1", cond1, act1)
+control2 = Control("C2", cond2, act2)
+
+app.append_control(control1)
+app.append_control(control2)
+```
+
+### Math Actions
+
+These actions change tags values with a defined mathematical expression, and defined tags can be used inside these expressions.
+
+```python
+# Conditions definitions
+
+cond1 = Condition("T1",">=", "T2")
+cond2 = Condition("T1","<", "T2")
+
+# Actions definitions
+
+act1 = MathAction("T3", "T1 + T2")
+act2 = MathAction("T3", "T2 - T1")
 
 # Controls Definitions
 
@@ -63,7 +94,21 @@ app.append_control(control2)
 
 Once Rackio is up and running, will trigger some actions if the associated condtions are met, by observing continously all the tags values for changes.
 
-## Adding some continous tasks
+## Supported functions within expressions
+
+You can define your mathematical expression following the same arithmetic rules that python can handle, but only a set of math functions and constants are supported.
+
+*  ```cos```
+*  ```sin```
+*  ```abs```
+*  ```log10```
+*  ```log```
+*  ```exp``` 
+*  ```tan```
+*  ```pi```
+*  ```e```
+
+## Adding continous tasks
 
 Rackio can be extended to add custom continous tasks and operations
 
@@ -127,4 +172,3 @@ Rackio is work in progress framework, some features are still in development and
 * Modbus and MQTT protocols
 * Automatic Datalogging
 * Trends and Historical data
-* Math evaluations in actions objects
