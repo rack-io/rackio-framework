@@ -25,6 +25,10 @@ class Tag:
     def get_value(self):
         
         return self.value
+
+    def get_type(self):
+        
+        return self._type
     
     def attach(self, observer):
 

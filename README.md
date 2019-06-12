@@ -4,9 +4,9 @@ A modern Python Framework for microboard automation and control applications dev
 
 ## Requirements
 
-Python 3.6+
-falcon 
-pyBigParser
+- Python 3.6+
+- falcon 
+- pyBigParser
 
 # Installation
 
@@ -162,11 +162,104 @@ def reader():
 
 By specify its ```period```, you can keep control of the time execution for these tasks.
 
+# Testing the RESTful API
+
+## Reading tags with httpie
+
+Once your application is up and running you can access through the API, if you want to try with ```httpie```, you can install it with the following command:
+
+```
+pip install httpie
+```
+
+Now execute the next command in your terminal
+
+```
+http localhost:8000/api/tags
+```
+
+you will get the following
+
+```
+HTTP/1.0 200 OK
+Date: Tue, 11 Jun 2019 23:54:55 GMT
+Server: WSGIServer/0.2 CPython/3.7.1
+content-length: 177
+content-type: application/json
+
+[
+    {
+        "tag": "RAND1",
+        "value": 25.597755601381692
+    },
+    {
+        "tag": "RAND2",
+        "value": 49.12890172456638
+    },
+    {
+        "tag": "T1",
+        "value": 57
+    },
+    {
+        "tag": "T2",
+        "value": 40
+    },
+    {
+        "tag": "T3",
+        "value": 97
+    }
+]
+```
+
+if you want to access an specific tag, for example tag ```T2```
+
+```
+http localhost:8000/api/tags/T2
+```
+
+you will get the following
+
+```
+HTTP/1.0 200 OK
+Date: Tue, 11 Jun 2019 23:58:40 GMT
+Server: WSGIServer/0.2 CPython/3.7.1
+content-length: 26
+content-type: application/json
+
+{
+    "tag": "T2",
+    "value": 40
+}
+```
+You can change this tag value by executing
+
+```
+http POST localhost:8000/api/tags/T2 value=50
+```
+
+And you will get the following
+
+```
+HTTP/1.0 200 OK
+Date: Wed, 12 Jun 2019 00:01:21 GMT
+Server: WSGIServer/0.2 CPython/3.7.1
+content-length: 16
+content-type: application/json
+
+{
+    "result": true
+}
+```
+
+This way you can create your custom HMTL and Javascript Views to perform ```AJAX``` requests on Rackio.
+
 # Things to do
 
 Rackio is work in progress framework, some features are still in development and they will be release soon for better applications, these features are listed below:
 
-* RESTful API
+* Finish RESTful API
+* Capability for users to add custom HTML files for HMI
+* Token Based Authentication for API access
 * Web Based Monitoring and Admin
 * Alarms definitions
 * Modbus and MQTT protocols

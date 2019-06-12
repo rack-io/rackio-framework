@@ -85,6 +85,16 @@ class CVT:
 
         return self._tags[name].get_value()
 
+    def get_type(self, name):
+        """Returns a tag type defined by name.
+        
+        # Parameters
+        name (str):
+            Tag name.
+        """
+
+        return self._tags[name].get_type()
+
     def attach_observer(self, name, observer):
         """Attaches a new observer to a tag object defined by name.
         
@@ -200,6 +210,26 @@ class CVTEngine(Singleton):
         if result["result"]:
             return result["response"]
 
+    def read_type(self, name):
+        """Returns a tag type defined by name, in thread-safe mechanism.
+        
+        # Parameters
+        name (str):
+            Tag name.
+        """
+
+        _query = dict()
+        _query["action"] = "get_type"
+
+        _query["parameters"] = dict()
+        _query["parameters"]["name"] = name
+
+        self.request(_query)
+        result = self.response()
+
+        if result["result"]:
+            return result["response"]
+
     def request(self, _query):
 
         self._request_lock.acquire()
@@ -248,6 +278,25 @@ class CVTEngine(Singleton):
 
                 name = parameters["name"]
                 value = self._cvt.get_value(name)
+
+                self._response = {
+                    "result": True,
+                    "response": value
+                }
+            except:
+                self._response = {
+                    "result": False,
+                    "response": None
+                }
+
+        elif action == "get_type":
+
+            try:
+
+                parameters = _query["parameters"]
+
+                name = parameters["name"]
+                value = self._cvt.get_type(name)
 
                 self._response = {
                     "result": True,

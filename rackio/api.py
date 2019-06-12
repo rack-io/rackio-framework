@@ -62,6 +62,20 @@ class TagResource(object):
         value = req.media.get('value')
 
         _cvt = CVTEngine()
+        _type = _cvt.read_type(tag_id)
+
+        if _type == "float":
+            value = float(value)
+        elif _type == "int":
+            value = int(value)
+        elif _type == "bool":
+            if value == "true":
+                value = True
+            elif value == "false":
+                value = False
+            else:
+                value = bool(value)
+
         _cvt.write_tag(tag_id, value)
 
         doc = {
