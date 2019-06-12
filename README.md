@@ -164,6 +164,8 @@ By specify its ```period```, you can keep control of the time execution for thes
 
 # Testing the RESTful API
 
+Once your application is up and running, it will deploy a RESTful API with ```falcon```, and the ```json``` format is the standard supported by this API.
+
 ## Reading tags with httpie
 
 Once your application is up and running you can access through the API, if you want to try with ```httpie```, you can install it with the following command:
@@ -180,13 +182,14 @@ http localhost:8000/api/tags
 
 you will get the following
 
-```
+```http
 HTTP/1.0 200 OK
 Date: Tue, 11 Jun 2019 23:54:55 GMT
 Server: WSGIServer/0.2 CPython/3.7.1
 content-length: 177
 content-type: application/json
-
+```
+```json
 [
     {
         "tag": "RAND1",
@@ -219,18 +222,21 @@ http localhost:8000/api/tags/T2
 
 you will get the following
 
-```
+```http
 HTTP/1.0 200 OK
 Date: Tue, 11 Jun 2019 23:58:40 GMT
 Server: WSGIServer/0.2 CPython/3.7.1
 content-length: 26
 content-type: application/json
-
+```
+```json
 {
     "tag": "T2",
     "value": 40
 }
 ```
+
+## Writing tags with httpie
 You can change this tag value by executing
 
 ```
@@ -239,13 +245,14 @@ http POST localhost:8000/api/tags/T2 value=50
 
 And you will get the following
 
-```
+```http
 HTTP/1.0 200 OK
 Date: Wed, 12 Jun 2019 00:01:21 GMT
 Server: WSGIServer/0.2 CPython/3.7.1
 content-length: 16
 content-type: application/json
-
+```
+```json
 {
     "result": true
 }
