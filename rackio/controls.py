@@ -139,7 +139,7 @@ class Condition:
         self._oper = _oper
         self.tag2 = tag2
 
-    def pair(self):
+    def tags(self):
 
         return (self.tag1, self.tag2)
 
@@ -225,6 +225,15 @@ class OrCondition:
 
         self._conditions = conditions
 
+    def tags(self):
+
+        result = tuple()
+
+        for _condition in self._conditions:
+            result += _condition.tags()
+
+        return result
+
     def evaluate(self):
 
         result = False
@@ -233,7 +242,7 @@ class OrCondition:
 
             result = result or _condition.evaluate()
 
-        return result
+        return tuple(set(result))
 
 
 class AndCondition:
@@ -261,6 +270,15 @@ class AndCondition:
     def __init__(self, conditions):
 
         self._conditions = conditions
+
+    def tags(self):
+
+        result = tuple()
+
+        for _condition in self._conditions:
+            result += _condition.tags()
+
+        return tuple(set(result))
 
     def evaluate(self):
 
@@ -357,6 +375,10 @@ class Rule:
         else:
             self._actions = actions
 
+    @property
+    def condition(self):
+        return self._condition
+
     def execute(self):
 
         if self._condition.evaluate():
@@ -377,9 +399,9 @@ class ControlManager:
         
         result = list()
         
-        for tag1, tag2 in self._rules.keys():
-            result.append(tag1)
-            result.append(tag2)
+        for _tags in self._rules.keys():
+            for _tag in _tags:
+                result.append(_tag)
 
         return result
 
@@ -387,27 +409,27 @@ class ControlManager:
         
         result = list()
         
-        for tag1, tag2 in self._controls.keys():
-            result.append(tag1)
-            result.append(tag2)
+        for _tags in self._controls.keys():
+            for _tag in _tags:
+                result.append(_tag)
 
         return result
     
     def append_rule(self, rule):
 
-        pair = rule._condition.pair()
+        tags = rule._condition.tags()
         try:
-            self._rules[pair].append(rule)
+            self._rules[tags].append(rule)
         except:
-            self._rules[pair] = [rule]
+            self._rules[tags] = [rule]
 
     def append_control(self, control):
 
-        pair = control._condition.pair()
+        tags = control._condition.tags()
         try:
-            self._controls[pair].append(control)
+            self._controls[tags].append(control)
         except:
-            self._controls[pair] = [control]
+            self._controls[tags] = [control]
 
     def attach_all(self):
 
@@ -417,30 +439,20 @@ class ControlManager:
 
             for entity in entities:
 
-                tag1, tag2 = entity.condition.pair()
+                tags = entity.condition.tags()
 
-                observer1 = TagObserver(self._tag_queue)
-                observer2 = TagObserver(self._tag_queue)
+                for _tag in tags:
 
-                query1 = dict()
-                query1["action"] = "attach"
-                query1["parameters"] = {
-                    "name": tag1,
-                    "observer": observer1,
-                }
+                    observer = TagObserver(self._tag_queue)
+                    query = dict()
+                    query["action"] = "attach"
+                    query["parameters"] = {
+                        "name": _tag,
+                        "observer": observer,
+                    }
 
-                query2 = dict()
-                query2["action"] = "attach"
-                query2["parameters"] = {
-                    "name": tag2,
-                    "observer": observer2,
-                }
-
-                _cvt.request(query1)
-                _cvt.response()
-
-                _cvt.request(query2)
-                _cvt.response()
+                    _cvt.request(query)
+                    _cvt.response()
 
         for _tags, _control in self._controls.items():
 

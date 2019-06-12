@@ -5,9 +5,6 @@ This module implements a singleton pattern design, a base class for
 inheritance in other classes
 """
 
-from __future__ import annotations
-from typing import Optional
-
 
 class SingletonMeta(type):
     """
