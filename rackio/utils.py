@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""CVT/utils.py
+"""rackio/utils.py
 
 This module implements a base utility classes and utility functions.
 """

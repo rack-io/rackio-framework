@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""CVT/models.py
+"""rackio/models.py
 
 This module implements a Controls classes for taking
 actions into Tags oberservers.

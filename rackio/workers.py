@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""CVT/workers.py
+"""rackio/workers.py
 
 This module implements all thread classes for workers.
 """
@@ -39,6 +39,31 @@ class ControlWorker(BaseWorker):
     def __init__(self, manager):
 
         super(ControlWorker, self).__init__()
+        
+        self._manager = manager
+        self._manager.attach_all()
+
+    def run(self):
+
+        _queue = self._manager._tag_queue
+
+        while True:
+            
+            time.sleep(0.1)
+
+            if not _queue.empty():
+                item = _queue.get()
+                
+                _tag = item["tag"]
+
+                self._manager.execute(_tag)
+
+
+class AlarmWorker(BaseWorker):
+
+    def __init__(self, manager):
+
+        super(AlarmWorker, self).__init__()
         
         self._manager = manager
         self._manager.attach_all()

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""CVT/models.py
+"""rackio/models.py
 
 This module implements a Tags and other classes for
 modelling the subjects involved in the core of the engine.

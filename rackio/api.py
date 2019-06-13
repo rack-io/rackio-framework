@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""rackio/models.py
+
+This module implements all class Resources for the RESTful API.
+"""
+
 import json
 
 import falcon

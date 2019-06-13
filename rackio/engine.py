@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""CVT/engine.py
+"""rackio/engine.py
 
 This module implements a Current Value Table (CVT), for holding current
 tag values, in a thread safe implementation for Data Acquisition,
