@@ -61,11 +61,12 @@ class ControlWorker(BaseWorker):
 
 class _ContinousWorker:
 
-    def __init__(self, f, period=0.5, pause_tag=None):
+    def __init__(self, f, period=0.5, pause_tag=None, stop_tag=None):
 
         self._f = f
         self._period = period
         self._pause_tag = pause_tag
+        self._stop_tag = stop_tag
 
         from .core import Rackio
 
@@ -78,6 +79,12 @@ class _ContinousWorker:
         while True:
 
             time.sleep(self._period)
+
+            if self._pause_tag:
+                stop = _cvt.read_tag(self._stop_tag)
+
+                if stop:
+                    return
 
             if self._pause_tag:
                 pause = _cvt.read_tag(self._pause_tag)
