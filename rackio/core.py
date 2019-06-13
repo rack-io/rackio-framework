@@ -28,14 +28,6 @@ class Rackio(Singleton):
     >>> app = Rackio()
     ```
 
-    # Parameters
-    host (str):
-        An optional host name for network service
-    port (str):
-        An optional port number for network service
-    context (str):
-        An optional context name
-
     """
 
     def __init__(self, context=None):
