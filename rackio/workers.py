@@ -101,9 +101,12 @@ class _ContinousWorker:
     def __call__(self, *args):
 
         _cvt = CVTEngine()
+
+        time.sleep(self._period)
+
         while True:
 
-            time.sleep(self._period)
+            now = time.time()
 
             if self._pause_tag:
                 stop = _cvt.read_tag(self._stop_tag)
@@ -119,6 +122,11 @@ class _ContinousWorker:
                     self._f()
             else:
                 self._f()
+
+            elapsed = time.time() - now
+
+            time.sleep(self._period - elapsed)
+            
 
 class APIWorker(BaseWorker):
 
