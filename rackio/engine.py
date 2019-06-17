@@ -133,7 +133,7 @@ class CVTEngine(Singleton):
     >>> from rackio.engine import CVTEngine
     >>> tag_egine = CVTEngine()
     >>> tag_engine.write_tag("TAG1", 40.43)
-    >>> value = >>> tag_engine.read_tag("TAG1")
+    >>> value = tag_engine.read_tag("TAG1")
     >>> print(value)
     40.43
     ```

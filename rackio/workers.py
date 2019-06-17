@@ -144,3 +144,34 @@ class APIWorker(BaseWorker):
 
             # Serve until process is killed
             httpd.serve_forever()
+
+
+class LoggerWorker(BaseWorker):
+
+    def __init__(self, manager, period=0.5):
+
+        super(LoggerWorker, self).__init__()
+        
+        self._manager = manager
+        self._period = period
+
+    def run(self):
+
+        for _tag in self._manager._logging_tags:
+            self._manager._logger.set_tag(_tag)
+
+        _cvt = CVTEngine()
+
+        time.sleep(self._period)
+
+        while True:
+
+            now = time.time()
+
+            for _tag in self._manager._logging_tags:
+                value = _cvt.read_tag(_tag)
+                self._manager._logger.write_tag(_tag, value)
+            
+            elapsed = time.time() - now
+
+            time.sleep(self._period - elapsed)

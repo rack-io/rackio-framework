@@ -1,2 +1,3 @@
 falcon==2.0.0
 pyBigParser==2.1
+sqlitedict==1.6.0

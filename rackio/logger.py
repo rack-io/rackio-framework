@@ -79,7 +79,7 @@ class LoggerEngine(Singleton):
     >>> from rackio.engine import CVTEngine
     >>> tag_egine = CVTEngine()
     >>> tag_engine.write_tag("TAG1", 40.43)
-    >>> value = >>> tag_engine.read_tag("TAG1")
+    >>> value = tag_engine.read_tag("TAG1")
     >>> print(value)
     40.43
     ```
@@ -94,8 +94,13 @@ class LoggerEngine(Singleton):
         self._request_lock = threading.Lock()
         self._response_lock = threading.Lock()
 
+        self._logging_tags = list()
+
         self._response = None
 
         self._response_lock.acquire()
 
+    def add_tag(self, tag):
+
+        self._logging_tags.append(tag)
         
