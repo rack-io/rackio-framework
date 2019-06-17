@@ -11,7 +11,7 @@ from ._singleton import Singleton
 from .logger import LoggerEngine
 from .controls import ControlManager
 from .workers import LoggerWorker, ControlWorker, APIWorker, _ContinousWorker
-from .api import TagResource, TagCollectionResource
+from .api import TagResource, TagCollectionResource, TagHistoryResource
 
 
 class Rackio(Singleton):
@@ -46,9 +46,12 @@ class Rackio(Singleton):
 
         _tag = TagResource()
         _tags = TagCollectionResource()
+        _tag_history = TagHistoryResource()
 
         self._api.add_route('/api/tags/{tag_id}', _tag)
         self._api.add_route('/api/tags', _tags)
+
+        self._api.add_route('/api/tags/history/{tag_id}', _tag_history)
 
     def set_db(self, dbfile):
         """Sets the database file.
@@ -57,7 +60,8 @@ class Rackio(Singleton):
         dbfile (str): a path to database file.
         """
 
-        self._db_manager = LoggerEngine(dbfile)
+        self._db_manager = LoggerEngine()
+        self._db_manager.set_db(dbfile)
 
     def set_dbtags(self, tags):
         """Sets the database tags for logging.
@@ -160,7 +164,7 @@ class Rackio(Singleton):
         _api_worker = APIWorker(self._api, port)
 
         if self._db_manager:
-
+            self._db_manager._logger.set_db()
             _db_worker = LoggerWorker(self._db_manager)
             _db_worker.start()
         

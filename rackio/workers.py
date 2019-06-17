@@ -170,7 +170,7 @@ class LoggerWorker(BaseWorker):
 
             for _tag in self._manager._logging_tags:
                 value = _cvt.read_tag(_tag)
-                self._manager._logger.write_tag(_tag, value)
+                self._manager.write_tag(_tag, value)
             
             elapsed = time.time() - now
 

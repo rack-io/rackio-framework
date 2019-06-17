@@ -9,6 +9,7 @@ import json
 import falcon
 
 from .engine import CVTEngine
+from .logger import LoggerEngine
 
 
 class TagCollectionResource(object):
@@ -90,3 +91,25 @@ class TagResource(object):
 
         # Create a JSON representation of the resource
         resp.body = json.dumps(doc, ensure_ascii=False)
+
+
+class TagHistoryResource(object):
+
+    def on_get(self, req, resp, tag_id):
+
+        _logger = LoggerEngine()
+
+        values = _logger.read_tag(tag_id)
+
+        doc = {
+            'tag': tag_id,
+            'value': values
+        }
+
+        # Create a JSON representation of the resource
+        resp.body = json.dumps(doc, ensure_ascii=False)
+
+        # The following line can be omitted because 200 is the default
+        # status returned by the framework, but it is included here to
+        # illustrate how this may be overridden as needed.
+        resp.status = falcon.HTTP_200
