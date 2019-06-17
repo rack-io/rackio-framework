@@ -6,6 +6,7 @@ will create a time-serie for each tag in a short memory sqlite data base.
 """
 
 import threading
+import pickledb
 
 from sqlitedict import SqliteDict
 from datetime import datetime
@@ -31,41 +32,28 @@ class TagLogger:
     
     def __init__(self, dbfile, memory=None):
 
-        self._dbfile = dbfile
+        self._dbfile = pickledb.load(dbfile, False)
         self._memory = memory
-        
-        with SqliteDict(self._dbfile) as _sqlitedb:
-            
-            _sqlitedb["tags"] = dict()
 
     def set_tag(self, tag):
 
-        with SqliteDict(self._dbfile) as _sqlitedb:
-
-            _sqlitedb["tags"][tag] = list()
+        self._dbfile.set(tag, list())
 
     def write_tag(self, tag, value):
 
-        with SqliteDict(self._dbfile) as _sqlitedb:
-
-            now = datetime.now()
-
-            _value = (now, value,)
-
-            _sqlitedb["tags"][tag].append(_value)
-            _sqlitedb.commit()
+        values = self._dbfile.get(tag)
+        values.append(value)
+        self._dbfile.set(tag, values)
+        self._dbfile.dump()
 
     def read_tag(self, tag):
 
-        with SqliteDict(self._dbfile) as _sqlitedb:
-
-            result = _sqlitedb["tags"][tag]
-            _sqlitedb.commit()
-
+        result = self._dbfile.get(tag)
+        
         return result
 
 
-class LoggerEngine(Singleton):
+class LoggerEngine:
     """Logger Engine class for Tag thread-safe database logging.
 
     This class is intended hold in memory tag based values and 
@@ -88,17 +76,12 @@ class LoggerEngine(Singleton):
 
     def __init__(self, dbfile):
 
-        super(LoggerEngine, self).__init__()
+        # super(LoggerEngine, self).__init__()
 
         self._logger = TagLogger(dbfile)
-        self._request_lock = threading.Lock()
-        self._response_lock = threading.Lock()
-
         self._logging_tags = list()
 
         self._response = None
-
-        self._response_lock.acquire()
 
     def add_tag(self, tag):
 

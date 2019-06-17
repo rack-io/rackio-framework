@@ -8,8 +8,9 @@ import falcon
 import concurrent.futures
 
 from ._singleton import Singleton
+from .logger import LoggerEngine
 from .controls import ControlManager
-from .workers import ControlWorker, APIWorker, _ContinousWorker
+from .workers import LoggerWorker, ControlWorker, APIWorker, _ContinousWorker
 from .api import TagResource, TagCollectionResource
 
 
@@ -39,6 +40,7 @@ class Rackio(Singleton):
         self._worker_functions = list()
         self._continous_functions = list()
         self._control_manager = ControlManager()
+        self._db_manager = None
 
         self._api = falcon.API()
 
@@ -47,6 +49,25 @@ class Rackio(Singleton):
 
         self._api.add_route('/api/tags/{tag_id}', _tag)
         self._api.add_route('/api/tags', _tags)
+
+    def set_db(self, dbfile):
+        """Sets the database file.
+        
+        # Parameters
+        dbfile (str): a path to database file.
+        """
+
+        self._db_manager = LoggerEngine(dbfile)
+
+    def set_dbtags(self, tags):
+        """Sets the database tags for logging.
+        
+        # Parameters
+        tags (list): A list of the tags.
+        """
+
+        for _tag in  tags:
+            self._db_manager.add_tag(_tag)
 
     def append_rule(self, rule):
         """Append a rule to the control manager.
@@ -137,6 +158,11 @@ class Rackio(Singleton):
 
         _control_worker = ControlWorker(self._control_manager)
         _api_worker = APIWorker(self._api, port)
+
+        if self._db_manager:
+
+            _db_worker = LoggerWorker(self._db_manager)
+            _db_worker.start()
         
         _control_worker.start()
         _api_worker.start()
