@@ -258,6 +258,53 @@ content-type: application/json
 }
 ```
 
+## Reading tags history
+You can read tags history using the API also
+
+```
+http localhost:8000/api/tags/history/RAND1
+```
+
+And you will get the following
+
+```http
+HTTP/1.0 200 OK
+Date: Tue, 18 Jun 2019 02:52:43 GMT
+Server: WSGIServer/0.2 CPython/3.7.1
+content-length: 4917
+content-type: application/json
+```
+```json
+{
+    "tag": "RAND1",
+    "value": [
+        0.0,
+        24.628376069489793,
+        25.757258388362462,
+        25.55412553374292,
+        24.555658954786043,
+        25.06933481716872,
+        25.40130983961439,
+        25.689521224514724,
+        25.81125032707667,
+        25.639558206736673,
+		.
+		.
+		.
+        25.349485473327377,
+        24.799801913324295,
+        25.227466610598572,
+        25.27254049615728,
+        25.105421823573916,
+        24.82832764778826,
+        24.65831512999663,
+        25.26014559203846,
+        25.216187451359872,
+        25.151243977491735
+    ]
+}
+```
+
 This way you can create your custom HMTL and Javascript Views to perform ```AJAX``` requests on Rackio.
 
 # Things to do
