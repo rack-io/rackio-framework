@@ -8,7 +8,6 @@ will create a time-serie for each tag in a short memory sqlite data base.
 import threading
 import pickledb
 
-from sqlitedict import SqliteDict
 from datetime import datetime
 
 from ._singleton import Singleton

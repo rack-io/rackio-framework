@@ -19,6 +19,7 @@ setuptools.setup(
     install_requires=[
         'falcon',
         'pyBigParser',
+        'pickledb',
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
