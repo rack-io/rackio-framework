@@ -91,6 +91,16 @@ class Rackio(Singleton):
 
         self._control_manager.append_control(control)
 
+    def add_route(self, route, resource):
+        """Append a resource and route the api.
+        
+        # Parameters
+        route (str): The url route for this resource.
+        resource (object): a url resouce template class instance.
+        """
+
+        self._api.add_route(route, resource)
+
     def rackit(self, period):
         """Decorator method to register functions plugins.
         
