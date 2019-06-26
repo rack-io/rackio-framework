@@ -71,3 +71,22 @@ class TagObserver(Observer):
         result["value"] = self._subject.value
 
         self._tag_queue.put(result)
+
+
+class Model:
+    """
+    Implements an Abstact Model to inherit for custom models
+    creation
+    """
+
+    def __init__(self, **kwargs):
+
+        pass
+
+    def commit(self):
+
+        pass
+
+    def get(self, tag):
+
+        pass
