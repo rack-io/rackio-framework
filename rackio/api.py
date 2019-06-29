@@ -99,11 +99,16 @@ class TagHistoryResource(object):
 
         _logger = LoggerEngine()
 
-        values = _logger.read_tag(tag_id)
+        history = _logger.read_tag(tag_id)
+
+        waveform = dict() 
+        waveform["dt"] = history["dt"]
+        waveform["t0"] = history["t0"].strftime('%Y-%m-%d %H:%M:%S')
+        waveform["values"] = history["values"]
 
         doc = {
             'tag': tag_id,
-            'value': values
+            'waveform': waveform
         }
 
         # Create a JSON representation of the resource

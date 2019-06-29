@@ -34,6 +34,8 @@ class TagLogger:
         self._dbfile = dbfile
         self._memory = memory
 
+        self._period = None
+
     def set_dbfile(self, dbfile):
 
         self._dbfile = dbfile
@@ -44,13 +46,41 @@ class TagLogger:
 
     def set_tag(self, tag):
 
-        self._db.set(tag, list())
+        # self._db.set(tag, list())
+        
+        waveform = dict()
+        waveform["values"] = list()
+        waveform["dt"] = self._period
+        waveform["t0"] = None
+
+        # self._db.set(tag, list())
+        self._db.set(tag, waveform)
+        self._db.dump()
 
     def write_tag(self, tag, value):
 
-        values = self._db.get(tag)
+        # values = self._db.get(tag)
+        # values.append(value)
+        # self._db.set(tag, values)
+        # self._db.dump()
+
+        waveform = self._db.get(tag)
+
+        values = waveform["values"]
+
+        if not values:
+            
+            dt = self._period
+            t0 = datetime.now()
+            
+            waveform["dt"] = dt
+            waveform["t0"] = t0
+
         values.append(value)
-        self._db.set(tag, values)
+
+        waveform["values"] = values
+
+        self._db.set(tag, waveform)
         self._db.dump()
 
     def read_tag(self, tag):
@@ -81,12 +111,14 @@ class LoggerEngine(Singleton):
 
     """
 
-    def __init__(self):
+    def __init__(self, period=0.5):
 
         super(LoggerEngine, self).__init__()
 
         self._logger = TagLogger()
         self._logging_tags = list()
+
+        self._logger._period = period
 
         self._request_lock = threading.Lock()
         self._response_lock = threading.Lock()
