@@ -48,11 +48,11 @@ def process_waveform(waveform, tstart, tstop):
         values.pop(0)
         first_date += time_delta
     
-    result_waveform["t0"] = first_date
+    result_waveform["t0"] = first_date.strftime('%Y-%m-%d %H:%M:%S')
 
     while first_date < finish_date:
 
-        if len(value) > 0:
+        if len(values) > 0:
             value = values.pop(0)
             result.append(value)
             
