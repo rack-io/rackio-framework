@@ -10,6 +10,7 @@ import falcon
 
 from .engine import CVTEngine
 from .logger import LoggerEngine
+from .utils import process_waveform
 
 
 class TagCollectionResource(object):
@@ -109,6 +110,38 @@ class TagHistoryResource(object):
         doc = {
             'tag': tag_id,
             'waveform': waveform
+        }
+
+        # Create a JSON representation of the resource
+        resp.body = json.dumps(doc, ensure_ascii=False)
+
+        # The following line can be omitted because 200 is the default
+        # status returned by the framework, but it is included here to
+        # illustrate how this may be overridden as needed.
+        resp.status = falcon.HTTP_200
+
+    
+class TrendResource(object):
+
+    def on_get(self, req, resp, tag_id):
+
+        tstart = req.media.get('tstart')
+        tstop = req.media.get('tstop')
+
+        _logger = LoggerEngine()
+
+        history = _logger.read_tag(tag_id)
+
+        waveform = dict()
+        waveform["dt"] = history["dt"]
+        waveform["t0"] = history["t0"].strftime('%Y-%m-%d %H:%M:%S')
+        waveform["values"] = history["values"]
+
+        result = process_waveform(waveform, tstart, tstop)
+
+        doc = {
+            'tag': tag_id,
+            'waveform': result
         }
 
         # Create a JSON representation of the resource
