@@ -135,7 +135,7 @@ class TrendResource(object):
         waveform = dict()
         waveform["dt"] = history["dt"]
         waveform["t0"] = history["t0"].strftime('%Y-%m-%d %H:%M:%S')
-        waveform["values"] = history["values"]
+        waveform["values"] = history["values"][:]
 
         result = process_waveform(waveform, tstart, tstop)
 
