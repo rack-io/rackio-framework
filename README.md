@@ -20,18 +20,17 @@ pip install Rackio
 
 ```python
 from rackio import Rackio, TagEngine
-from rackio.models import Tag
 
 app = Rackio()
 tag_egine = TagEngine()
 
 # Tags definitions
 
-tag_egine.set_tag("RAND1", "float")
-tag_egine.set_tag("RAND2", "float")
-tag_egine.set_tag("T1", "float")
-tag_egine.set_tag("T2", "float")
-tag_egine.set_tag("T3", "float")
+tag_engine.set_tag("RAND1", "float")
+tag_engine.set_tag("RAND2", "float")
+tag_engine.set_tag("T1", "float")
+tag_engine.set_tag("T2", "float")
+tag_engine.set_tag("T3", "float")
 
 if __name__ == "__main__":
 
@@ -49,6 +48,8 @@ Controls are objects that interact with the tags, changing their values accordin
 These actions only change tags values with a defined constant value.
 
 ```python
+from rackio.controls import Condition, ValueAction, Control
+
 # Conditions definitions
 
 cond1 = Condition("T1",">=", "T2")
@@ -73,6 +74,8 @@ app.append_control(control2)
 These actions change tags values with a defined mathematical expression, and defined tags can be used inside these expressions.
 
 ```python
+from rackio.controls import MathAction
+
 # Conditions definitions
 
 cond1 = Condition("T1",">=", "T2")
@@ -116,8 +119,8 @@ Rackio can be extended to add custom continous tasks and operations
 @app.rackit(1)
 def writer1():
 
-    tag_egine.write_tag("T1", 15)
-    tag_egine.write_tag("T2", 40)
+    tag_engine.write_tag("T1", 15)
+    tag_engine.write_tag("T2", 40)
 
     direction = 1
 
@@ -146,11 +149,11 @@ You can register a defined function as a continous task to be perform by Rackio.
 @app.rackit_on(period=1)
 def reader():
 
-    rand1 = tag_egine.read_tag("RAND1")
-    rand2 = tag_egine.read_tag("RAND2")
-    T1 = tag_egine.read_tag("T1")
-    T2 = tag_egine.read_tag("T2")
-    T3 = tag_egine.read_tag("T3")
+    rand1 = tag_engine.read_tag("RAND1")
+    rand2 = tag_engine.read_tag("RAND2")
+    T1 = tag_engine.read_tag("T1")
+    T2 = tag_engine.read_tag("T2")
+    T3 = tag_engine.read_tag("T3")
         
     print("")
     print("RAND1: {}".format(rand1))
