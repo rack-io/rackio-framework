@@ -123,7 +123,7 @@ class TagHistoryResource(object):
     
 class TrendResource(object):
 
-    def on_get(self, req, resp, tag_id):
+    def on_post(self, req, resp, tag_id):
 
         tstart = req.media.get('tstart')
         tstop = req.media.get('tstop')
