@@ -6,6 +6,7 @@ will create a time-serie for each tag in a short memory sqlite data base.
 """
 
 import threading
+import os
 import pickledb
 
 from datetime import datetime
@@ -35,6 +36,11 @@ class TagLogger:
         self._memory = memory
 
         self._period = None
+
+        if os.path.exists(self._dbfile):
+            os.remove(self._dbfile)
+        else:   
+            print("Can not delete the file as it doesn't exists")
 
     def set_dbfile(self, dbfile):
 
