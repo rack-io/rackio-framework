@@ -5,6 +5,8 @@ This module implements all Alarms class definitions and Alarm Handlers.
 """
 import queue
 
+from datetime import datetime
+
 from .engine import CVTEngine
 from .models import TagObserver
 
@@ -17,24 +19,73 @@ class Alarm:
         self._tag = tag
         self._description = description
 
-        self._enabled = True
-        self._triggered = False
-        self._acknowledged = False
+        self._trigger_value = None
+        self._trigger_type = None       # ["HI", "LO", "BOOL"]
 
-        self._state = None
+        self._enabled = True            # True: Enable       - False: Disable
+        
+        self._process = True            # True: Normal       - False: Abnormal
+        self._triggered = False         # True: Active       - False: Not Active
+        self._acknowledged = True       # True: Acknowledged - False: Unacknowledged
+
+        self._state = "Normal"          # ["Normal", "Unacknowledged", "Acknowledged", "RTN Unacknowledged"]
+        
         self._tripped_timestamp = None
+        self._acknowledged_timestamp = None
+
+    def set_trigger(self, value, _type):
+
+        self._trigger_value = value
+        self._trigger_type = value
 
     def get_tag(self):
 
         return self._tag
 
+    def set_state(self, _state):
+
+        self._state = _state
+
+        if _state == "Normal":
+
+            self._process = True
+            self._triggered = False
+            self._acknowledged = True
+
+        elif _state == "Unacknowledged":
+
+            self._process = False
+            self._triggered = True
+            self._acknowledged = False
+
+        elif _state == "Acknowledged":
+
+            self._process = False
+            self._triggered = True
+            self._acknowledged = True
+
+        elif _state == "RTN Unacknowledged":
+
+            self._process = True
+            self._triggered = False
+            self._acknowledged = False
+
     def trigger(self):
 
         self._triggered = True
+        self._tripped_timestamp = datetime.now()
 
     def acknowledge(self):
 
-        self._acknowledged = True
+        if self._state == "Unacknowledged":
+
+            self.set_state("Acknowledged")
+        
+        if self._state == "RTN Unacknowledged":
+            
+            self.set_state("Normal")
+
+        self._acknowledged_timestamp = datetime.now()
 
     def clear(self):
 
@@ -46,11 +97,66 @@ class Alarm:
         self._triggered = False
         self._acknowledged = False
 
+        self._tripped_timestamp = None
+        self._acknowledged_timestamp = None
+
     def update(self, value):
 
-        pass
+        _state = self._state
+        _type = self._trigger_type
 
-    
+        if _state == "Normal" or _state == "RTN Unacknowledged":
+
+            if _type == "HI":
+
+                if value >= self._trigger_value:
+                    self.set_state("Unacknowledged")
+
+            elif _type == "LO":
+
+                if value <= self._trigger_value:
+                    self.set_state("Unacknowledged")
+
+            elif _type == "BOOL":
+
+                if value:
+                    self.set_state("Unacknowledged")
+
+        elif _state == "Unacknowledged":
+
+            if _type == "HI":
+
+                if value < self._trigger_value:
+                    self.set_state("RTN Unacknowledged")
+
+            elif _type == "LO":
+
+                if value > self._trigger_value:
+                    self.set_state("RTN Unacknowledged")
+
+            elif _type == "BOOL":
+
+                if not value:
+                    self.set_state("RTN Unacknowledged")
+
+        elif _state == "Acknowledged":
+
+            if _type == "HI":
+
+                if value < self._trigger_value:
+                    self.set_state("Normal")
+
+            elif _type == "LO":
+
+                if value > self._trigger_value:
+                    self.set_state("Normal")
+
+            elif _type == "BOOL":
+
+                if not value:
+                    self.set_state("Normal")
+
+
 class AlarmManager:
 
     def __init__(self):
