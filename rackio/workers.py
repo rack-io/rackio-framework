@@ -36,11 +36,13 @@ class ThreadWorker(BaseWorker):
 
 class ControlWorker(BaseWorker):
 
-    def __init__(self, manager):
+    def __init__(self, manager, period=0.1):
 
         super(ControlWorker, self).__init__()
         
         self._manager = manager
+        self._period = period
+
         self._manager.attach_all()
 
     def run(self):
@@ -49,7 +51,7 @@ class ControlWorker(BaseWorker):
 
         while True:
             
-            time.sleep(0.1)
+            time.sleep(self._period)
 
             if not _queue.empty():
                 item = _queue.get()
@@ -61,11 +63,13 @@ class ControlWorker(BaseWorker):
 
 class AlarmWorker(BaseWorker):
 
-    def __init__(self, manager):
+    def __init__(self, manager, period=0.25):
 
         super(AlarmWorker, self).__init__()
         
         self._manager = manager
+        self._period = period
+
         self._manager.attach_all()
 
     def run(self):
@@ -74,7 +78,7 @@ class AlarmWorker(BaseWorker):
 
         while True:
             
-            time.sleep(0.1)
+            time.sleep(self._period)
 
             if not _queue.empty():
                 item = _queue.get()

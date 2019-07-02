@@ -10,8 +10,9 @@ import concurrent.futures
 from ._singleton import Singleton
 from .logger import LoggerEngine
 from .controls import ControlManager
+from .alarms import AlarmManager
 from .workers import LoggerWorker, ControlWorker, APIWorker, _ContinousWorker
-from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource
+from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, AlarmResource
 
 
 class Rackio(Singleton):
@@ -40,6 +41,7 @@ class Rackio(Singleton):
         self._worker_functions = list()
         self._continous_functions = list()
         self._control_manager = ControlManager()
+        self._alarm_manager = AlarmManager()
         self._db_manager = None
 
         self._api = falcon.API()
@@ -48,12 +50,15 @@ class Rackio(Singleton):
         _tags = TagCollectionResource()
         _tag_history = TagHistoryResource()
         _tag_trend = TrendResource()
+        _alarm = AlarmResource()
 
         self._api.add_route('/api/tags/{tag_id}', _tag)
         self._api.add_route('/api/tags', _tags)
 
         self._api.add_route('/api/tags/history/{tag_id}', _tag_history)
         self._api.add_route('/api/tags/trends/{tag_id}', _tag_trend)
+
+        self._api.add_route('/api/alarms/{alarm_name}', _alarm)
 
     def set_db(self, dbfile):
         """Sets the database file.
@@ -92,6 +97,13 @@ class Rackio(Singleton):
         """
 
         self._control_manager.append_control(control)
+
+    def append_alarm(self, alarm):
+        """Append an alarm to the alarm manager.
+        
+        # Parameters
+        alarm (Alarm): an alarm object.
+        """
 
     def add_route(self, route, resource):
         """Append a resource and route the api.
@@ -173,6 +185,7 @@ class Rackio(Singleton):
         """
 
         _control_worker = ControlWorker(self._control_manager)
+        _alarm_worker = ControlWorker(self._alarm_manager)
         _api_worker = APIWorker(self._api, port)
 
         if self._db_manager:
@@ -181,6 +194,7 @@ class Rackio(Singleton):
             _db_worker.start()
         
         _control_worker.start()
+        _alarm_worker.start()
         _api_worker.start()
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:

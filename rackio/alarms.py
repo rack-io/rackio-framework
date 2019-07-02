@@ -33,14 +33,35 @@ class Alarm:
         self._tripped_timestamp = None
         self._acknowledged_timestamp = None
 
+    def serialize(self):
+
+        result = dict()
+        
+        result["name"] = self._name
+        result["state"] = self._state
+        result["enabled"] = self._enabled
+        result["process"] = self._process
+        result["triggered"] = self._triggered
+        result["acknowledged"] = self._acknowledged
+
+        return result
+
     def set_trigger(self, value, _type):
 
         self._trigger_value = value
         self._trigger_type = value
+    
+    def get_name(self):
+
+        return self._name
 
     def get_tag(self):
 
         return self._tag
+
+    def get_state(self):
+
+        return self._state
 
     def set_state(self, _state):
 
@@ -167,6 +188,12 @@ class AlarmManager:
     def append_alarm(self, alarm):
 
         self._alarms.append(alarm)
+
+    def get_alarm(self, name):
+
+        for _alarm in self._alarms:
+            if name == _alarm.get_name():
+                return _alarm
 
     def alarms_tags(self):
 
