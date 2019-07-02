@@ -11,7 +11,7 @@ from ._singleton import Singleton
 from .logger import LoggerEngine
 from .controls import ControlManager
 from .alarms import AlarmManager
-from .workers import LoggerWorker, ControlWorker, APIWorker, _ContinousWorker
+from .workers import LoggerWorker, ControlWorker, AlarmWorker, APIWorker, _ContinousWorker
 from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, AlarmResource
 
 
@@ -141,7 +141,7 @@ class Rackio(Singleton):
         
         return decorator
 
-    def rackit_on(self, function=None, period=0.5, pause_tag=None, stop_tag=None):
+    def rackit_on(self, function=None, worker_name=None, period=0.5, pause_tag=None, stop_tag=None):
         """Decorator method to register functions plugins with continous execution.
         
         This method will register into the Rackio application
@@ -167,7 +167,7 @@ class Rackio(Singleton):
             return _ContinousWorker(function)
         else:
             def wrapper(function):
-                return _ContinousWorker(function, period, pause_tag, stop_tag)
+                return _ContinousWorker(function, worker_name, period, pause_tag, stop_tag)
 
             return wrapper
 
@@ -185,7 +185,7 @@ class Rackio(Singleton):
         """
 
         _control_worker = ControlWorker(self._control_manager)
-        _alarm_worker = ControlWorker(self._alarm_manager)
+        _alarm_worker = AlarmWorker(self._alarm_manager)
         _api_worker = APIWorker(self._api, port)
 
         if self._db_manager:

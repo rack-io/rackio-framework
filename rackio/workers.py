@@ -47,6 +47,9 @@ class ControlWorker(BaseWorker):
 
     def run(self):
 
+        if (not self._manager.rule_tags()) and (not self._manager.control_tags()):
+            return
+
         _queue = self._manager._tag_queue
 
         while True:
@@ -73,6 +76,9 @@ class AlarmWorker(BaseWorker):
         self._manager.attach_all()
 
     def run(self):
+
+        if not self._manager.alarms_tags():
+            return
 
         _queue = self._manager._tag_queue
 
@@ -114,6 +120,8 @@ class _ContinousWorker:
     
     def __call__(self, *args):
 
+        print(self._period)
+
         _cvt = CVTEngine()
 
         time.sleep(self._period)
@@ -144,7 +152,10 @@ class _ContinousWorker:
                     self._status = "Pause"
 
             else:
-                self._f()
+                try:
+                    self._f()
+                except:
+                    self._status = "Error"
 
             elapsed = time.time() - now
 

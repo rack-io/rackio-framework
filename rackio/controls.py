@@ -395,7 +395,7 @@ class ControlManager:
         self._controls = dict()
         self._tag_queue = queue.Queue()
 
-    def rules_tags(self):
+    def rule_tags(self):
         
         result = list()
         
@@ -405,7 +405,7 @@ class ControlManager:
 
         return result
 
-    def controls_tags(self):
+    def control_tags(self):
         
         result = list()
         
