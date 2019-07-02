@@ -208,4 +208,6 @@ class Rackio(Singleton):
                 executor.submit(_f)
 
         _control_worker.join()
+        _alarm_worker.join()
+        _api_worker.join()
             

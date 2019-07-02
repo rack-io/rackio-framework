@@ -213,3 +213,58 @@ class AlarmResource(object):
             resp.status = status_code.HTTP_200
         else:
             resp.status = status_code.HTTP_NOT_FOUND
+
+
+class ContinousWorkerResource(object):
+
+    def on_get(self, req, resp, worker_name):
+        
+        from .core import Rackio
+
+        app = Rackio()
+        manager = app._alarm_manager
+
+        alarm = manager.get_alarm(worker_name)
+
+        if alarm:
+            doc = alarm.serialize()
+            
+            # Create a JSON representation of the resource
+            resp.body = json.dumps(doc, ensure_ascii=False)
+
+            # The following line can be omitted because 200 is the default
+            # status returned by the framework, but it is included here to
+            # illustrate how this may be overridden as needed.
+            # resp.status = falcon.HTTP_200
+            resp.status = status_code.HTTP_200
+        else:
+            resp.status = status_code.HTTP_NOT_FOUND
+
+    def on_post(self, req, resp, alarm_name):
+        
+        from .core import Rackio
+        
+        action = req.media.get('action')
+
+        app = Rackio()
+        manager = app._alarm_manager
+
+        alarm = manager.get_alarm(alarm_name)
+
+        if alarm:
+            if action == "Acknowledge":
+
+                alarm.acknowledge()
+
+            doc = alarm.serialize()
+
+            # Create a JSON representation of the resource
+            resp.body = json.dumps(doc, ensure_ascii=False)
+
+            # The following line can be omitted because 200 is the default
+            # status returned by the framework, but it is included here to
+            # illustrate how this may be overridden as needed.
+            # resp.status = falcon.HTTP_200
+            resp.status = status_code.HTTP_200
+        else:
+            resp.status = status_code.HTTP_NOT_FOUND

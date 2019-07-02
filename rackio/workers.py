@@ -110,6 +110,41 @@ class _ContinousWorker:
         rackio = Rackio()
         rackio._continous_functions.append(self)
 
+    def serialize(self):
+
+        result = dict()
+        result["name"] = self._name
+        result["period"] = self._period
+        result["pause_tag"] = self._pause_tag
+        result["stop_tag"] = self._stop_tag
+        result["status"] = self._status
+
+        return result
+
+    def pause(self):
+
+        if self._pause_tag:
+            _cvt = CVTEngine()
+            _cvt.write_tag(self._pause_tag, True)
+
+            return True
+
+    def resume(self):
+
+        if self._pause_tag:
+            _cvt = CVTEngine()
+            _cvt.write_tag(self._pause_tag, False)
+
+            return True
+
+    def stop(self):
+
+        if self._stop_tag:
+            _cvt = CVTEngine()
+            _cvt.write_tag(self._stop_tag, True)
+
+            return True
+
     def get_name(self):
 
         return self._name
@@ -119,8 +154,6 @@ class _ContinousWorker:
         return self._status
     
     def __call__(self, *args):
-
-        print(self._period)
 
         _cvt = CVTEngine()
 
@@ -209,3 +242,4 @@ class LoggerWorker(BaseWorker):
             elapsed = time.time() - now
 
             time.sleep(self._period - elapsed)
+            
