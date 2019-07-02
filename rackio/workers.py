@@ -90,17 +90,27 @@ class AlarmWorker(BaseWorker):
 
 class _ContinousWorker:
 
-    def __init__(self, f, period=0.5, pause_tag=None, stop_tag=None):
+    def __init__(self, f, worker_name=None, period=0.5, pause_tag=None, stop_tag=None):
 
         self._f = f
+        self._name = worker_name
         self._period = period
         self._pause_tag = pause_tag
         self._stop_tag = stop_tag
+        self._status = "Stop"       # ["Stop", "Pause", "Running", "Error"]
 
         from .core import Rackio
 
         rackio = Rackio()
         rackio._continous_functions.append(self)
+
+    def get_name(self):
+
+        return self._name
+
+    def get_status(self):
+
+        return self._status
     
     def __call__(self, *args):
 
@@ -110,20 +120,29 @@ class _ContinousWorker:
 
         while True:
 
+            self._status = "Running"
+
             now = time.time()
 
-            if self._pause_tag:
+            if self._stop_tag:
                 stop = _cvt.read_tag(self._stop_tag)
 
                 if stop:
+                    self._status = "Stop"
                     return
 
             if self._pause_tag:
                 pause = _cvt.read_tag(self._pause_tag)
-
+                
                 if not pause:
                     
-                    self._f()
+                    try:
+                        self._f()
+                    except:
+                        self._status = "Error"
+                else:
+                    self._status = "Pause"
+
             else:
                 self._f()
 
