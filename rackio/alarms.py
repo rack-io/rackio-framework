@@ -10,6 +10,15 @@ from datetime import datetime
 from .engine import CVTEngine
 from .models import TagObserver
 
+NORMAL              = "Normal"
+UNACKNOWLEDGED      = "Unacknowledged"
+ACKNOWLEDGED        = "Acknowledged"
+RTN_UNACKNOWLEDGED  = "RTN Unacknowledged"
+
+HI                  = "HI"
+LO                  = "LO"
+BOOL                = "BOOL"
+
 
 class Alarm:
 
@@ -28,7 +37,7 @@ class Alarm:
         self._triggered = False         # True: Active       - False: Not Active
         self._acknowledged = True       # True: Acknowledged - False: Unacknowledged
 
-        self._state = "Normal"          # ["Normal", "Unacknowledged", "Acknowledged", "RTN Unacknowledged"]
+        self._state = NORMAL            # [NORMAL, UNACKNOWLEDGED, ACKNOWLEDGED, RTN_UNACKNOWLEDGED]
         
         self._tripped_timestamp = None
         self._acknowledged_timestamp = None
@@ -67,25 +76,25 @@ class Alarm:
 
         self._state = _state
 
-        if _state == "Normal":
+        if _state == NORMAL:
 
             self._process = True
             self._triggered = False
             self._acknowledged = True
 
-        elif _state == "Unacknowledged":
+        elif _state == UNACKNOWLEDGED:
 
             self._process = False
             self._triggered = True
             self._acknowledged = False
 
-        elif _state == "Acknowledged":
+        elif _state == ACKNOWLEDGED:
 
             self._process = False
             self._triggered = True
             self._acknowledged = True
 
-        elif _state == "RTN Unacknowledged":
+        elif _state == RTN_UNACKNOWLEDGED:
 
             self._process = True
             self._triggered = False
@@ -106,13 +115,13 @@ class Alarm:
 
     def acknowledge(self):
 
-        if self._state == "Unacknowledged":
+        if self._state == UNACKNOWLEDGED:
 
-            self.set_state("Acknowledged")
+            self.set_state(ACKNOWLEDGED)
         
-        if self._state == "RTN Unacknowledged":
+        if self._state == RTN_UNACKNOWLEDGED:
             
-            self.set_state("Normal")
+            self.set_state(NORMAL)
 
         self._acknowledged_timestamp = datetime.now()
 
@@ -137,56 +146,56 @@ class Alarm:
         _state = self._state
         _type = self._trigger_type
 
-        if _state == "Normal" or _state == "RTN Unacknowledged":
+        if _state == NORMAL or _state == RTN_UNACKNOWLEDGED:
 
-            if _type == "HI":
+            if _type == HI:
 
                 if value >= self._trigger_value:
-                    self.set_state("Unacknowledged")
+                    self.set_state(UNACKNOWLEDGED)
 
-            elif _type == "LO":
+            elif _type == LO:
 
                 if value <= self._trigger_value:
-                    self.set_state("Unacknowledged")
+                    self.set_state(UNACKNOWLEDGED)
 
-            elif _type == "BOOL":
+            elif _type == BOOL:
 
                 if value:
-                    self.set_state("Unacknowledged")
+                    self.set_state(UNACKNOWLEDGED)
 
-        elif _state == "Unacknowledged":
+        elif _state == UNACKNOWLEDGED:
 
-            if _type == "HI":
-
-                if value < self._trigger_value:
-                    self.set_state("RTN Unacknowledged")
-
-            elif _type == "LO":
-
-                if value > self._trigger_value:
-                    self.set_state("RTN Unacknowledged")
-
-            elif _type == "BOOL":
-
-                if not value:
-                    self.set_state("RTN Unacknowledged")
-
-        elif _state == "Acknowledged":
-
-            if _type == "HI":
+            if _type == HI:
 
                 if value < self._trigger_value:
-                    self.set_state("Normal")
+                    self.set_state(RTN_UNACKNOWLEDGED)
 
-            elif _type == "LO":
+            elif _type == LO:
 
                 if value > self._trigger_value:
-                    self.set_state("Normal")
+                    self.set_state(RTN_UNACKNOWLEDGED)
 
-            elif _type == "BOOL":
+            elif _type == BOOL:
 
                 if not value:
-                    self.set_state("Normal")
+                    self.set_state(RTN_UNACKNOWLEDGED)
+
+        elif _state == ACKNOWLEDGED:
+
+            if _type == HI:
+
+                if value < self._trigger_value:
+                    self.set_state(NORMAL)
+
+            elif _type == LO:
+
+                if value > self._trigger_value:
+                    self.set_state(NORMAL)
+
+            elif _type == BOOL:
+
+                if not value:
+                    self.set_state(NORMAL)
 
 
 class AlarmManager:
