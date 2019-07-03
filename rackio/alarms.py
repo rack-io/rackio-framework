@@ -49,7 +49,7 @@ class Alarm:
     def set_trigger(self, value, _type):
 
         self._trigger_value = value
-        self._trigger_type = value
+        self._trigger_type = _type
     
     def get_name(self):
 
@@ -96,6 +96,14 @@ class Alarm:
         self._triggered = True
         self._tripped_timestamp = datetime.now()
 
+    def disable(self):
+
+        self._enabled = False
+
+    def enable(self):
+
+        self._enabled = True
+
     def acknowledge(self):
 
         if self._state == "Unacknowledged":
@@ -122,6 +130,9 @@ class Alarm:
         self._acknowledged_timestamp = None
 
     def update(self, value):
+
+        if not self._enabled:
+            return
 
         _state = self._state
         _type = self._trigger_type
@@ -195,6 +206,15 @@ class AlarmManager:
             if name == _alarm.get_name():
                 return _alarm
 
+    def get_alarms(self):
+
+        result = list()
+
+        for _alarm in self._alarms:
+            result.append(_alarm)
+
+        return result
+
     def alarms_tags(self):
 
         result = [_alarm.get_tag() for _alarm in self._alarms]
@@ -224,11 +244,14 @@ class AlarmManager:
 
             attach_observers(_alarm)
 
-    def execute(self, tag, value):
+    def execute(self, tag):
+
+        _cvt = CVTEngine()
+        value = _cvt.read_tag(tag)
 
         for _alarm in self._alarms:
 
             if tag == _alarm.get_tag():
-                
+
                 _alarm.update(value)
     
