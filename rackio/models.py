@@ -176,12 +176,16 @@ class Model:
         pass
 
     @classmethod
-    def set(self, tag, obj):
+    def set(cls, tag, obj):
 
         obj.tag = tag
 
     @classmethod
-    def get(self, tag):
+    def get(cls, tag):
+
+        pass
+
+    def save(self):
 
         pass
 
