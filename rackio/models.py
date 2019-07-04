@@ -131,6 +131,13 @@ class Model:
     Implement an abstract model for inheritance
     """
 
+    def __new__(cls, *args, **kwargs):
+
+        from .engine import CVTEngine
+
+        _cvt = CVTEngine()
+        _cvt.set_type(cls.__name__)
+
     def __init__(self, **kwargs):
 
         attrs = self.get_attributes()
@@ -191,4 +198,11 @@ class Model:
 
     def _serialize(self):
 
-        pass
+        result = dict()
+
+        attrs = self.get_attributes()
+
+        for key in attrs.keys():
+            result[key] = getattr(self, key)
+
+        return result
