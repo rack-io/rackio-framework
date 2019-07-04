@@ -4,8 +4,13 @@
 This module implements a Tags and other classes for
 modelling the subjects involved in the core of the engine.
 """
+from inspect import ismethod
+
 from .utils import Observer
 
+FLOAT = "float"
+INTEGER = "int"
+BOOL = "bool"
 
 class Tag:
 
@@ -72,21 +77,114 @@ class TagObserver(Observer):
 
         self._tag_queue.put(result)
 
+# Classes for Custom models design
+
+
+class PropertyField:
+
+    """
+    Implement an abstract propery field
+    """
+
+    def __init__(self, _type, default=None):
+
+        self._type = _type
+        self.default = default
+
+
+class FloatField(PropertyField):
+
+    """
+    Implement a Float Field
+    """
+
+    def __init__(self, default=None):
+
+        super(FloatField, self).__init__(FLOAT, default)
+
+
+class IntegerField(PropertyField):
+
+    """
+    Implement an Integer Field
+    """
+
+    def __init__(self, default=None):
+
+        super(IntegerField, self).__init__(INTEGER, default)
+
+        
+class BooleanField(PropertyField):
+
+    """
+    Implement a Boolean Field
+    """
+
+    def __init__(self, default=None):
+
+        super(BooleanField, self).__init__(BOOL, default)
+
 
 class Model:
+
     """
-    Implements an Abstact Model to inherit for custom models
-    creation
+    Implement an abstract model for inheritance
     """
 
     def __init__(self, **kwargs):
 
-        pass
+        attrs = self.get_attributes()
 
+        for key, value in attrs.items():
+
+            if key in kwargs:
+                default = kwargs[key]
+            else:
+                default = value.default
+                _type = value._type
+
+            if default:
+                setattr(self, key, default)
+            else:
+                if _type == FLOAT:
+                    setattr(self, key, 0.0)
+                elif _type == INTEGER:
+                    setattr(self, key, 0)
+                elif _type == BOOL:
+                    setattr(self, key, False)
+
+        self.attrs = attrs
+
+    @classmethod
+    def get_attributes(cls):
+
+        result = dict()
+        
+        props = cls.__dict__
+
+        for key, value in props.items():
+
+            if not ismethod(value):
+
+                if not "__" in key:
+                    result[key] = value
+
+        return result
+    
     def commit(self):
 
         pass
 
+    @classmethod
+    def set(self, tag, obj):
+
+        obj.tag = tag
+
+    @classmethod
     def get(self, tag):
+
+        pass
+
+    def _serialize(self):
 
         pass
