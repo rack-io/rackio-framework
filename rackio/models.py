@@ -125,7 +125,7 @@ class BooleanField(PropertyField):
         super(BooleanField, self).__init__(BOOL, default)
 
 
-class Model:
+class Model(object):
 
     """
     Implement an abstract model for inheritance
@@ -137,6 +137,12 @@ class Model:
 
         _cvt = CVTEngine()
         _cvt.set_type(cls.__name__)
+
+        if not hasattr(cls,'_inst'):
+
+            cls._inst = super(Model, cls).__new__(cls)
+
+        return cls._inst
 
     def __init__(self, **kwargs):
 
@@ -161,7 +167,7 @@ class Model:
                     setattr(self, key, False)
 
         self.attrs = attrs
-
+    
     @classmethod
     def get_attributes(cls):
 
@@ -170,7 +176,9 @@ class Model:
         props = cls.__dict__
 
         for key, value in props.items():
-
+            
+            if isinstance(value, cls):
+                continue
             if not ismethod(value):
 
                 if not "__" in key:
@@ -181,6 +189,14 @@ class Model:
     def commit(self):
 
         pass
+
+    def set_attr(self, name, value):
+
+        setattr(self, name, value)
+
+    def get_attr(self, name):
+
+        return getattr(self, name)
 
     @classmethod
     def set(cls, tag, obj):

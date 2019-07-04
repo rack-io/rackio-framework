@@ -60,10 +60,10 @@ class CVT:
                 value = 0
             else:
                 value = False
-
-            tag = Tag(name, value, _type)
         else:
-            tag = None
+            value = None
+
+        tag = Tag(name, value, _type)
 
         self._tags[name] = tag
 
@@ -82,11 +82,24 @@ class CVT:
         value (float, int, bool): 
             Tag value ("int", "float", "bool")
         """
+
+        if "." in name:
+            values = name.split(".")
+            tag_name = values[0]
+        else:
+            tag_name = name
         
-        if not name in self._tags:
+        if not tag_name in self._tags:
             raise KeyError
 
-        self._tags[name].set_value(value)
+        if "." in name:
+            values = name.split(".")
+            name = values[0]
+            _property = values[1]
+            self._tags[name].value.set_attr(_property, value)
+            self._tags[name].notify()
+        else:
+            self._tags[name].set_value(value)
 
     def get_value(self, name):
         """Returns a tag value defined by name.
@@ -95,8 +108,13 @@ class CVT:
         name (str):
             Tag name.
         """
-
-        return self._tags[name].get_value()
+        if "." in name:
+            values = name.split(".")
+            name = values[0]
+            _property = values[1]
+            return self._tags[name].value.get_attr(_property)
+        else:
+            return self._tags[name].get_value()
 
     def get_type(self, name):
         """Returns a tag type defined by name.
