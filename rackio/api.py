@@ -15,6 +15,13 @@ from .logger import LoggerEngine
 from .utils import process_waveform
 
 
+class RackioResource(object):
+
+    def __init__(self):
+
+        self.tag_engine = CVTEngine()
+
+
 class TagCollectionResource(object):
 
     def on_get(self, req, resp):
@@ -45,11 +52,12 @@ class TagCollectionResource(object):
         resp.status = status_code.HTTP_200
 
 
-class TagResource(object):
+class TagResource(RackioResource):
 
     def on_get(self, req, resp, tag_id):
 
-        _cvt = CVTEngine()
+        # _cvt = CVTEngine()
+        _cvt = self.tag_engine
 
         value = _cvt.read_tag(tag_id)
 
