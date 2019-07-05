@@ -22,7 +22,7 @@ pip install Rackio
 from rackio import Rackio, TagEngine
 
 app = Rackio()
-tag_egine = TagEngine()
+tag_engine = TagEngine()
 
 # Tags definitions
 
@@ -129,12 +129,12 @@ def writer1():
         time.sleep(0.5)
 
         value = 24 + 2 * random()
-        tag_egine.write_tag("RAND1", value)
+        tag_engine.write_tag("RAND1", value)
 
-        T1 = tag_egine.read_tag("T1")
+        T1 = tag_engine.read_tag("T1")
         T1 += direction
 
-        tag_egine.write_tag("T1", T1)
+        tag_engine.write_tag("T1", T1)
 
         if T1 >= 60:
             direction *= -1
