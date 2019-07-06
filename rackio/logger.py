@@ -11,6 +11,7 @@ import pickledb
 
 from datetime import datetime
 
+from .utils import process_waveform
 from ._singleton import Singleton
 
 
@@ -224,4 +225,72 @@ class LoggerEngine(Singleton):
         self._request_lock.release()
 
         return result
-        
+
+
+class QueryLogger:
+
+    def __init__(self):
+
+        self._logger = LoggerEngine()
+
+    def get_history(self, tag):
+
+        return self._logger.read_tag(tag)
+
+    def get_waveform(self, tag):
+
+        history = self._logger.read_tag(tag)
+
+        result = dict()
+        result["dt"] = history["dt"]
+        result["t0"] = history["t0"].strftime('%Y-%m-%d %H:%M:%S')
+        result["values"] = history["values"][:]
+
+        return result
+
+    def query(self, tag, start, stop):
+
+        waveform = self.get_waveform(tag)
+
+        return process_waveform(waveform, start, stop)
+    
+    def query_last(self, tag, seconds=None, values=None):
+
+        if seconds:
+
+            stop = datetime.now()
+            start = stop - seconds
+
+            start = start.strftime('%Y-%m-%d %H:%M:%S')
+            stop = stop.strftime('%Y-%m-%d %H:%M:%S')
+
+            return self.query(tag, start, stop)
+
+        if values:
+            
+            values *= -1
+            waveform = self.get_waveform(tag)
+            waveform["values"] = waveform["values"][values:]
+
+            return waveform
+
+    def query_first(self, tag, seconds=None, values=None):
+
+        history = self.get_history(tag)
+
+        if seconds:
+
+            start = history["t0"]
+            stop = start + seconds
+
+            start = start.strftime('%Y-%m-%d %H:%M:%S')
+            stop = stop.strftime('%Y-%m-%d %H:%M:%S')
+
+            return self.query(tag, start, stop)
+
+        if values:
+
+            waveform = self.get_waveform(tag)
+            waveform["values"] = waveform["values"][:values]
+
+            return waveform

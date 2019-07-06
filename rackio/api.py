@@ -11,7 +11,7 @@ import falcon
 from rackio import status_code
 
 from .engine import CVTEngine
-from .logger import LoggerEngine
+from .logger import QueryLogger, LoggerEngine
 from .utils import process_waveform
 
 
@@ -140,16 +140,8 @@ class TrendResource(object):
         tstart = req.media.get('tstart')
         tstop = req.media.get('tstop')
 
-        _logger = LoggerEngine()
-
-        history = _logger.read_tag(tag_id)
-
-        waveform = dict()
-        waveform["dt"] = history["dt"]
-        waveform["t0"] = history["t0"].strftime('%Y-%m-%d %H:%M:%S')
-        waveform["values"] = history["values"][:]
-
-        result = process_waveform(waveform, tstart, tstop)
+        _query_logger = QueryLogger()
+        result = _query_logger.query(tag_id, tstart, tstop)
 
         doc = {
             'tag': tag_id,
