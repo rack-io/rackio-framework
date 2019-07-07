@@ -270,7 +270,10 @@ class QueryLogger:
             
             values *= -1
             waveform = self.get_waveform(tag)
-            waveform["values"] = waveform["values"][values:]
+            try:
+                waveform["values"] = waveform["values"][values:]
+            except:
+                waveform["values"] = waveform["values"][:]
 
             return waveform
 
@@ -291,6 +294,9 @@ class QueryLogger:
         if values:
 
             waveform = self.get_waveform(tag)
-            waveform["values"] = waveform["values"][:values]
+            try:
+                waveform["values"] = waveform["values"][:values]
+            except:
+                waveform["values"] = waveform["values"][:]
 
             return waveform
