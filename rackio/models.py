@@ -137,6 +137,9 @@ class Model(object):
 
         for key, value in attrs.items():
 
+            if hasattr(value, '__call__'):
+                continue
+                
             if key in kwargs:
                 default = kwargs[key]
             else:
