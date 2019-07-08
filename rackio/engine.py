@@ -45,23 +45,21 @@ class CVT:
         _type (str): 
             Tag value type ("int", "float", "bool")
         """
-        
-        if not _type in self._types:
 
-            _type = _type.__name__
-
-            if not _type in self._types:
-                raise TypeError
+        if isinstance(_type, str):
         
-        if _type in ["float", "int", "bool"]:
-            if _type == "float":
-                value = 0.0
-            elif _type == "int":
-                value = 0
-            else:
-                value = False
+            if _type in ["float", "int", "bool"]:
+                if _type == "float":
+                    value = 0.0
+                elif _type == "int":
+                    value = 0
+                else:
+                    value = False
         else:
-            value = None
+            value = _type()
+            _type.set(name, value)
+            _type = _type.__name__
+            self.set_type(_type)
 
         tag = Tag(name, value, _type)
 
@@ -99,6 +97,10 @@ class CVT:
             self._tags[name].value.set_attr(_property, value)
             self._tags[name].notify()
         else:
+            _type = self._tags[name].get_type()
+
+            if not _type in ["int", "float", "bool"]:
+                value.tag = name
             self._tags[name].set_value(value)
 
     def get_value(self, name):

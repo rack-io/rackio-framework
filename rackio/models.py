@@ -131,19 +131,6 @@ class Model(object):
     Implement an abstract model for inheritance
     """
 
-    def __new__(cls, *args, **kwargs):
-
-        from .engine import CVTEngine
-
-        _cvt = CVTEngine()
-        _cvt.set_type(cls.__name__)
-
-        if not hasattr(cls,'_inst'):
-
-            cls._inst = super(Model, cls).__new__(cls)
-
-        return cls._inst
-
     def __init__(self, **kwargs):
 
         attrs = self.get_attributes()
@@ -188,7 +175,9 @@ class Model(object):
     
     def commit(self):
 
-        pass
+        from .engine import CVTEngine
+
+        _cvt = CVTEngine()
 
     def set_attr(self, name, value):
 
@@ -206,11 +195,24 @@ class Model(object):
     @classmethod
     def get(cls, tag):
 
-        pass
+        from .engine import CVTEngine
+
+        _cvt = CVTEngine()
+
+        return _cvt.read_tag(tag)
 
     def save(self):
 
-        pass
+        from .engine import CVTEngine
+
+        _cvt = CVTEngine()
+
+        try:
+            tag = self.tag
+
+            _cvt.write_tag(tag, self)
+        except:
+            raise KeyError
 
     def _serialize(self):
 
