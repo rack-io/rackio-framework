@@ -203,7 +203,7 @@ class Rackio(Singleton):
         _alarm_worker.start()
         _api_worker.start()
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             
             for _f, period in self._worker_functions:
 
