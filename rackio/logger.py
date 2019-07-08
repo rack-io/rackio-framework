@@ -91,7 +91,7 @@ class TagLogger:
         self._db.dump()
 
     def read_tag(self, tag):
-
+        
         result = self._db.get(tag)
         
         return result
@@ -141,6 +141,14 @@ class LoggerEngine(Singleton):
     def add_tag(self, tag):
 
         self._logging_tags.append(tag)
+
+    def set_period(self, period):
+
+        self._logger._period = period
+
+    def get_period(self):
+
+        return self._logger._period
 
     def write_tag(self, tag, value):
 
@@ -203,7 +211,7 @@ class LoggerEngine(Singleton):
                 tag = parameters["tag"]
 
                 result = self._logger.read_tag(tag)
-
+                
                 self._response = {
                     "result": True,
                     "response": result
@@ -238,9 +246,9 @@ class QueryLogger:
         return self._logger.read_tag(tag)
 
     def get_waveform(self, tag):
-
+        
         history = self._logger.read_tag(tag)
-
+        
         result = dict()
         result["dt"] = history["dt"]
         result["t0"] = history["t0"].strftime('%Y-%m-%d %H:%M:%S')
@@ -270,6 +278,7 @@ class QueryLogger:
             
             values *= -1
             waveform = self.get_waveform(tag)
+            
             try:
                 waveform["values"] = waveform["values"][values:]
             except:

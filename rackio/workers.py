@@ -215,12 +215,12 @@ class APIWorker(BaseWorker):
 
 class LoggerWorker(BaseWorker):
 
-    def __init__(self, manager, period=0.5):
+    def __init__(self, manager):
 
         super(LoggerWorker, self).__init__()
         
         self._manager = manager
-        self._period = period
+        self._period = manager.get_period()
 
     def run(self):
 

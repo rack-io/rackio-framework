@@ -72,13 +72,15 @@ class Rackio(Singleton):
         self._db_manager = LoggerEngine()
         self._db_manager.set_db(dbfile)
 
-    def set_dbtags(self, tags):
+    def set_dbtags(self, tags, period=0.5):
         """Sets the database tags for logging.
         
         # Parameters
         tags (list): A list of the tags.
         """
 
+        self._db_manager.set_period(period)
+        
         for _tag in  tags:
             self._db_manager.add_tag(_tag)
 
