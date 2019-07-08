@@ -137,9 +137,6 @@ class Model(object):
 
         for key, value in attrs.items():
 
-            if hasattr(value, '__call__'):
-                continue
-                
             if key in kwargs:
                 default = kwargs[key]
             else:
@@ -167,6 +164,8 @@ class Model(object):
 
         for key, value in props.items():
             
+            if hasattr(value, '__call__'):
+                continue
             if isinstance(value, cls):
                 continue
             if not ismethod(value):
@@ -224,6 +223,7 @@ class Model(object):
         attrs = self.get_attributes()
 
         for key in attrs.keys():
+            
             result[key] = getattr(self, key)
 
         return result

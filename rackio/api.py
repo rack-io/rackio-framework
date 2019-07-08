@@ -34,11 +34,17 @@ class TagCollectionResource(object):
         for _tag in tags:
 
             value = _cvt.read_tag(_tag)
-
-            result = {
-                'tag': _tag,
-                'value': value
-            }
+            
+            try:
+                result = {
+                    'tag': _tag,
+                    'value': value._serialize()
+                }
+            except:
+                result = {
+                    'tag': _tag,
+                    'value': value
+                }
 
             doc.append(result)
 
