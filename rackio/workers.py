@@ -241,5 +241,6 @@ class LoggerWorker(BaseWorker):
             
             elapsed = time.time() - now
 
-            time.sleep(self._period - elapsed)
+            if elapsed < self._period:
+                time.sleep(self._period - elapsed)
             
