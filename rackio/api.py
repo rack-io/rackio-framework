@@ -67,10 +67,16 @@ class TagResource(RackioResource):
 
         value = _cvt.read_tag(tag_id)
 
-        doc = {
-            'tag': tag_id,
-            'value': value
-        }
+        try:
+            doc = {
+                'tag': tag_id,
+                'value': value._serialize()
+            }
+        except:
+            doc = {
+                'tag': tag_id,
+                'value': value
+            }
 
         # Create a JSON representation of the resource
         resp.body = json.dumps(doc, ensure_ascii=False)
