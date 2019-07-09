@@ -11,6 +11,7 @@ from .utils import Observer
 FLOAT = "float"
 INTEGER = "int"
 BOOL = "bool"
+STRING = "str"
 
 class Tag:
 
@@ -92,6 +93,17 @@ class PropertyField:
         self.default = default
 
 
+class StringField(PropertyField):
+
+    """
+    Implement a Float Field
+    """
+
+    def __init__(self, default=None):
+
+        super(StringField, self).__init__(STRING, default)
+
+
 class FloatField(PropertyField):
 
     """
@@ -152,6 +164,8 @@ class Model(object):
                     setattr(self, key, 0)
                 elif _type == BOOL:
                     setattr(self, key, False)
+                elif _type == STRING:
+                    setattr(self, key, "")
 
         self.attrs = attrs
     
