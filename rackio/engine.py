@@ -65,6 +65,18 @@ class CVT:
 
         self._tags[name] = tag
 
+    def set_tags(self, tags):
+        """Initialize a list of new Tags object in the _tags dictionary.
+        
+        # Parameters
+        tags (list):
+            List of (tag, _type).
+        """
+
+        for name, _type in tags:
+            self.set_tag
+
+        
     def get_tags(self):
         """Returns a list of the defined tags names.
         """
