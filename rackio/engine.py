@@ -6,6 +6,8 @@ tag values, in a thread safe implementation for Data Acquisition,
 Database logging, Math operations and others real time processes.
 """
 import threading
+import copy
+
 from ._singleton import Singleton
 from .models import Tag
 
@@ -126,9 +128,11 @@ class CVT:
             values = name.split(".")
             name = values[0]
             _property = values[1]
-            return self._tags[name].value.get_attr(_property)
+            _new_object = copy.deepcopy(self._tags[name].value.get_attr(_property))
         else:
-            return self._tags[name].get_value()
+            _new_object = copy.deepcopy(self._tags[name].get_value())
+        
+        return _new_object
 
     def get_type(self, name):
         """Returns a tag type defined by name.
