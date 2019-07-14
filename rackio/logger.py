@@ -14,6 +14,8 @@ from datetime import datetime
 from .utils import process_waveform
 from ._singleton import Singleton
 
+EVENTS = "events"
+
 
 class TagLogger:
 
@@ -96,6 +98,27 @@ class TagLogger:
         
         return result
 
+    def set_events(self): 
+        
+        events = list()
+        self._db.set(EVENTS, events)
+        self._db.dump()
+
+    def add_event(self, event):
+
+        events = self._db.get(EVENTS)
+        events = events[:]
+        events.append(event)
+
+        self._db.set(EVENTS, events)
+        self._db.dump()
+    
+    def get_events(self):
+
+        events = self._db.get(EVENTS)
+        events = events[:]
+
+        return events
 
 class LoggerEngine(Singleton):
     """Logger Engine class for Tag thread-safe database logging.
