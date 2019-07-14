@@ -40,6 +40,7 @@ class Rackio(Singleton):
 
         self._worker_functions = list()
         self._continous_functions = list()
+        self._custom_observer = None
         self._control_manager = ControlManager()
         self._alarm_manager = AlarmManager()
         self._db_manager = None
