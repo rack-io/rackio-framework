@@ -108,7 +108,10 @@ class TagLogger:
 
         events = self._db.get(EVENTS)
         events = events[:]
-        events.append(event._serialize())
+        try:
+            events.append(event._serialize())
+        except:
+            events.append(event)
 
         self._db.set(EVENTS, events)
         self._db.dump()
@@ -271,18 +274,20 @@ class LoggerEngine(Singleton):
 
         elif action == "write_event":
 
-            try:
-                event = _query["event"]
+            #try:
+                
+            parameters = _query["parameters"]
+            event = parameters["event"]
+            
+            self._logger.add_event(event)
 
-                self._logger.add_event(event)
-
-                self._response = {
-                    "result": True
-                }
-            except:
-                self._response = {
-                    "result": False
-                }
+            self._response = {
+                "result": True
+            }
+            #except:
+            #    self._response = {
+            #        "result": False
+            #    }
 
         elif action == "read_events":
 

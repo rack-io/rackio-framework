@@ -53,7 +53,7 @@ class Rackio(Singleton):
         _tag_trend = TrendResource()
         _alarm = AlarmResource()
         _alarms = AlarmCollectionResource()
-        _event = EventCollectionResource()
+        _events = EventCollectionResource()
 
         self._api.add_route('/api/tags/{tag_id}', _tag)
         self._api.add_route('/api/tags', _tags)
@@ -64,7 +64,7 @@ class Rackio(Singleton):
         self._api.add_route('/api/alarms/{alarm_name}', _alarm)
         self._api.add_route('/api/alarms', _alarms)
 
-        self._api.add_route('/api/events', _alarms)
+        self._api.add_route('/api/events', _events)
 
     def set_db(self, dbfile):
         """Sets the database file.
