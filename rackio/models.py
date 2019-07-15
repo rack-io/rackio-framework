@@ -237,7 +237,7 @@ class Model(object):
         attrs = self.get_attributes()
 
         for key in attrs.keys():
-            
-            result[key] = getattr(self, key)
+            value = getattr(self, key)
+            result[key] = value
 
         return result

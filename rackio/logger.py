@@ -83,7 +83,7 @@ class TagLogger:
             t0 = datetime.now()
             
             waveform["dt"] = dt
-            waveform["t0"] = t0
+            waveform["t0"] = t0.strftime('%Y-%m-%d %H:%M:%S')
 
         values.append(value)
 
@@ -107,11 +107,13 @@ class TagLogger:
     def add_event(self, event):
 
         events = self._db.get(EVENTS)
-        events = events[:]
+
         try:
-            events.append(event._serialize())
+            event = event._serialize()
         except:
-            events.append(event)
+            pass
+
+        events.append(event)
 
         self._db.set(EVENTS, events)
         self._db.dump()
@@ -278,7 +280,7 @@ class LoggerEngine(Singleton):
                 
             parameters = _query["parameters"]
             event = parameters["event"]
-            
+
             self._logger.add_event(event)
 
             self._response = {

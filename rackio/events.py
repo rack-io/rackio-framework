@@ -11,7 +11,7 @@ class Event(Model):
 
     user = StringField()
     message = StringField()
-    description = StringField()
+    description = StringField(default="")
     priority = IntegerField(default=4)
-    datetime = StringField()
+    date_time = StringField()
     

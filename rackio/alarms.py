@@ -9,6 +9,8 @@ from datetime import datetime
 
 from .engine import CVTEngine
 from .models import TagObserver
+from .events import Event
+from .logger import LoggerEngine
 
 NORMAL              = "Normal"
 UNACKNOWLEDGED      = "Unacknowledged"
@@ -18,6 +20,8 @@ RTN_UNACKNOWLEDGED  = "RTN Unacknowledged"
 HI                  = "HI"
 LO                  = "LO"
 BOOL                = "BOOL"
+
+USER = "System"
 
 
 class Alarm:
@@ -76,11 +80,19 @@ class Alarm:
 
         self._state = _state
 
-        if _state == NORMAL:
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+        if _state == NORMAL:
+            
             self._process = True
             self._triggered = False
             self._acknowledged = True
+
+            message = "Alarm {} back to normal".format(self.get_name())
+            event = Event(user=USER, message=message, priority=2, datetime=now)
+
+            _logger = LoggerEngine()
+            _logger.write_event(event)
 
         elif _state == UNACKNOWLEDGED:
 
@@ -88,17 +100,35 @@ class Alarm:
             self._triggered = True
             self._acknowledged = False
 
+            message = "Alarm {} triggered".format(self.get_name())
+            event = Event(user=USER, message=message, priority=1, date_time=now)
+
+            _logger = LoggerEngine()
+            _logger.write_event(event)
+
         elif _state == ACKNOWLEDGED:
 
             self._process = False
             self._triggered = True
             self._acknowledged = True
 
+            message = "Alarm {} has been acknowledged".format(self.get_name())
+            event = Event(user=USER, message=message, priority=2, date_time=now)
+
+            _logger = LoggerEngine()
+            _logger.write_event(event)
+
         elif _state == RTN_UNACKNOWLEDGED:
 
             self._process = True
             self._triggered = False
             self._acknowledged = False
+
+            message = "Alarm {} back to normal unacknowledged".format(self.get_name())
+            event = Event(user=USER, message=message, priority=2, date_time=now)
+
+            _logger = LoggerEngine()
+            _logger.write_event(event)
 
     def trigger(self):
 
