@@ -12,7 +12,7 @@ from .logger import LoggerEngine
 from .controls import ControlManager
 from .alarms import AlarmManager
 from .workers import LoggerWorker, ControlWorker, AlarmWorker, APIWorker, _ContinousWorker
-from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, AlarmResource, AlarmCollectionResource
+from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, AlarmResource, AlarmCollectionResource, EventCollectionResource
 
 
 class Rackio(Singleton):
@@ -53,6 +53,7 @@ class Rackio(Singleton):
         _tag_trend = TrendResource()
         _alarm = AlarmResource()
         _alarms = AlarmCollectionResource()
+        _event = EventCollectionResource()
 
         self._api.add_route('/api/tags/{tag_id}', _tag)
         self._api.add_route('/api/tags', _tags)
@@ -62,6 +63,8 @@ class Rackio(Singleton):
 
         self._api.add_route('/api/alarms/{alarm_name}', _alarm)
         self._api.add_route('/api/alarms', _alarms)
+
+        self._api.add_route('/api/events', _alarms)
 
     def set_db(self, dbfile):
         """Sets the database file.
@@ -197,6 +200,7 @@ class Rackio(Singleton):
 
         if self._db_manager:
             self._db_manager._logger.set_db()
+            self._db_manager._logger.set_events()
             _db_worker = LoggerWorker(self._db_manager)
             _db_worker.start()
         

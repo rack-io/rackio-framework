@@ -108,7 +108,7 @@ class TagLogger:
 
         events = self._db.get(EVENTS)
         events = events[:]
-        events.append(event)
+        events.append(event._serialize())
 
         self._db.set(EVENTS, events)
         self._db.dump()
@@ -201,6 +201,30 @@ class LoggerEngine(Singleton):
         if result["result"]:
             return result["response"]
 
+    def write_event(self, event):
+
+        _query = dict()
+        _query["action"] = "write_event"
+
+        _query["parameters"] = dict()
+        _query["parameters"]["event"] = event
+
+        self.request(_query)
+        result = self.response()
+
+        return result
+
+    def read_events(self):
+
+        _query = dict()
+        _query["action"] = "read_events"
+
+        self.request(_query)
+        result = self.response()
+
+        if result["result"]:
+            return result["response"]
+
     def request(self, _query):
 
         self._request_lock.acquire()
@@ -243,6 +267,36 @@ class LoggerEngine(Singleton):
                 self._response = {
                     "result": False,
                     "response": None
+                }
+
+        elif action == "write_event":
+
+            try:
+                event = _query["event"]
+
+                self._logger.add_event(event)
+
+                self._response = {
+                    "result": True
+                }
+            except:
+                self._response = {
+                    "result": False
+                }
+
+        elif action == "read_events":
+
+            try:
+
+                result = self._logger.get_events()
+
+                self._response = {
+                    "result": True,
+                    "response": result
+                }
+            except:
+                self._response = {
+                    "result": False
                 }
 
         self._response_lock.release()
