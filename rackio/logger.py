@@ -335,7 +335,7 @@ class QueryLogger:
         
         result = dict()
         result["dt"] = history["dt"]
-        result["t0"] = history["t0"].strftime('%Y-%m-%d %H:%M:%S')
+        result["t0"] = history["t0"]
         result["values"] = history["values"][:]
 
         return result
