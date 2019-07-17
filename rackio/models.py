@@ -174,7 +174,7 @@ class Model(object):
         method = object.__getattribute__(self, attr)
         
         if not method:
-            raise AttributeError
+            return method
 
         if callable(method):
              
