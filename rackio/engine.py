@@ -128,9 +128,9 @@ class CVT:
             values = name.split(".")
             name = values[0]
             _property = values[1]
-            _new_object = copy.deepcopy(self._tags[name].value.get_attr(_property))
+            _new_object = copy.copy(self._tags[name].value.get_attr(_property))
         else:
-            _new_object = copy.deepcopy(self._tags[name].get_value())
+            _new_object = copy.copy(self._tags[name].get_value())
         
         return _new_object
 

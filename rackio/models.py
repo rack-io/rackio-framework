@@ -168,7 +168,37 @@ class Model(object):
                     setattr(self, key, "")
 
         self.attrs = attrs
-    
+
+    def __getattribute__(self, attr):
+        
+        method = object.__getattribute__(self, attr)
+        
+        if not method:
+            raise AttributeError
+
+        if callable(method):
+             
+            def new_method(*args, **kwargs):
+                 
+                result = method(*args, **kwargs)
+                name = method.__name__
+
+                if (not "__" in name) and (name != "save"):
+                    try:
+                        self.save()
+                    except:
+                        pass
+
+                return result
+            return new_method
+        else:
+            return method
+
+    def __copy__(self):
+        newone = type(self)()
+        newone.__dict__.update(self.__dict__)
+        return newone
+
     @classmethod
     def get_attributes(cls):
 
