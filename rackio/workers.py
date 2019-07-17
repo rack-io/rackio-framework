@@ -244,4 +244,6 @@ class LoggerWorker(BaseWorker):
 
             if elapsed < self._period:
                 time.sleep(self._period - elapsed)
+            else:
+                print("Failed to log on item...")
             

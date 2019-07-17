@@ -57,13 +57,17 @@ class TagLogger:
 
         # self._db.set(tag, list())
         
-        waveform = dict()
-        waveform["values"] = list()
-        waveform["dt"] = self._period
-        waveform["t0"] = None
+        #waveform = dict()
+        #waveform["values"] = list()
+        #waveform["dt"] = self._period
+        #waveform["t0"] = None
 
         # self._db.set(tag, list())
-        self._db.set(tag, waveform)
+
+        self._db.lcreate(tag + "." + "values")
+        self._db.set(tag + "." + "dt", self._period)
+        self._db.set(tag + "." + "t0", None)
+        
         self._db.dump()
 
     def write_tag(self, tag, value):
@@ -73,30 +77,41 @@ class TagLogger:
         # self._db.set(tag, values)
         # self._db.dump()
 
-        waveform = self._db.get(tag)
+        # waveform = self._db.get(tag)
 
-        values = waveform["values"]
+        size = self._db.llen(tag + "." + "values")
 
-        if not values:
+        if size == 0:
             
             dt = self._period
             t0 = datetime.now()
             
-            waveform["dt"] = dt
-            waveform["t0"] = t0.strftime('%Y-%m-%d %H:%M:%S')
+            # waveform["dt"] = dt
+            # waveform["t0"] = t0.strftime('%Y-%m-%d %H:%M:%S')
+            self._db.set(tag + "." + "dt", dt)
+            self._db.set(tag + "." + "t0", t0.strftime('%Y-%m-%d %H:%M:%S'))
 
-        values.append(value)
+        self._db.ladd(tag + "." + "values", value)
 
-        waveform["values"] = values
+        # waveform["values"] = values
 
-        self._db.set(tag, waveform)
+        # self._db.set(tag, waveform)
         self._db.dump()
 
     def read_tag(self, tag):
+
+        waveform = dict()
         
-        result = self._db.get(tag)
+        values = self._db.lgetall(tag + "." + "values")
         
-        return result
+        dt = self._db.get(tag + "." + "dt")
+        t0 = self._db.get(tag + "." + "t0")
+
+        waveform["values"] = values
+        waveform["dt"] = dt
+        waveform["t0"] = t0
+        
+        return waveform
 
     def set_events(self): 
         
