@@ -29,7 +29,7 @@ def process_waveform(waveform, tstart, tstop):
     finish_date = datetime.strptime(tstop, '%Y-%m-%d %H:%M:%S')
     
     dt = waveform["dt"]
-    values = waveform["values"]
+    values = waveform["values"][:]
     t0 = waveform["t0"]
 
     first_date = datetime.strptime(t0, '%Y-%m-%d %H:%M:%S')
@@ -39,9 +39,6 @@ def process_waveform(waveform, tstart, tstop):
     result_waveform = dict()
 
     result_waveform["dt"] = dt
-
-    if start_date < first_date:
-        first_date = start_date
 
     while first_date < start_date:
 
