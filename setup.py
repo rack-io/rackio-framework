@@ -19,7 +19,6 @@ setuptools.setup(
     install_requires=[
         'falcon',
         'pyBigParser',
-        'pickledb',
         'peewee',
     ],
     classifiers=[
