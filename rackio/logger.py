@@ -315,7 +315,7 @@ class QueryLogger:
         trend = TagTrend.select().where(TagTrend.name == tag).get()
         
         start = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
-        stop = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+        stop = datetime.strptime(stop, '%Y-%m-%d %H:%M:%S')
 
         period = self._logger.get_period()
         
