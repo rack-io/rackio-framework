@@ -366,7 +366,7 @@ class QueryLogger:
             result["t0"] = t0
             result["dt"] = period
         
-            result["values"] = values
+            result["values"] = tag_values
 
             return result
 
@@ -403,6 +403,6 @@ class QueryLogger:
             result["t0"] = t0
             result["dt"] = period
         
-            result["values"] = values
+            result["values"] = tag_values
 
             return result
