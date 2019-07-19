@@ -6,41 +6,32 @@ modelling the trending process.
 """
 from datetime import datetime
 
-from peewee import Model, CharField, TextField, DateTimeField, IntegerField, FloatField, ForeignKeyField
+from peewee import Proxy, Model, CharField, TextField, DateTimeField, IntegerField, FloatField, ForeignKeyField
 
-from .core import Rackio
-app = Rackio()
+proxy = Proxy()
+
+class BaseModel(Model):
+    class Meta:
+        database = proxy
 
 
-class TagTrend(Model):
+class TagTrend(BaseModel):
 
     name = CharField()
     start = DateTimeField()
 
-    class Meta:
 
-        database = app.db
-
-
-class TagValue(Model):
+class TagValue(BaseModel):
 
     tag = ForeignKeyField(TagTrend, backref='values')
     value = FloatField()
     timestamp = DateTimeField()
 
-    class Meta:
 
-        database = app.db
-
-
-class Event(Model):
+class Event(BaseModel):
 
     user = CharField()
     message = TextField()
     description = TextField()
     priority = IntegerField(default=4)
     date_time = DateTimeField()
-
-    class Meta:
-
-        database = app.db

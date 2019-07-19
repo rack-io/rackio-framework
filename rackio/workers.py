@@ -9,6 +9,7 @@ from wsgiref.simple_server import make_server
 
 from .controls import ControlManager
 from .engine import CVTEngine
+from .dbmodels import TagTrend, TagValue, Event
 
 
 class BaseWorker(Thread):
@@ -226,8 +227,11 @@ class LoggerWorker(BaseWorker):
 
     def run(self):
 
-        for _tag in self._manager._logging_tags:
-            self._manager._logger.set_tag(_tag)
+        self._manager._logger._db.create_tables([TagTrend, TagValue, Event])
+
+        for tag in self._manager._logging_tags:
+
+            self._manager._logger.set_tag(tag)
 
         _cvt = CVTEngine()
 

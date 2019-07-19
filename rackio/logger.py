@@ -13,7 +13,7 @@ from datetime import datetime
 
 from peewee import SqliteDatabase
 
-from dbmodels import TagTrend, TagValue, Event
+from .dbmodels import TagTrend, TagValue, Event
 from .utils import serialize_dbo
 from ._singleton import Singleton
 
@@ -50,6 +50,8 @@ class TrendLogger:
         trend = TagTrend(name=tag, start=now)
         trend.save()
 
+        self.tags_dbo[tag] = trend
+
     def set_tags(self, tags):
         
         for tag in tags:
@@ -68,8 +70,20 @@ class TrendLogger:
     def read_tag(self, tag):
 
         trend = TagTrend.select().where(TagTrend.name == tag).get()
+        
+        period = self._period
+        values = trend.values.select()
+        
+        result = dict()
 
-        return trend
+        t0 = values[0].timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        values = [value.value for value in values]
+
+        result["t0"] = t0
+        result["dt"] = period
+        result["values"] = values
+        
+        return result
 
     def add_event(self, event):
 
@@ -134,7 +148,6 @@ class LoggerEngine(Singleton):
     def add_tag(self, tag):
 
         self._logging_tags.append(tag)
-        self._logger.set_tag(tag)
 
     def set_period(self, period):
 

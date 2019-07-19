@@ -76,7 +76,10 @@ class Rackio(Singleton):
         dbfile (str): a path to database file.
         """
 
+        from .dbmodels import proxy
+
         self._db = SqliteDatabase(dbfile)
+        proxy.initialize(self._db)
         self._db_manager.set_db(self._db)
 
     def set_dbtags(self, tags, period=0.5):
@@ -202,8 +205,6 @@ class Rackio(Singleton):
         _api_worker = APIWorker(self._api, port)
 
         if self._db_manager:
-            self._db_manager._logger.set_db()
-            self._db_manager._logger.set_events()
             _db_worker = LoggerWorker(self._db_manager)
             _db_worker.start()
         
