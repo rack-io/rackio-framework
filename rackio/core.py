@@ -7,6 +7,8 @@ This module implements the core app class and methods for Rackio.
 import falcon
 import concurrent.futures
 
+from peewee import SqliteDatabase
+
 from ._singleton import Singleton
 from .logger import LoggerEngine
 from .controls import ControlManager
@@ -43,7 +45,8 @@ class Rackio(Singleton):
         self._custom_observer = None
         self._control_manager = ControlManager()
         self._alarm_manager = AlarmManager()
-        self._db_manager = None
+        self.db = None
+        self._db_manager = LoggerEngine()
 
         self._api = falcon.API()
 
@@ -73,8 +76,8 @@ class Rackio(Singleton):
         dbfile (str): a path to database file.
         """
 
-        self._db_manager = LoggerEngine()
-        self._db_manager.set_db(dbfile)
+        self._db = SqliteDatabase(dbfile)
+        self._db_manager.set_db(self._db)
 
     def set_dbtags(self, tags, period=0.5):
         """Sets the database tags for logging.

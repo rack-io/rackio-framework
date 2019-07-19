@@ -13,7 +13,6 @@ from rackio import status_code
 
 from .engine import CVTEngine
 from .logger import QueryLogger, LoggerEngine
-from .utils import process_waveform
 from .events import Event
 
 
@@ -326,7 +325,7 @@ class EventCollectionResource(RackioResource):
 
         try:
             doc = {
-                'events': [event._serialize() for event in events],
+                'events': [serialize_dbo(event) for event in events],
             }
         except:
             doc = {
@@ -352,13 +351,7 @@ class EventCollectionResource(RackioResource):
         priority = req.media.get('priority')
         date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        event = {
-            "user": user,
-            "message": message,
-            "description": description,
-            "priority": priority,
-            "datetime": date_time
-        }
+        event  = Event(user=user, message=message, description=description, priority=priority, date_time=date_time)
 
         try:
             _logger.write_event(event)

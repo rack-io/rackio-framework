@@ -11,15 +11,16 @@ import pickledb
 
 from datetime import datetime
 
-from .utils import process_waveform
+from peewee import SqliteDatabase
+
+from dbmodels import TagTrend, TagValue, Event
+from .utils import serialize_dbo
 from ._singleton import Singleton
 
-EVENTS = "events"
 
+class TrendLogger:
 
-class TagLogger:
-
-    """CVT Tag Logger class.
+    """CVT Trend Logger class.
 
     This class is intended to be an API for tags 
     settings and tags logged access.
@@ -27,116 +28,65 @@ class TagLogger:
     # Example
     
     ```python
-    >>> from rackio.logger import TagLogger
-    >>> _logger = TagLogger()
+    >>> from rackio.logger import TrendLogger
+    >>> _logger = TrendLogger()
     ```
     
     """
-    
-    def __init__(self, dbfile="tags.db", memory=None):
 
-        self._dbfile = dbfile
-        self._memory = memory
+    def __init__(self):
 
+        self._db = None
+        self.tags_dbo = dict()
         self._period = None
 
-        if os.path.exists(self._dbfile):
-            os.remove(self._dbfile)
-        else:   
-            print("Can not delete the file as it doesn't exists")
+    def set_db(self, db):
 
-    def set_dbfile(self, dbfile):
-
-        self._dbfile = dbfile
-
-    def set_db(self):
-
-        self._db = pickledb.load(self._dbfile, False) 
+        self._db = db
 
     def set_tag(self, tag):
 
-        # self._db.set(tag, list())
-        
-        #waveform = dict()
-        #waveform["values"] = list()
-        #waveform["dt"] = self._period
-        #waveform["t0"] = None
+        now = datetime.now()
+        trend = TagTrend(name=tag, start=now)
+        trend.save()
 
-        # self._db.set(tag, list())
-
-        self._db.lcreate(tag + "." + "values")
-        self._db.set(tag + "." + "dt", self._period)
-        self._db.set(tag + "." + "t0", None)
+    def set_tags(self, tags):
         
-        self._db.dump()
+        for tag in tags:
+
+            self.set_tag(tag)
 
     def write_tag(self, tag, value):
 
-        # values = self._db.get(tag)
-        # values.append(value)
-        # self._db.set(tag, values)
-        # self._db.dump()
+        # trend = TagTrend.select().where(TagTrend.name == tag).get()
+        trend = self.tags_dbo[tag]
 
-        # waveform = self._db.get(tag)
-
-        size = self._db.llen(tag + "." + "values")
-
-        if size == 0:
-            
-            dt = self._period
-            t0 = datetime.now()
-            
-            # waveform["dt"] = dt
-            # waveform["t0"] = t0.strftime('%Y-%m-%d %H:%M:%S')
-            self._db.set(tag + "." + "dt", dt)
-            self._db.set(tag + "." + "t0", t0.strftime('%Y-%m-%d %H:%M:%S'))
-
-        self._db.ladd(tag + "." + "values", value)
-
-        # waveform["values"] = values
-
-        # self._db.set(tag, waveform)
-        self._db.dump()
+        now = datetime.now()
+        tag_value = TagValue.create(tag=trend, value=value, timestamp=now)
+        tag_value.save()
 
     def read_tag(self, tag):
 
-        waveform = dict()
-        
-        values = self._db.lgetall(tag + "." + "values")
-        
-        dt = self._db.get(tag + "." + "dt")
-        t0 = self._db.get(tag + "." + "t0")
+        trend = TagTrend.select().where(TagTrend.name == tag).get()
 
-        waveform["values"] = values
-        waveform["dt"] = dt
-        waveform["t0"] = t0
-        
-        return waveform
-
-    def set_events(self): 
-        
-        events = list()
-        self._db.set(EVENTS, events)
-        self._db.dump()
+        return trend
 
     def add_event(self, event):
 
-        events = self._db.get(EVENTS)
+        event = Event(user=event.user, 
+            message=event.message,
+            description=event.description,
+            priority=event.priority,
+            date_time=event.date_time
+        )
 
-        try:
-            event = event._serialize()
-        except:
-            pass
+        event.save()
 
-        events.append(event)
-
-        self._db.set(EVENTS, events)
-        self._db.dump()
-    
     def get_events(self):
 
-        events = self._db.get(EVENTS)
-        events = events[:]
+        events = Event.select()
+
+        events = [serialize_dbo(event) for event in events]
 
         return events
 
@@ -165,7 +115,7 @@ class LoggerEngine(Singleton):
 
         super(LoggerEngine, self).__init__()
 
-        self._logger = TagLogger()
+        self._logger = TrendLogger()
         self._logging_tags = list()
 
         self._logger._period = period
@@ -177,13 +127,14 @@ class LoggerEngine(Singleton):
 
         self._response_lock.acquire()
 
-    def set_db(self, dbfile):
+    def set_db(self, db):
 
-        self._logger.set_dbfile(dbfile)
+        self._logger.set_db(db)
 
     def add_tag(self, tag):
 
         self._logging_tags.append(tag)
+        self._logger.set_tag(tag)
 
     def set_period(self, period):
 
@@ -340,27 +291,36 @@ class QueryLogger:
 
         self._logger = LoggerEngine()
 
-    def get_history(self, tag):
+    def get_values(self, tag):
 
-        return self._logger.read_tag(tag)
-
-    def get_waveform(self, tag):
+        trend = TagTrend.select().where(TagTrend.name == tag).get()
+        values = trend.values
         
-        history = self._logger.read_tag(tag)
-        
-        result = dict()
-        result["dt"] = history["dt"]
-        result["t0"] = history["t0"]
-        result["values"] = history["values"][:]
-
-        return result
+        return values
 
     def query(self, tag, start, stop):
 
-        waveform = self.get_waveform(tag)
+        trend = TagTrend.select().where(TagTrend.name == tag).get()
+        
+        start = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
+        stop = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
 
-        return process_waveform(waveform, start, stop)
-    
+        period = self._logger.get_period()
+        
+        values = trend.values.select().where((TagValue.timestamp > start) & (TagValue.timestamp < stop))
+        
+        result = dict()
+
+        t0 = values[0].timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        values = [value.value for value in values]
+
+        result["t0"] = t0
+        result["dt"] = period
+        
+        result["values"] = values
+
+        return result
+
     def query_last(self, tag, seconds=None, values=None):
 
         if seconds:
@@ -374,24 +334,36 @@ class QueryLogger:
             return self.query(tag, start, stop)
 
         if values:
+
+            result = dict()
             
             values *= -1
-            waveform = self.get_waveform(tag)
+            tag_values = self.get_values(tag)
+            
+            period = self._logger.get_period()
             
             try:
-                waveform["values"] = waveform["values"][values:]
+                tag_values = tag_values[values:]
             except:
-                waveform["values"] = waveform["values"][:]
+                tag_values = tag_values[:]
 
-            return waveform
+            t0 = tag_values[0].timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            tag_values = [value.value for value in tag_values]
+
+            result["t0"] = t0
+            result["dt"] = period
+        
+            result["values"] = values
+
+            return result
 
     def query_first(self, tag, seconds=None, values=None):
 
-        history = self.get_history(tag)
+        tag_values = self.get_values(tag)
 
         if seconds:
 
-            start = history["t0"]
+            start = tag_values[0].timestamp
             stop = start + seconds
 
             start = start.strftime('%Y-%m-%d %H:%M:%S')
@@ -401,10 +373,23 @@ class QueryLogger:
 
         if values:
 
-            waveform = self.get_waveform(tag)
+            result = dict()
+            
+            tag_values = self.get_values(tag)
+            
+            period = self._logger.get_period()
+            t0 = tag_values[0].timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            
+            tag_values = [value.value for value in tag_values]
+            
             try:
-                waveform["values"] = waveform["values"][:values]
+                tag_values = tag_values[:values]
             except:
-                waveform["values"] = waveform["values"][:]
+                tag_values = tag_values[:]
+                
+            result["t0"] = t0
+            result["dt"] = period
+        
+            result["values"] = values
 
-            return waveform
+            return result

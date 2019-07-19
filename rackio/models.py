@@ -78,6 +78,7 @@ class TagObserver(Observer):
 
         self._tag_queue.put(result)
 
+
 # Classes for Custom models design
 
 

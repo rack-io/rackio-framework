@@ -23,6 +23,24 @@ class Observer(metaclass=abc.ABCMeta):
         pass
 
 
+def serialize_dbo(dbo):
+
+    result = dict()
+
+    data = dbo.__dict__["__data__"]
+    
+    for key, value in data.items():
+
+        if isinstance(value, datetime):
+
+            result[key] = value.strftime('%Y-%m-%d %H:%M:%S')
+
+        else:
+            
+            result[key] = value
+    
+    return result
+
 def process_waveform(waveform, tstart, tstop):
 
     start_date = datetime.strptime(tstart, '%Y-%m-%d %H:%M:%S')
