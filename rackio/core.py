@@ -78,7 +78,14 @@ class Rackio(Singleton):
 
         from .dbmodels import proxy
 
-        self._db = SqliteDatabase(dbfile)
+        self._db = SqliteDatabase(dbfile, pragmas={
+            'journal_mode': 'wal',
+            'cache_size': -1 * 64000,  # 64MB
+            'foreign_keys': 1,
+            'ignore_check_constraints': 0,
+            'synchronous': 0}
+        )
+        
         proxy.initialize(self._db)
         self._db_manager.set_db(self._db)
 
