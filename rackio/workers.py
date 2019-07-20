@@ -79,7 +79,7 @@ class AlarmWorker(BaseWorker):
 
     def run(self):
 
-        if not self._manager.alarms_tags():
+        if not self._manager.alarm_tags():
             return
 
         _queue = self._manager._tag_queue
@@ -227,11 +227,15 @@ class LoggerWorker(BaseWorker):
 
     def run(self):
 
-        self._manager._logger._db.create_tables([TagTrend, TagValue, Event])
+        tags = self._manager.get_tags()
 
-        for tag in self._manager._logging_tags:
+        if not tags:
+            return
 
-            self._manager._logger.set_tag(tag)
+        self._manager.create_tables([TagTrend, TagValue, Event])
+        for tag in tags:
+
+            self._manager.set_tag(tag)
 
         _cvt = CVTEngine()
 

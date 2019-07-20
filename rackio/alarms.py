@@ -254,7 +254,7 @@ class AlarmManager:
 
         return result
 
-    def alarms_tags(self):
+    def alarm_tags(self):
 
         result = [_alarm.get_tag() for _alarm in self._alarms]
 

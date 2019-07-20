@@ -69,7 +69,7 @@ class Rackio(Singleton):
 
         self._api.add_route('/api/events', _events)
 
-    def set_db(self, dbfile):
+    def set_db(self, dbfile=':memory:'):
         """Sets the database file.
         
         # Parameters

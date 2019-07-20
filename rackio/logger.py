@@ -43,6 +43,10 @@ class TrendLogger:
 
         self._db = db
 
+    def get_db(self):
+        
+        return self._db
+
     def set_tag(self, tag):
 
         now = datetime.now()
@@ -56,6 +60,11 @@ class TrendLogger:
         for tag in tags:
 
             self.set_tag(tag)
+    
+    def create_tables(self, tables):
+
+        self._db.connect()
+        self._db.create_tables(tables, safe=True)
 
     def write_tag(self, tag, value):
 
@@ -144,9 +153,25 @@ class LoggerEngine(Singleton):
 
         self._logger.set_db(db)
 
+    def get_db(self):
+
+        return self._logger.get_db()
+
+    def create_tables(self, tables):
+
+        self._logger.create_tables(tables)
+
     def add_tag(self, tag):
 
         self._logging_tags.append(tag)
+
+    def get_tags(self):
+
+        return self._logging_tags
+
+    def set_tag(self, tag):
+
+        self._logger.set_tag(tag)
 
     def set_period(self, period):
 
