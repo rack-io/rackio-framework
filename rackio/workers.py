@@ -232,7 +232,13 @@ class LoggerWorker(BaseWorker):
         if not tags:
             return
 
+        try:
+            self._manager.drop_tables([TagTrend, TagValue, Event])
+        except:
+            pass
+
         self._manager.create_tables([TagTrend, TagValue, Event])
+        
         for tag in tags:
 
             self._manager.set_tag(tag)

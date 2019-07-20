@@ -7,7 +7,7 @@ This module implements the core app class and methods for Rackio.
 import falcon
 import concurrent.futures
 
-from peewee import SqliteDatabase
+from peewee import SqliteDatabase, MySQLDatabase, PostgresqlDatabase
 
 from ._singleton import Singleton
 from .logger import LoggerEngine
@@ -15,6 +15,8 @@ from .controls import ControlManager
 from .alarms import AlarmManager
 from .workers import LoggerWorker, ControlWorker, AlarmWorker, APIWorker, _ContinousWorker
 from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, AlarmResource, AlarmCollectionResource, EventCollectionResource
+
+from .dbmodels import SQLITE, MYSQL, POSTGRESQL
 
 
 class Rackio(Singleton):
@@ -69,7 +71,7 @@ class Rackio(Singleton):
 
         self._api.add_route('/api/events', _events)
 
-    def set_db(self, dbfile=':memory:'):
+    def set_db(self, dbfile=':memory:', dbtype=SQLITE, **kwargs):
         """Sets the database file.
         
         # Parameters
@@ -78,13 +80,25 @@ class Rackio(Singleton):
 
         from .dbmodels import proxy
 
-        self._db = SqliteDatabase(dbfile, pragmas={
-            'journal_mode': 'wal',
-            'cache_size': -1 * 64000,  # 64MB
-            'foreign_keys': 1,
-            'ignore_check_constraints': 0,
-            'synchronous': 0}
-        )
+        if dbtype == SQLITE:
+            
+            self._db = SqliteDatabase(dbfile, pragmas={
+                'journal_mode': 'wal',
+                'cache_size': -1 * 64000,  # 64MB
+                'foreign_keys': 1,
+                'ignore_check_constraints': 0,
+                'synchronous': 0}
+            )
+
+        elif dbtype == MYSQL:
+            
+            app = kwargs['app']
+            self._db = MySQLDatabase(app, **kwargs)
+
+        elif dbtype == POSTGRESQL:
+            
+            app = kwargs['app']
+            self._db = PostgresqlDatabase(app, **kwargs)
         
         proxy.initialize(self._db)
         self._db_manager.set_db(self._db)
