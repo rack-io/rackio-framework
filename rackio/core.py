@@ -172,7 +172,15 @@ class Rackio(Singleton):
 
         def decorator(f):
 
-            _worker_function = (f, period)
+            def wrapper():
+                try:
+                    f()
+                except Exception as e:
+                    error = str(e)
+                    print("{}:{}".format(f.__name__, error))
+
+            # _worker_function = (f, period)
+            _worker_function = (wrapper, period)
             self._worker_functions.append(_worker_function)
             return f
         

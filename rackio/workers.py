@@ -181,7 +181,9 @@ class _ContinousWorker:
                     
                     try:
                         self._f()
-                    except:
+                    except Exception as e:
+                        error = str(e)
+                        print("{}:{}".format(self._f.__name__, error))
                         self._status = "Error"
                 else:
                     self._status = "Pause"
