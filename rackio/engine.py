@@ -76,9 +76,8 @@ class CVT:
         """
 
         for name, _type in tags:
-            self.set_tag
+            self.set_tag(name, _type)
 
-        
     def get_tags(self):
         """Returns a list of the defined tags names.
         """
