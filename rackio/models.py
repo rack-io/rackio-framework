@@ -227,7 +227,7 @@ class Model(object):
         _cvt = CVTEngine()
 
     def set_attr(self, name, value):
-
+        
         setattr(self, name, value)
 
     def get_attr(self, name):
