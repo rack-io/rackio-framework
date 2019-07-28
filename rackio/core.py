@@ -4,8 +4,10 @@
 This module implements the core app class and methods for Rackio.
 """
 
-import falcon
+import logging
 import concurrent.futures
+
+import falcon
 
 from peewee import SqliteDatabase, MySQLDatabase, PostgresqlDatabase
 
@@ -42,6 +44,9 @@ class Rackio(Singleton):
         
         self._context = context
 
+        self._logging_level = logging.INFO
+        self._log_file = ""
+
         self._worker_functions = list()
         self._continous_functions = list()
         self._custom_observer = None
@@ -70,6 +75,19 @@ class Rackio(Singleton):
         self._api.add_route('/api/alarms', _alarms)
 
         self._api.add_route('/api/events', _events)
+
+    def set_log(self, level=logging.INFO, file=""):
+        """Sets the log file and level.
+        
+        # Parameters
+        level (str): logging.LEVEL.
+        file (str): filename to log.
+        """
+
+        self._logging_level = level
+        
+        if file:
+            self._log_file = file
 
     def set_db(self, dbfile=':memory:', dbtype=SQLITE, **kwargs):
         """Sets the database file.
@@ -228,6 +246,13 @@ class Rackio(Singleton):
         >>> app.run()
         ```
         """
+
+        log_format = "%(asctime)s:%(levelname)s:%(message)s"
+
+        if self._log_file:
+            logging.basicConfig(filename=self._log_file, level=self._logging_level, format=log_format)
+        else:
+            logging.basicConfig(level=self._logging_level, format=log_format)
 
         _control_worker = ControlWorker(self._control_manager)
         _alarm_worker = AlarmWorker(self._alarm_manager)
