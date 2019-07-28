@@ -4,6 +4,7 @@
 This module implements all thread classes for workers.
 """
 import time
+import logging
 from threading import Thread
 from wsgiref.simple_server import make_server
 
@@ -95,6 +96,11 @@ class AlarmWorker(BaseWorker):
 
                 self._manager.execute(_tag)
 
+STOP = "Stop"
+PAUSE = "Pause"
+RUNNING = "Running"
+ERROR = "Error"
+
 
 class _ContinousWorker:
 
@@ -105,7 +111,7 @@ class _ContinousWorker:
         self._period = period
         self._pause_tag = pause_tag
         self._stop_tag = stop_tag
-        self._status = "Stop"       # ["Stop", "Pause", "Running", "Error"]
+        self._status = STOP       # [STOP, PAUSE, RUNNING, ERROR]
 
         from .core import Rackio
 
@@ -163,7 +169,7 @@ class _ContinousWorker:
 
         while True:
 
-            self._status = "Running"
+            self._status = RUNNING
 
             now = time.time()
 
@@ -171,7 +177,7 @@ class _ContinousWorker:
                 stop = _cvt.read_tag(self._stop_tag)
 
                 if stop:
-                    self._status = "Stop"
+                    self._status = STOP
                     return
 
             if self._pause_tag:
@@ -183,21 +189,25 @@ class _ContinousWorker:
                         self._f()
                     except Exception as e:
                         error = str(e)
-                        print("{}:{}".format(self._f.__name__, error))
-                        self._status = "Error"
+                        logging.error("Worker - {}:{}".format(self._f.__name__, error))
+                        self._status = ERROR
+
                 else:
-                    self._status = "Pause"
+                    self._status = PAUSE
 
             else:
                 try:
                     self._f()
                 except:
-                    self._status = "Error"
+                    self._status = ERROR
+                    logging.error("Worker - {}:{}".format(self._f.__name__, error))
 
             elapsed = time.time() - now
 
             if elapsed < self._period:
                 time.sleep(self._period - elapsed)
+            else:
+                logging.warning("Worker - {}: Unable to perform on time...".format(self._f.__name__))
             
 
 class APIWorker(BaseWorker):
@@ -212,7 +222,7 @@ class APIWorker(BaseWorker):
     def run(self):
 
         with make_server('', self._port, self._api_app) as httpd:
-            print('Serving on port {}...'.format(self._port))
+            logging.info('Serving on port {}...'.format(self._port))
 
             # Serve until process is killed
             httpd.serve_forever()
@@ -236,8 +246,8 @@ class LoggerWorker(BaseWorker):
 
         try:
             self._manager.drop_tables([TagTrend, TagValue, Event])
-        except:
-            pass
+        except Exception as e:
+            print(e)
 
         self._manager.create_tables([TagTrend, TagValue, Event])
         
@@ -262,5 +272,5 @@ class LoggerWorker(BaseWorker):
             if elapsed < self._period:
                 time.sleep(self._period - elapsed)
             else:
-                print("Failed to log on item...")
+                logging.warning("Logger Worker: Failed to log on item...")
             

@@ -63,8 +63,13 @@ class TrendLogger:
     
     def create_tables(self, tables):
 
-        self._db.connect()
+        # self._db.connect()
         self._db.create_tables(tables, safe=True)
+
+    def drop_tables(self, tables):
+
+        # self._db.connect()
+        self._db.drop_tables(tables)
 
     def write_tag(self, tag, value):
 
@@ -77,7 +82,7 @@ class TrendLogger:
 
     def read_tag(self, tag):
 
-        trend = TagTrend.select().where(TagTrend.name == tag).get()
+        trend = TagTrend.select().order_by(TagTrend.start).where(TagTrend.name == tag).get()
         
         period = self._period
         values = trend.values.select()
@@ -160,6 +165,10 @@ class LoggerEngine(Singleton):
     def create_tables(self, tables):
 
         self._logger.create_tables(tables)
+
+    def drop_tables(self, tables):
+
+        self._logger.drop_tables(tables)
 
     def add_tag(self, tag):
 
@@ -330,14 +339,14 @@ class QueryLogger:
 
     def get_values(self, tag):
 
-        trend = TagTrend.select().where(TagTrend.name == tag).get()
+        trend = TagTrend.select().order_by(TagTrend.start).where(TagTrend.name == tag).get()
         values = trend.values
         
         return values
 
     def query(self, tag, start, stop):
 
-        trend = TagTrend.select().where(TagTrend.name == tag).get()
+        trend = TagTrend.select().order_by(TagTrend.start).where(TagTrend.name == tag).get()
         
         start = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
         stop = datetime.strptime(stop, '%Y-%m-%d %H:%M:%S')
