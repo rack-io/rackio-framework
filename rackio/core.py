@@ -15,6 +15,7 @@ from ._singleton import Singleton
 from .logger import LoggerEngine
 from .controls import ControlManager
 from .alarms import AlarmManager
+from .state import StateMachineManager
 from .workers import LoggerWorker, ControlWorker, AlarmWorker, APIWorker, _ContinousWorker
 from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, AlarmResource, AlarmCollectionResource, EventCollectionResource
 
@@ -52,6 +53,8 @@ class Rackio(Singleton):
         self._custom_observer = None
         self._control_manager = ControlManager()
         self._alarm_manager = AlarmManager()
+        self._machine_manager = StateMachineManager()
+        
         self.db = None
         self._db_manager = LoggerEngine()
 
@@ -159,6 +162,15 @@ class Rackio(Singleton):
         """
 
         self._alarm_manager.append_alarm(alarm)
+
+    def append_machine(self, machine):
+        """Append a state machine to the state machine manager.
+        
+        # Parameters
+        machine (StateMachine): a state machine object.
+        """
+
+        self._machine_manager.append_machine(machine)
 
     def add_route(self, route, resource):
         """Append a resource and route the api.

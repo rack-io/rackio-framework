@@ -6,6 +6,7 @@ tag values, in a thread safe implementation for Data Acquisition,
 Database logging, Math operations and others real time processes.
 """
 import threading
+import logging
 import copy
 
 from ._singleton import Singleton
@@ -57,6 +58,7 @@ class CVT:
                     value = 0
                 else:
                     value = False
+
         else:
             value = _type()
             _type.set(name, value)

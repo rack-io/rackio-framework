@@ -96,6 +96,30 @@ class AlarmWorker(BaseWorker):
 
                 self._manager.execute(_tag)
 
+
+class StateMachineWorker(BaseWorker):
+
+    def __init__(self, manager, period=0.25):
+
+        super(StateMachineWorker, self).__init__()
+        
+        self._manager = manager
+        self._period = period
+
+    def run(self):
+
+        if not self._manager.get_machines():
+            return
+
+        while True:
+            
+            time.sleep(self._period)
+
+            for machine in self._manager.get_machines():
+                
+                machine.loop()
+
+
 STOP = "Stop"
 PAUSE = "Pause"
 RUNNING = "Running"

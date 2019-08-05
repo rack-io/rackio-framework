@@ -20,6 +20,7 @@ setuptools.setup(
         'falcon',
         'pyBigParser',
         'peewee',
+        'python-statemachine',
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
