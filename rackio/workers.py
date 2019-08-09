@@ -111,13 +111,25 @@ class StateMachineWorker(BaseWorker):
         if not self._manager.get_machines():
             return
 
+        def loop(machine):
+
+            try:
+                state_name = machine.current_state.name
+                method_name = "while_" + state_name
+                method = getattr(machine, method_name)
+                
+                method()
+
+            except:
+                logging.error("Machine has no method - {}".format(method_name))
+
         while True:
             
             time.sleep(self._period)
 
             for machine in self._manager.get_machines():
                 
-                machine.loop()
+                loop(machine)
 
 
 STOP = "Stop"
@@ -222,9 +234,10 @@ class _ContinousWorker:
             else:
                 try:
                     self._f()
-                except:
-                    self._status = ERROR
+                except Exception as e:
+                    error = str(e)
                     logging.error("Worker - {}:{}".format(self._f.__name__, error))
+                    self._status = ERROR
 
             elapsed = time.time() - now
 
