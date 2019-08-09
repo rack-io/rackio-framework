@@ -7,6 +7,11 @@ from inspect import ismethod
 
 from statemachine import StateMachine, State
 
+FLOAT = "float"
+INTEGER = "int"
+BOOL = "bool"
+STRING = "str"
+
 
 class RackioStateMachine(StateMachine):
 
@@ -14,6 +19,33 @@ class RackioStateMachine(StateMachine):
         
         super(RackioStateMachine, self).__init__()
         self.name = name
+
+        attrs = self.get_attributes()
+
+        for key, value in attrs.items():
+
+            try:
+                if key in kwargs:
+                    default = kwargs[key]
+                else:
+                    default = value.default
+                    _type = value._type
+
+                if default:
+                    setattr(self, key, default)
+                else:
+                    if _type == FLOAT:
+                        setattr(self, key, 0.0)
+                    elif _type == INTEGER:
+                        setattr(self, key, 0)
+                    elif _type == BOOL:
+                        setattr(self, key, False)
+                    elif _type == STRING:
+                        setattr(self, key, "")
+            except:
+                continue
+
+        self.attrs = attrs
     
     def get_states(self):
 
