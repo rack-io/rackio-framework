@@ -3,8 +3,67 @@
 
 This module implements all state machine classes.
 """
+from inspect import ismethod
 
 from statemachine import StateMachine, State
+
+
+class RackioStateMachine(StateMachine):
+
+    def __init__(self, name):
+        
+        super(RackioStateMachine, self).__init__()
+        self.name = name
+    
+    def get_states(self):
+
+        return [s.identifier for s in self.states]
+    
+    @classmethod
+    def get_attributes(cls):
+
+        result = dict()
+        
+        props = cls.__dict__
+
+        for key, value in props.items():
+
+            if key in ["states", "transitions", "states_map", "get_attributes"]:
+                continue
+            if hasattr(value, '__call__'):
+                continue
+            if isinstance(value, cls):
+                continue
+            if isinstance(value, State):
+                continue
+            if not ismethod(value):
+
+                if not "__" in key:
+                    result[key] = value
+
+        return result
+    
+    def serialize(self):
+
+        result = dict()
+
+        result["state"] = self.current_state.name
+
+        states = self.get_states()
+        checkers = ["is_" + state for state in states]
+        methods = ["while_" + state for state in states]
+
+        attrs = self.get_attributes()
+        
+        for key in attrs.keys():
+            if key in checkers:
+                continue
+            if key in methods:
+                continue
+            value = getattr(self, key)
+            result[key] = value
+
+        return result
 
 
 class StateMachineManager:
@@ -19,9 +78,9 @@ class StateMachineManager:
 
     def get_machine(self, name):
 
-        for machine in self._machines:
+        for _machine in self._machines:
 
-            if machine.name == name:
+            if name == _machine.name:
 
-                return machine
+                return _machine
 
