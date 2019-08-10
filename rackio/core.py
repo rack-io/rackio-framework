@@ -167,10 +167,19 @@ class Rackio(Singleton):
         """Append a state machine to the state machine manager.
         
         # Parameters
-        machine (StateMachine): a state machine object.
+        machine (RackioStateMachine): a state machine object.
         """
 
         self._machine_manager.append_machine(machine)
+
+    def get_machine(self, name):
+        """Returns a Rackio State Machine defined by its name.
+        
+        # Parameters
+        name (str): a rackio state machine name.
+        """
+
+        return self._machine_manager.get_machine(name)
 
     def add_route(self, route, resource):
         """Append a resource and route the api.
