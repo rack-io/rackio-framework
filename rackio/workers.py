@@ -99,7 +99,7 @@ class AlarmWorker(BaseWorker):
 
 class StateMachineWorker(BaseWorker):
 
-    def __init__(self, manager, period=0.25):
+    def __init__(self, manager, period=1):
 
         super(StateMachineWorker, self).__init__()
         
@@ -113,16 +113,13 @@ class StateMachineWorker(BaseWorker):
 
         def loop(machine):
 
-            try:
-                state_name = machine.current_state.identifier.lower()
-                method_name = "while_" + state_name
-                method = getattr(machine, method_name)
-                
-                method()
+            state_name = machine.current_state.identifier.lower()
+            method_name = "while_" + state_name
 
-            except Exception as e:
-                error = str(e)
-                logging.error("Machine - {}:{}".format(machine.name, error))
+            if method_name in dir(machine):
+                method = getattr(machine, method_name)
+            
+                method()
 
         while True:
             
@@ -130,7 +127,11 @@ class StateMachineWorker(BaseWorker):
 
             for machine in self._manager.get_machines():
                 
-                loop(machine)
+                try:
+                    loop(machine)
+                except Exception as e:
+                    error = str(e)
+                    logging.error("Machine - {}:{}".format(machine.name, error))
 
 
 STOP = "Stop"
