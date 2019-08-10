@@ -114,14 +114,15 @@ class StateMachineWorker(BaseWorker):
         def loop(machine):
 
             try:
-                state_name = machine.current_state.name
+                state_name = machine.current_state.identifier.lower()
                 method_name = "while_" + state_name
                 method = getattr(machine, method_name)
                 
                 method()
 
-            except:
-                logging.error("Machine has no method - {}".format(method_name))
+            except Exception as e:
+                error = str(e)
+                logging.error("Machine - {}:{}".format(machine.name, error))
 
         while True:
             

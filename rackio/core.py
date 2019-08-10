@@ -16,7 +16,7 @@ from .logger import LoggerEngine
 from .controls import ControlManager
 from .alarms import AlarmManager
 from .state import StateMachineManager
-from .workers import LoggerWorker, ControlWorker, AlarmWorker, APIWorker, _ContinousWorker
+from .workers import LoggerWorker, ControlWorker, StateMachineWorker, AlarmWorker, APIWorker, _ContinousWorker
 from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, AlarmResource, AlarmCollectionResource, EventCollectionResource
 
 from .dbmodels import SQLITE, MYSQL, POSTGRESQL
@@ -267,6 +267,7 @@ class Rackio(Singleton):
             logging.basicConfig(level=self._logging_level, format=log_format)
 
         _control_worker = ControlWorker(self._control_manager)
+        _machine_worker = StateMachineWorker(self._machine_manager)
         _alarm_worker = AlarmWorker(self._alarm_manager)
         _api_worker = APIWorker(self._api, port)
 
@@ -275,6 +276,7 @@ class Rackio(Singleton):
             _db_worker.start()
         
         _control_worker.start()
+        _machine_worker.start()
         _alarm_worker.start()
         _api_worker.start()
 
@@ -289,6 +291,7 @@ class Rackio(Singleton):
                 executor.submit(_f)
 
         _control_worker.join()
+        _machine_worker.join()
         _alarm_worker.join()
         _api_worker.join()
             

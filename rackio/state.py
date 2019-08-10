@@ -15,7 +15,7 @@ STRING = "str"
 
 class RackioStateMachine(StateMachine):
 
-    def __init__(self, name):
+    def __init__(self, name, **kwargs):
         
         super(RackioStateMachine, self).__init__()
         self.name = name
@@ -108,6 +108,12 @@ class StateMachineManager:
         
         self._machines.append(machine)
 
+    def get_machines(self):
+
+        result = [_machine for _machine in self._machines]
+        
+        return result
+
     def get_machine(self, name):
 
         for _machine in self._machines:
@@ -115,4 +121,13 @@ class StateMachineManager:
             if name == _machine.name:
 
                 return _machine
+
+    def start_machine(self, name):
+
+        for _machine in self._machines:
+
+            if name == _machine.name:
+
+                _machine.start()
+                break
 
