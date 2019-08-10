@@ -122,8 +122,8 @@ class StateMachineWorker(BaseWorker):
                 method()
 
         while True:
-            
-            time.sleep(self._period)
+
+            now = time.time()
 
             for machine in self._manager.get_machines():
                 
@@ -132,6 +132,11 @@ class StateMachineWorker(BaseWorker):
                 except Exception as e:
                     error = str(e)
                     logging.error("Machine - {}:{}".format(machine.name, error))
+
+            elapsed = time.time() - now
+
+            if elapsed < self._period:
+                time.sleep(self._period - elapsed)
 
 
 STOP = "Stop"
@@ -311,5 +316,5 @@ class LoggerWorker(BaseWorker):
             if elapsed < self._period:
                 time.sleep(self._period - elapsed)
             else:
-                logging.warning("Logger Worker: Failed to log on item...")
+                logging.warning("Logger Worker: Failed to log items on time...")
             
