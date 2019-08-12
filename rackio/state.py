@@ -79,7 +79,7 @@ class RackioStateMachine(StateMachine):
 
         result = dict()
 
-        result["state"] = self.current_state.name
+        result["state"] = self.current_state.identifier
 
         states = self.get_states()
         checkers = ["is_" + state for state in states]
