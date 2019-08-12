@@ -99,7 +99,7 @@ class AlarmWorker(BaseWorker):
 
 class StateMachineWorker(BaseWorker):
 
-    def __init__(self, manager, period=1):
+    def __init__(self, manager, period=1.0):
 
         super(StateMachineWorker, self).__init__()
         
