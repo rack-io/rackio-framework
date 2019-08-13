@@ -41,6 +41,16 @@ class ValueAction:
         self.tag_name = tag_name
         self.value = value
 
+    def serialize(self):
+
+        result = dict()
+        
+        result["type"] = "ValueAction"
+        result["tag"] = self.tag_name
+        result["value"] = self.value
+
+        return result
+
     def trigger(self):
 
         _cvt = CVTEngine()
@@ -89,6 +99,16 @@ class MathAction:
 
         self._parser = MathParser()
         self._parser.set_function(self._expression)
+
+    def serialize(self):
+
+        result = dict()
+        
+        result["type"] = "MathAction"
+        result["tag"] = self.tag_name
+        result["expresion"] = self._expression
+
+        return result
 
     def trigger(self):
 
@@ -142,6 +162,17 @@ class Condition:
     def tags(self):
 
         return (self.tag1, self.tag2)
+
+    def serialize(self):
+
+        result = dict()
+
+        result["type"] = "Condition"
+        result["left"] = self.tag1
+        result["right"] = self.tag2
+        result["relation"] = self._oper
+
+        return result
 
     def evaluate(self):
 
@@ -234,6 +265,14 @@ class OrCondition:
 
         return result
 
+    def serialize(self):
+
+        result = dict()
+        result["type"] = "OrCondition"
+        result["conditions"] = [_condition.serialize() for _condition in self._conditions]
+
+        return result
+
     def evaluate(self):
 
         result = False
@@ -280,6 +319,14 @@ class AndCondition:
 
         return tuple(set(result))
 
+    def serialize(self):
+
+        result = dict()
+        result["type"] = "AndCondition"
+        result["conditions"] = [_condition.serialize() for _condition in self._conditions]
+
+        return result
+    
     def evaluate(self):
 
         result = True
@@ -328,6 +375,16 @@ class Control:
     @property
     def condition(self):
         return self._condition
+
+    def serialize(self):
+
+        result = dict()
+
+        result["name"] = self._name
+        result["condition"] = self._condition.serialize()
+        result["action"] = self._action.serialize()
+
+        return result
 
     def execute(self):
 
@@ -379,6 +436,16 @@ class Rule:
     def condition(self):
         return self._condition
 
+    def serialize(self):
+
+        result = dict()
+
+        result["name"] = self._name
+        result["condition"] = self._condition.serialize()
+        result["actions"] = [action.serialize() for action in self._actions]
+
+        return result
+        
     def execute(self):
 
         if self._condition.evaluate():
@@ -430,6 +497,22 @@ class ControlManager:
             self._controls[tags].append(control)
         except:
             self._controls[tags] = [control]
+
+    def get_rule(self, name):
+
+        for _rule in self._rules:
+
+            if _rule.name == name:
+
+                return _rule
+
+    def get_control(self, name):
+
+        for _control in self._controls:
+
+            if _control.name == name:
+
+                return _control
 
     def attach_all(self):
 

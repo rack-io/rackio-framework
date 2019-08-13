@@ -17,7 +17,9 @@ from .controls import ControlManager
 from .alarms import AlarmManager
 from .state import StateMachineManager
 from .workers import LoggerWorker, ControlWorker, StateMachineWorker, AlarmWorker, APIWorker, _ContinousWorker
-from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, AlarmResource, AlarmCollectionResource, EventCollectionResource
+from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource
+from .api import ControlResource, ControlCollectionResource, RuleResource, RuleCollectionResource
+from .api import AlarmResource, AlarmCollectionResource, EventCollectionResource
 
 from .dbmodels import SQLITE, MYSQL, POSTGRESQL
 
@@ -64,6 +66,10 @@ class Rackio(Singleton):
         _tags = TagCollectionResource()
         _tag_history = TagHistoryResource()
         _tag_trend = TrendResource()
+        _control = ControlResource()
+        _controls = ControlCollectionResource()
+        _rule = RuleResource()
+        _rules = RuleCollectionResource()
         _alarm = AlarmResource()
         _alarms = AlarmCollectionResource()
         _events = EventCollectionResource()
@@ -74,6 +80,12 @@ class Rackio(Singleton):
         self._api.add_route('/api/tags/history/{tag_id}', _tag_history)
         self._api.add_route('/api/tags/trends/{tag_id}', _tag_trend)
 
+        self._api.add_route('/api/controls/{control_name}', _control)
+        self._api.add_route('/api/controls', _controls)
+
+        self._api.add_route('/api/rules/{rule_name}', _rule)
+        self._api.add_route('/api/rules', _rules)
+        
         self._api.add_route('/api/alarms/{alarm_name}', _alarm)
         self._api.add_route('/api/alarms', _alarms)
 
@@ -145,6 +157,15 @@ class Rackio(Singleton):
 
         self._control_manager.append_rule(rule)
 
+    def get_rule(self, name):
+        """Returns a Rule defined by its name.
+        
+        # Parameters
+        name (str): a rackio rule.
+        """
+
+        return self._control_manager.get_rule(name)
+
     def append_control(self, control):
         """Append a control to the control manager.
         
@@ -153,6 +174,15 @@ class Rackio(Singleton):
         """
 
         self._control_manager.append_control(control)
+    
+    def get_control(self, name):
+        """Returns a Control defined by its name.
+        
+        # Parameters
+        name (str): a rackio control.
+        """
+
+        return self._control_manager.get_control(name)
 
     def append_alarm(self, alarm):
         """Append an alarm to the alarm manager.
