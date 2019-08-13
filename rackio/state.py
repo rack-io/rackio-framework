@@ -7,6 +7,8 @@ from inspect import ismethod
 
 from statemachine import StateMachine, State
 
+from .models import FloatField, IntegerField, BooleanField, StringField
+
 FLOAT = "float"
 INTEGER = "int"
 BOOL = "bool"
@@ -77,6 +79,13 @@ class RackioStateMachine(StateMachine):
     
     def serialize(self):
 
+        def ismodel_instance(obj):
+
+            for cls in [FloatField, IntegerField, BooleanField, StringField]:
+                if isinstance(obj, cls):
+                    return True
+            return False
+
         result = dict()
 
         result["state"] = self.current_state.identifier
@@ -91,6 +100,8 @@ class RackioStateMachine(StateMachine):
             if key in checkers:
                 continue
             if key in methods:
+                continue
+            if not ismodel_instance(attrs[key]):
                 continue
             value = getattr(self, key)
             result[key] = value
