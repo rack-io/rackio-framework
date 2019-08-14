@@ -57,6 +57,10 @@ coverage.xml
 local_settings.py
 db.sqlite3
 
+# Peewee dbs
+*.db-shm
+*.db-wal
+
 # Flask stuff:
 instance/
 .webassets-cache

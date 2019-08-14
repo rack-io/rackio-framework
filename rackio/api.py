@@ -271,7 +271,7 @@ class ControlCollectionResource(object):
 
         doc = list()
 
-        for control in manager._controls:
+        for control in manager.get_controls():
 
             doc.append(control.serialize())
             

@@ -373,8 +373,12 @@ class Control:
         self._action = action
 
     @property
+    def name(self):
+        return self._name
+        
+    @property
     def condition(self):
-        return self._condition
+        return self._condition    
 
     def serialize(self):
 
@@ -431,6 +435,10 @@ class Rule:
             self._actions = list()
         else:
             self._actions = actions
+    
+    @property
+    def name(self):
+        return self._name
 
     @property
     def condition(self):
@@ -500,19 +508,43 @@ class ControlManager:
 
     def get_rule(self, name):
 
-        for _rule in self._rules:
+        for _rules in self._rules.values():
+            
+            for _rule in _rules:
+                
+                if _rule.name == name:
 
-            if _rule.name == name:
+                    return _rule
 
-                return _rule
+    def get_rules(self):
+
+        result = list()
+
+        for _rules in self._rules.values():
+
+            result += _rules
+
+        return result
 
     def get_control(self, name):
 
-        for _control in self._controls:
+        for _controls in self._controls.values():
+            
+            for _control in _controls:
 
-            if _control.name == name:
+                if _control.name == name:  
 
-                return _control
+                    return _control
+
+    def get_controls(self):
+
+        result = list()
+        
+        for _controls in self._controls.values():
+            
+            result += _controls
+
+        return result
 
     def attach_all(self):
 
