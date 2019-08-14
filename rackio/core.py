@@ -47,6 +47,7 @@ class Rackio(Singleton):
         
         self._context = context
 
+        self.max_workers = 8
         self._logging_level = logging.INFO
         self._log_file = ""
 
@@ -135,6 +136,15 @@ class Rackio(Singleton):
         
         proxy.initialize(self._db)
         self._db_manager.set_db(self._db)
+
+    def set_workers(self, nworkers):
+        """Sets the maximum workers in the ThreadPoolExecutor.
+        
+        # Parameters
+        nworkers (int): Number of workers.
+        """
+
+        self.max_workers = nworkers
 
     def set_dbtags(self, tags, period=0.5):
         """Sets the database tags for logging.
@@ -319,7 +329,7 @@ class Rackio(Singleton):
         _alarm_worker.start()
         _api_worker.start()
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             
             for _f, period in self._worker_functions:
 

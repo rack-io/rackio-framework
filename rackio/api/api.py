@@ -11,9 +11,9 @@ from datetime import datetime
 
 from rackio import status_code
 
-from .engine import CVTEngine
-from .logger import QueryLogger, LoggerEngine
-from .events import Event
+from ..engine import CVTEngine
+from ..logger import QueryLogger, LoggerEngine
+from ..events import Event
 
 
 class RackioResource(object):
@@ -176,7 +176,7 @@ class AlarmCollectionResource(object):
 
     def on_get(self, req, resp):
         
-        from .core import Rackio
+        from ..core import Rackio
 
         app = Rackio()
         manager = app._alarm_manager
@@ -201,7 +201,7 @@ class AlarmResource(object):
 
     def on_get(self, req, resp, alarm_name):
         
-        from .core import Rackio
+        from ..core import Rackio
 
         app = Rackio()
         manager = app._alarm_manager
@@ -224,7 +224,7 @@ class AlarmResource(object):
 
     def on_post(self, req, resp, alarm_name):
         
-        from .core import Rackio
+        from ..core import Rackio
         
         action = req.media.get('action')
 
@@ -264,7 +264,7 @@ class ControlCollectionResource(object):
 
     def on_get(self, req, resp):
         
-        from .core import Rackio
+        from ..core import Rackio
 
         app = Rackio()
         manager = app._control_manager
@@ -289,7 +289,7 @@ class ControlResource(object):
 
     def on_get(self, req, resp, control_name):
         
-        from .core import Rackio
+        from ..core import Rackio
 
         app = Rackio()
         manager = app._control_manager
@@ -315,7 +315,7 @@ class RuleCollectionResource(object):
 
     def on_get(self, req, resp):
         
-        from .core import Rackio
+        from ..core import Rackio
 
         app = Rackio()
         manager = app._control_manager
@@ -340,7 +340,7 @@ class RuleResource(object):
 
     def on_get(self, req, resp, rule_name):
         
-        from .core import Rackio
+        from ..core import Rackio
 
         app = Rackio()
         manager = app._control_manager
@@ -366,7 +366,7 @@ class ContinousWorkerResource(object):
 
     def on_get(self, req, resp, worker_name):
         
-        from .core import Rackio
+        from ..core import Rackio
 
         app = Rackio()
         manager = app._alarm_manager
@@ -389,7 +389,7 @@ class ContinousWorkerResource(object):
 
     def on_post(self, req, resp, alarm_name):
         
-        from .core import Rackio
+        from ..core import Rackio
         
         action = req.media.get('action')
 
