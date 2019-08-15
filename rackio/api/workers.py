@@ -8,7 +8,7 @@ import json
 
 from rackio import status_code
 
-from .api import RackioResource
+from .core import RackioResource
 
 
 class ContinousWorkerResource(RackioResource):

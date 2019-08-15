@@ -9,7 +9,7 @@ from datetime import datetime
 
 from rackio import status_code
 
-from .api import RackioResource
+from .core import RackioResource
 
 from ..events import Event
 
