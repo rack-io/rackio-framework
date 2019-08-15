@@ -18,97 +18,17 @@ from ..events import Event
 
 class RackioResource(object):
 
+    from ..core import Rackio
+
     tag_engine = CVTEngine()
     logger_engine = LoggerEngine()
     query_logger = QueryLogger()
+    
+    def get_app(self):
 
-
-class AlarmCollectionResource(object):
-
-    def on_get(self, req, resp):
-        
         from ..core import Rackio
 
-        app = Rackio()
-        manager = app._alarm_manager
-
-        doc = list()
-
-        for alarm in manager.get_alarms():
-
-            doc.append(alarm.serialize())
-            
-        # Create a JSON representation of the resource
-        resp.body = json.dumps(doc, ensure_ascii=False)
-
-        # The following line can be omitted because 200 is the default
-        # status returned by the framework, but it is included here to
-        # illustrate how this may be overridden as needed.
-        # resp.status = falcon.HTTP_200
-        resp.status = status_code.HTTP_200
- 
-
-class AlarmResource(object):
-
-    def on_get(self, req, resp, alarm_name):
-        
-        from ..core import Rackio
-
-        app = Rackio()
-        manager = app._alarm_manager
-
-        alarm = manager.get_alarm(alarm_name)
-
-        if alarm:
-            doc = alarm.serialize()
-            
-            # Create a JSON representation of the resource
-            resp.body = json.dumps(doc, ensure_ascii=False)
-
-            # The following line can be omitted because 200 is the default
-            # status returned by the framework, but it is included here to
-            # illustrate how this may be overridden as needed.
-            # resp.status = falcon.HTTP_200
-            resp.status = status_code.HTTP_200
-        else:
-            resp.status = status_code.HTTP_NOT_FOUND
-
-    def on_post(self, req, resp, alarm_name):
-        
-        from ..core import Rackio
-        
-        action = req.media.get('action')
-
-        app = Rackio()
-        manager = app._alarm_manager
-
-        alarm = manager.get_alarm(alarm_name)
-
-        if alarm:
-            if action == "Acknowledge":
-
-                alarm.acknowledge()
-            
-            elif action == "Enable":
-
-                alarm.enable()
-
-            elif action == "Disable":
-
-                alarm.disable()
-
-            doc = alarm.serialize()
-
-            # Create a JSON representation of the resource
-            resp.body = json.dumps(doc, ensure_ascii=False)
-
-            # The following line can be omitted because 200 is the default
-            # status returned by the framework, but it is included here to
-            # illustrate how this may be overridden as needed.
-            # resp.status = falcon.HTTP_200
-            resp.status = status_code.HTTP_200
-        else:
-            resp.status = status_code.HTTP_NOT_FOUND
+        return Rackio()
 
 
 class ControlCollectionResource(object):
