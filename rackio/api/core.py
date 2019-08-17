@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""rackio/api/api.py
+"""rackio/api/core.py
 
 This module implements all class Resources for the RESTful API.
 """

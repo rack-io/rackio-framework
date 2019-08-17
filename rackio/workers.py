@@ -267,8 +267,6 @@ class APIWorker(BaseWorker):
 
         with make_server('', self._port, self._api_app) as httpd:
             logging.info('Serving on port {}...'.format(self._port))
-
-            # Serve until process is killed
             httpd.serve_forever()
 
 

@@ -51,7 +51,7 @@ class RackioStateMachine(StateMachine):
     
     def get_states(self):
 
-        return [s.identifier for s in self.states]
+        return [state.identifier for state in self.states]
     
     @classmethod
     def get_attributes(cls):

@@ -37,14 +37,7 @@ class TagCollectionResource(RackioResource):
 
             doc.append(result)
 
-        # Create a JSON representation of the resource
         resp.body = json.dumps(doc, ensure_ascii=False)
-
-        # The following line can be omitted because 200 is the default
-        # status returned by the framework, but it is included here to
-        # illustrate how this may be overridden as needed.
-        # resp.status = falcon.HTTP_200
-        resp.status = status_code.HTTP_200
 
 
 class TagResource(RackioResource):
@@ -66,14 +59,7 @@ class TagResource(RackioResource):
                 'value': value
             }
 
-        # Create a JSON representation of the resource
         resp.body = json.dumps(doc, ensure_ascii=False)
-
-        # The following line can be omitted because 200 is the default
-        # status returned by the framework, but it is included here to
-        # illustrate how this may be overridden as needed.
-        # resp.status = falcon.HTTP_200
-        resp.status = status_code.HTTP_200
 
     def on_post(self, req, resp, tag_id):
         
@@ -100,9 +86,7 @@ class TagResource(RackioResource):
             'result': True
         }
 
-        # Create a JSON representation of the resource
         resp.body = json.dumps(doc, ensure_ascii=False)
-        resp.status = status_code.HTTP_200
 
 
 class TagHistoryResource(RackioResource):
@@ -116,7 +100,6 @@ class TagHistoryResource(RackioResource):
         waveform = dict() 
         waveform["dt"] = history["dt"]
         waveform["t0"] = history["t0"]
-        # waveform["t0"] = history["t0"].strftime('%Y-%m-%d %H:%M:%S')
         waveform["values"] = history["values"]
 
         doc = {
@@ -124,14 +107,7 @@ class TagHistoryResource(RackioResource):
             'waveform': waveform
         }
 
-        # Create a JSON representation of the resource
         resp.body = json.dumps(doc, ensure_ascii=False)
-
-        # The following line can be omitted because 200 is the default
-        # status returned by the framework, but it is included here to
-        # illustrate how this may be overridden as needed.
-        # resp.status = falcon.HTTP_200
-        resp.status = status_code.HTTP_200
 
     
 class TrendResource(RackioResource):
@@ -149,12 +125,5 @@ class TrendResource(RackioResource):
             'waveform': result
         }
 
-        # Create a JSON representation of the resource
         resp.body = json.dumps(doc, ensure_ascii=False)
-
-        # The following line can be omitted because 200 is the default
-        # status returned by the framework, but it is included here to
-        # illustrate how this may be overridden as needed.
-        # resp.status = falcon.HTTP_200
-        resp.status = status_code.HTTP_200
         

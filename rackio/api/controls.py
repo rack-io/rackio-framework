@@ -23,15 +23,8 @@ class ControlCollectionResource(RackioResource):
         for control in manager.get_controls():
 
             doc.append(control.serialize())
-            
-        # Create a JSON representation of the resource
-        resp.body = json.dumps(doc, ensure_ascii=False)
 
-        # The following line can be omitted because 200 is the default
-        # status returned by the framework, but it is included here to
-        # illustrate how this may be overridden as needed.
-        # resp.status = falcon.HTTP_200
-        resp.status = status_code.HTTP_200
+        resp.body = json.dumps(doc, ensure_ascii=False)
 
 
 class ControlResource(RackioResource):
@@ -45,15 +38,9 @@ class ControlResource(RackioResource):
 
         if control:
             doc = control.serialize()
-            
-            # Create a JSON representation of the resource
+
             resp.body = json.dumps(doc, ensure_ascii=False)
 
-            # The following line can be omitted because 200 is the default
-            # status returned by the framework, but it is included here to
-            # illustrate how this may be overridden as needed.
-            # resp.status = falcon.HTTP_200
-            resp.status = status_code.HTTP_200
         else:
             resp.status = status_code.HTTP_NOT_FOUND
 
@@ -71,14 +58,7 @@ class RuleCollectionResource(RackioResource):
 
             doc.append(rule.serialize())
             
-        # Create a JSON representation of the resource
         resp.body = json.dumps(doc, ensure_ascii=False)
-
-        # The following line can be omitted because 200 is the default
-        # status returned by the framework, but it is included here to
-        # illustrate how this may be overridden as needed.
-        # resp.status = falcon.HTTP_200
-        resp.status = status_code.HTTP_200
 
 
 class RuleResource(RackioResource):
@@ -92,15 +72,9 @@ class RuleResource(RackioResource):
 
         if rule:
             doc = rule.serialize()
-            
-            # Create a JSON representation of the resource
-            resp.body = json.dumps(doc, ensure_ascii=False)
 
-            # The following line can be omitted because 200 is the default
-            # status returned by the framework, but it is included here to
-            # illustrate how this may be overridden as needed.
-            # resp.status = falcon.HTTP_200
-            resp.status = status_code.HTTP_200
+            resp.body = json.dumps(doc, ensure_ascii=False)
+            
         else:
             resp.status = status_code.HTTP_NOT_FOUND
             

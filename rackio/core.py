@@ -319,10 +319,6 @@ class Rackio(Singleton):
         _machine_worker = StateMachineWorker(self._machine_manager)
         _alarm_worker = AlarmWorker(self._alarm_manager)
         _api_worker = APIWorker(self._api, port)
-
-        if self._db_manager:
-            _db_worker = LoggerWorker(self._db_manager)
-            _db_worker.start()
         
         _control_worker.start()
         _machine_worker.start()
@@ -338,6 +334,10 @@ class Rackio(Singleton):
             for _f in self._continous_functions:
 
                 executor.submit(_f)
+
+        if self._db_manager.get_db():
+            _db_worker = LoggerWorker(self._db_manager)
+            _db_worker.start()
 
         _control_worker.join()
         _machine_worker.join()

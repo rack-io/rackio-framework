@@ -23,15 +23,8 @@ class AlarmCollectionResource(RackioResource):
         for alarm in manager.get_alarms():
 
             doc.append(alarm.serialize())
-            
-        # Create a JSON representation of the resource
+        
         resp.body = json.dumps(doc, ensure_ascii=False)
-
-        # The following line can be omitted because 200 is the default
-        # status returned by the framework, but it is included here to
-        # illustrate how this may be overridden as needed.
-        # resp.status = falcon.HTTP_200
-        resp.status = status_code.HTTP_200
  
 
 class AlarmResource(RackioResource):
@@ -46,24 +39,16 @@ class AlarmResource(RackioResource):
         if alarm:
             doc = alarm.serialize()
             
-            # Create a JSON representation of the resource
             resp.body = json.dumps(doc, ensure_ascii=False)
 
-            # The following line can be omitted because 200 is the default
-            # status returned by the framework, but it is included here to
-            # illustrate how this may be overridden as needed.
-            # resp.status = falcon.HTTP_200
-            resp.status = status_code.HTTP_200
         else:
             resp.status = status_code.HTTP_NOT_FOUND
 
     def on_post(self, req, resp, alarm_name):
         
-        from ..core import Rackio
-        
         action = req.media.get('action')
 
-        app = Rackio()
+        app = self.get_app()
         manager = app._alarm_manager
 
         alarm = manager.get_alarm(alarm_name)
@@ -83,14 +68,8 @@ class AlarmResource(RackioResource):
 
             doc = alarm.serialize()
 
-            # Create a JSON representation of the resource
             resp.body = json.dumps(doc, ensure_ascii=False)
 
-            # The following line can be omitted because 200 is the default
-            # status returned by the framework, but it is included here to
-            # illustrate how this may be overridden as needed.
-            # resp.status = falcon.HTTP_200
-            resp.status = status_code.HTTP_200
         else:
             resp.status = status_code.HTTP_NOT_FOUND
             
