@@ -17,9 +17,9 @@ from .utils import serialize_dbo
 from ._singleton import Singleton
 
 
-class TrendLogger:
+class DataLogger:
 
-    """CVT Trend Logger class.
+    """Data Logger class.
 
     This class is intended to be an API for tags 
     settings and tags logged access.
@@ -27,8 +27,8 @@ class TrendLogger:
     # Example
     
     ```python
-    >>> from rackio.logger import TrendLogger
-    >>> _logger = TrendLogger()
+    >>> from rackio.logger import DataLogger
+    >>> _logger = DataLogger()
     ```
     
     """
@@ -63,17 +63,14 @@ class TrendLogger:
     
     def create_tables(self, tables):
 
-        # self._db.connect()
         self._db.create_tables(tables, safe=True)
 
     def drop_tables(self, tables):
 
-        # self._db.connect()
         self._db.drop_tables(tables)
 
     def write_tag(self, tag, value):
 
-        # trend = TagTrend.select().where(TagTrend.name == tag).get()
         trend = self.tags_dbo[tag]
 
         now = datetime.now()
@@ -103,6 +100,7 @@ class TrendLogger:
         event = Event(user=event.user, 
             message=event.message,
             description=event.description,
+            classification=event.classification,
             priority=event.priority,
             date_time=event.date_time
         )
@@ -142,7 +140,7 @@ class LoggerEngine(Singleton):
 
         super(LoggerEngine, self).__init__()
 
-        self._logger = TrendLogger()
+        self._logger = DataLogger()
         self._logging_tags = list()
 
         self._logger._period = period
@@ -288,20 +286,21 @@ class LoggerEngine(Singleton):
 
         elif action == "write_event":
 
-            #try:
+            try:
                 
-            parameters = _query["parameters"]
-            event = parameters["event"]
+                parameters = _query["parameters"]
+                event = parameters["event"]
 
-            self._logger.add_event(event)
+                self._logger.add_event(event)
 
-            self._response = {
-                "result": True
-            }
-            #except:
-            #    self._response = {
-            #        "result": False
-            #    }
+                self._response = {
+                    "result": True
+                }
+            except:
+
+                self._response = {
+                    "result": False
+                }
 
         elif action == "read_events":
 

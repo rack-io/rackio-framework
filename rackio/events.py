@@ -12,6 +12,7 @@ class Event(Model):
     user = StringField()
     message = StringField()
     description = StringField(default="")
+    classification = StringField()
     priority = IntegerField(default=4)
     date_time = StringField()
     
