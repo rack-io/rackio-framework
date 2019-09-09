@@ -286,6 +286,11 @@ class LoggerWorker(BaseWorker):
         if not tags:
             return
 
+        db = self._manager.get_db()
+
+        if not db:
+            return
+
         try:
             self._manager.drop_tables([TagTrend, TagValue, Event])
         except Exception as e:

@@ -315,6 +315,7 @@ class Rackio(Singleton):
         else:
             logging.basicConfig(level=self._logging_level, format=log_format)
 
+        _db_worker = LoggerWorker(self._db_manager)
         _control_worker = ControlWorker(self._control_manager)
         _machine_worker = StateMachineWorker(self._machine_manager)
         _alarm_worker = AlarmWorker(self._alarm_manager)
@@ -335,9 +336,8 @@ class Rackio(Singleton):
 
                 executor.submit(_f)
 
-        if self._db_manager.get_db():
-            _db_worker = LoggerWorker(self._db_manager)
-            _db_worker.start()
+        
+        _db_worker.start()
 
         _control_worker.join()
         _machine_worker.join()

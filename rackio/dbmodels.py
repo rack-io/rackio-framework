@@ -38,5 +38,6 @@ class Event(BaseModel):
     user = CharField()
     message = TextField()
     description = TextField()
+    classification = TextField()
     priority = IntegerField(default=4)
     date_time = DateTimeField()
