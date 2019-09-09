@@ -321,6 +321,7 @@ class Rackio(Singleton):
         _alarm_worker = AlarmWorker(self._alarm_manager)
         _api_worker = APIWorker(self._api, port)
         
+        _db_worker.start()
         _control_worker.start()
         _machine_worker.start()
         _alarm_worker.start()
@@ -330,15 +331,19 @@ class Rackio(Singleton):
             
             for _f, period in self._worker_functions:
 
-                executor.submit(_f)
+                try:
+                    executor.submit(_f)
+                except Exception as e:
+                    print(e)
 
             for _f in self._continous_functions:
 
-                executor.submit(_f)
+                try:
+                    executor.submit(_f)
+                except Exception as e:
+                    print(e)
 
-        
-        _db_worker.start()
-
+        _db_worker.join()
         _control_worker.join()
         _machine_worker.join()
         _alarm_worker.join()
