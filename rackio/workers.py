@@ -147,11 +147,17 @@ ERROR = "Error"
 
 class _ContinousWorker:
 
-    def __init__(self, f, worker_name=None, period=0.5, pause_tag=None, stop_tag=None):
+    def __init__(self, f, worker_name=None, period=0.5, error_message=None, pause_tag=None, stop_tag=None):
 
         self._f = f
+
+        if not worker_name:
+            worker_name = f.__name__
+
         self._name = worker_name
         self._period = period
+
+        self._error_message = error_message
         self._pause_tag = pause_tag
         self._stop_tag = stop_tag
         self._status = STOP       # [STOP, PAUSE, RUNNING, ERROR]
@@ -232,7 +238,12 @@ class _ContinousWorker:
                         self._f()
                     except Exception as e:
                         error = str(e)
-                        logging.error("Worker - {}:{}".format(self._f.__name__, error))
+                        
+                        if not self._error_message:
+                            logging.error("Worker - {}:{}".format(self._name, error))
+                        else:
+                            logging.error("Worker - {}:{}:{}".format(self._name, self._error_message, error))
+                        
                         self._status = ERROR
 
                 else:
@@ -243,7 +254,11 @@ class _ContinousWorker:
                     self._f()
                 except Exception as e:
                     error = str(e)
-                    logging.error("Worker - {}:{}".format(self._f.__name__, error))
+
+                    if not self._error_message:
+                        logging.error("Worker - {}:{}".format(self._name, error))
+                    else:
+                        logging.error("Worker - {}:{}:{}".format(self._name, self._error_message, error))
                     self._status = ERROR
 
             elapsed = time.time() - now
@@ -251,7 +266,7 @@ class _ContinousWorker:
             if elapsed < self._period:
                 time.sleep(self._period - elapsed)
             else:
-                logging.warning("Worker - {}: Unable to perform on time...".format(self._f.__name__))
+                logging.warning("Worker - {}: Unable to perform on time...".format(self._name))
             
 
 class APIWorker(BaseWorker):
