@@ -9,6 +9,9 @@ from statemachine import StateMachine, State
 
 from .models import FloatField, IntegerField, BooleanField, StringField
 
+from .engine import CVTEngine
+from .logger import QueryLogger, LoggerEngine
+
 FLOAT = "float"
 INTEGER = "int"
 BOOL = "bool"
@@ -16,6 +19,10 @@ STRING = "str"
 
 
 class RackioStateMachine(StateMachine):
+
+    tag_engine = CVTEngine()
+    logger_engine = LoggerEngine()
+    query_logger = QueryLogger()
 
     def __init__(self, name, **kwargs):
         

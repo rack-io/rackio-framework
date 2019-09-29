@@ -265,7 +265,7 @@ class Rackio(Singleton):
         
         return decorator
 
-    def rackit_on(self, function=None, worker_name=None, period=0.5, pause_tag=None, stop_tag=None):
+    def rackit_on(self, function=None, worker_name=None, period=0.5, error_message=None, pause_tag=None, stop_tag=None):
         """Decorator method to register functions plugins with continous execution.
         
         This method will register into the Rackio application
@@ -291,7 +291,7 @@ class Rackio(Singleton):
             return _ContinousWorker(function)
         else:
             def wrapper(function):
-                return _ContinousWorker(function, worker_name, period, pause_tag, stop_tag)
+                return _ContinousWorker(function, worker_name, period, error_message, pause_tag, stop_tag)
 
             return wrapper
 
