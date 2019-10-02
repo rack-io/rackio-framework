@@ -71,6 +71,8 @@ class FunctionWorker(BaseWorker):
 
     def __init__(self, manager, period=0.1):
 
+        super(FunctionWorker, self).__init__()
+        
         self._manager = manager
         self._period = period
 
@@ -78,7 +80,7 @@ class FunctionWorker(BaseWorker):
 
     def run(self):
 
-        if not self._manager._tags():
+        if not self._manager._tags:
             return
         
         _queue = self._manager._tag_queue
