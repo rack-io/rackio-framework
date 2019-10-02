@@ -56,8 +56,6 @@ class ControlWorker(BaseWorker):
         _queue = self._manager._tag_queue
 
         while True:
-            
-            time.sleep(self._period)
 
             if not _queue.empty():
                 item = _queue.get()
@@ -65,6 +63,36 @@ class ControlWorker(BaseWorker):
                 _tag = item["tag"]
 
                 self._manager.execute(_tag)
+            else:
+                time.sleep(self._period)
+
+
+class FunctionWorker(BaseWorker):
+
+    def __init__(self, manager, period=0.1):
+
+        self._manager = manager
+        self._period = period
+
+        self._manager.attach_all()
+
+    def run(self):
+
+        if not self._manager._tags():
+            return
+        
+        _queue = self._manager._tag_queue
+
+        while True:
+
+            if not _queue.empty():
+                item = _queue.get()
+                
+                _tag = item["tag"]
+
+                self._manager.execute(_tag)
+            else:
+                time.sleep(self._period)
 
 
 class AlarmWorker(BaseWorker):

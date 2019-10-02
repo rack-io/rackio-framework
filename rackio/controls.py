@@ -593,3 +593,44 @@ class ControlManager:
                 for _rule in _rules:
                     _rule.execute()
 
+
+class FunctionManager:
+
+    def __init__(self):
+
+        self._tags = dict()
+        self._tag_queue = queue.Queue()
+
+    def append_function(self, tag, function):
+
+        try:
+            self._tags[tag].append(function)
+        except:
+            self._tags[tag] = [function]
+
+    def attach_all(self):
+
+        _cvt = CVTEngine()
+
+        for _tag in self._tags.keys():
+
+            observer = TagObserver(self._tag_queue)
+            query = dict()
+            query["action"] = "attach"
+            query["parameters"] = {
+                "name": _tag,
+                "observer": observer,
+            }
+
+            _cvt.request(query)
+            _cvt.response()
+
+    def execute(self, tag):
+
+        try:
+            for _function in self._tags[tag]:
+
+                _function()
+        except:
+            pass
+

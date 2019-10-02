@@ -13,10 +13,10 @@ from peewee import SqliteDatabase, MySQLDatabase, PostgresqlDatabase
 
 from ._singleton import Singleton
 from .logger import LoggerEngine
-from .controls import ControlManager
+from .controls import ControlManager, FunctionManager
 from .alarms import AlarmManager
 from .state import StateMachineManager
-from .workers import LoggerWorker, ControlWorker, StateMachineWorker, AlarmWorker, APIWorker, _ContinousWorker
+from .workers import LoggerWorker, ControlWorker, FunctionWorker, StateMachineWorker, AlarmWorker, APIWorker, _ContinousWorker
 from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource
 from .api import ControlResource, ControlCollectionResource, RuleResource, RuleCollectionResource
 from .api import AlarmResource, AlarmCollectionResource, EventCollectionResource
@@ -47,16 +47,17 @@ class Rackio(Singleton):
         
         self._context = context
 
-        self.max_workers = 8
+        self.max_workers = 10
         self._logging_level = logging.INFO
         self._log_file = ""
 
         self._worker_functions = list()
         self._continous_functions = list()
-        self._custom_observer = None
+
         self._control_manager = ControlManager()
         self._alarm_manager = AlarmManager()
         self._machine_manager = StateMachineManager()
+        self._function_manager = FunctionManager()
         
         self.db = None
         self._db_manager = LoggerEngine()
@@ -295,6 +296,40 @@ class Rackio(Singleton):
 
             return wrapper
 
+    def observe(self, tag):
+        """Decorator method to register functions as tag observers.
+        
+        This method will register into the Rackio application
+        a new function as a custom observer  to be executed by 
+        the Thread Pool Executor. If the tag associated changes 
+        its value, the function registered will be executed.
+
+        # Example
+    
+        ```python
+        @app.observer
+        def hello("T1"):
+            print("Hello, Tag T1 has changed!!!")
+        ```
+
+        # Parameters
+        tag (str): Tag name.
+        """
+
+        def decorator(f):
+
+            def wrapper():
+                try:
+                    f()
+                except Exception as e:
+                    error = str(e)
+                    print("{}:{}".format(f.__name__, error))
+
+            self._function_manager.append_function(tag, wrapper)
+            return f
+        
+        return decorator
+
     def run(self, port=8000):
 
         """Runs the main execution for the application to start serving.
@@ -317,12 +352,14 @@ class Rackio(Singleton):
 
         _db_worker = LoggerWorker(self._db_manager)
         _control_worker = ControlWorker(self._control_manager)
+        _function_worker = FunctionWorker(self._function_manager)
         _machine_worker = StateMachineWorker(self._machine_manager)
         _alarm_worker = AlarmWorker(self._alarm_manager)
         _api_worker = APIWorker(self._api, port)
         
         _db_worker.start()
         _control_worker.start()
+        _function_worker.start()
         _machine_worker.start()
         _alarm_worker.start()
         _api_worker.start()
@@ -345,6 +382,7 @@ class Rackio(Singleton):
 
         _db_worker.join()
         _control_worker.join()
+        _function_worker.join()
         _machine_worker.join()
         _alarm_worker.join()
         _api_worker.join()
