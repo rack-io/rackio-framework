@@ -129,12 +129,12 @@ class AlarmWorker(BaseWorker):
 
 class StateMachineWorker(BaseWorker):
 
-    def __init__(self, manager, period=1.0):
+    def __init__(self, manager):
 
         super(StateMachineWorker, self).__init__()
         
         self._manager = manager
-        self._period = period
+        self._period = manager.get_period()
 
     def run(self):
 
