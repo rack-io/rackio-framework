@@ -5,6 +5,8 @@ This module implements all thread classes for workers.
 """
 import time
 import logging
+import asyncio
+
 from threading import Thread
 from wsgiref.simple_server import make_server
 
@@ -365,4 +367,37 @@ class LoggerWorker(BaseWorker):
                 time.sleep(self._period - elapsed)
             else:
                 logging.warning("Logger Worker: Failed to log items on time...")
+    
+
+class BindingWorker(BaseWorker):
+
+    def __init__(self, manager, period=0.1):
+
+        super(BindingWorker, self).__init__()
+        
+        self._manager = manager
+        self._period = period
+
+    def run(self):
+        
+        bindings = self._manager.get_bindings()
+        if not bindings:
+            return
+
+        host_ip, host_port = self._manager.get_host()
+        
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(self._run(bindings, host_ip, host_port))
+        loop.close()
+
+    async def _run(self, bindings, host_ip, host_port):
+
+        while True:
             
+            loop = asyncio.get_event_loop()
+            await asyncio.sleep(self._period)
+
+            futures = [loop.run_in_executor(None, i.sync, host_ip, host_port) for i in bindings]
+
+            for response in await asyncio.gather(*futures):
+                pass

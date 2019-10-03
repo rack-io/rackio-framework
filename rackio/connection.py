@@ -20,9 +20,9 @@ class TagBinding:
 
     def sync(self, host, port):
 
+        url = "http://{}:{}/api/tags/{}".format(host, port, self.remote_tag)
+
         if self.direction == "read":
-            
-            url = "http://{}:{}/api/tags/{}".format(host, port, self.remote_tag)
             
             response = requests.get(url)
             response = json.loads(response.content)
@@ -31,28 +31,32 @@ class TagBinding:
 
             value = 45.4
             
-            url = "http://{}:{}/api/tags/{}".format(host, port, self.remote_tag)
-            
             response = requests.post('', json={"value": value})
 
         if response.status_code == 200:
-
             return True
         else:
             return False
 
 
-
 class RackioBinding:
 
-    def __init__(self, name, host_ip):
+    def __init__(self, name, host_ip, host_port):
 
         self.name = name
         self.host_ip = host_ip
+        self.host_port = host_port
         self.tag_bindings = list()
+
+    def get_host(self):
+        return self.host_ip, self.host_port
 
     def append_binding(self, tag_binding):
 
         self.tag_bindings.append(tag_binding)
+
+    def get_bindings(self):
+
+        return self.tag_bindings
 
     
