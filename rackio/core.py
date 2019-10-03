@@ -5,6 +5,7 @@ This module implements the core app class and methods for Rackio.
 """
 
 import logging
+import sys
 import concurrent.futures
 
 import falcon
@@ -366,15 +367,20 @@ class Rackio(Singleton):
         _alarm_worker = AlarmWorker(self._alarm_manager)
         _api_worker = APIWorker(self._api, port)
         
-        _db_worker.start()
-        _control_worker.start()
-        _function_worker.start()
-        _machine_worker.start()
-        _alarm_worker.start()
-        _api_worker.start()
+        try:
+            _db_worker.start()
+            _control_worker.start()
+            _function_worker.start()
+            _machine_worker.start()
+            _alarm_worker.start()
+            _api_worker.start()
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            threads = [_db_worker, _control_worker, _function_worker, _machine_worker, _alarm_worker, _api_worker]
             
+            # with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+
+            executor = concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers)
+                
             for _f, period in self._worker_functions:
 
                 try:
@@ -389,10 +395,9 @@ class Rackio(Singleton):
                 except Exception as e:
                     print(e)
 
-        _db_worker.join()
-        _control_worker.join()
-        _function_worker.join()
-        _machine_worker.join()
-        _alarm_worker.join()
-        _api_worker.join()
+            threads = [t.join() for t in threads]
+
+        except (KeyboardInterrupt, SystemExit):
+            print("Shutting down!!!")
+            sys.exit()
             
