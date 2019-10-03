@@ -17,6 +17,8 @@ tag_egine.set_tag("RAND2", "float")
 tag_egine.set_tag("T1", "float")
 tag_egine.set_tag("T2", "float")
 tag_egine.set_tag("T3", "float")
+tag_egine.set_tag("T4", "float")
+tag_egine.set_tag("T5", "float")
 
 # Conditions definitions
 
