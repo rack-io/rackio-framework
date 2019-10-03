@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""rackio/models.py
+"""rackio/alarms.py
 
 This module implements all Alarms class definitions and Alarm Handlers.
 """
