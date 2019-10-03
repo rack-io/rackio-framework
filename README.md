@@ -2,6 +2,10 @@
 A modern Python Framework for microboard automation and control applications development.
 [Github-Rackio Framework](https://github.com/rack-io/rackio-framework)
 
+# Documentation
+The complete Rackio documentation can be found in Read the Docs
+[Rackio Framework Documentation](https://rackio-framework.readthedocs.io/)
+
 ## Requirements
 
 - Python 3.6+
