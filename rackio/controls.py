@@ -14,6 +14,14 @@ from .engine import CVTEngine
 from .models import TagObserver
 
 
+GT = ">"
+LT = "<"
+GTE = ">="
+LTE = "<="
+EQ = "=="
+NEQ = "!="
+
+
 class ValueAction:
 
     """ValueAction class.
@@ -206,23 +214,27 @@ class Condition:
         
         value2 = response["response"]
 
-        if _oper == "=":
+        if _oper == EQ:
 
             return value1 == value2
+
+        elif _oper == NEQ:
+
+            return value1 != value2
         
-        elif _oper == "<":
+        elif _oper == LT:
 
             return value1 < value2
 
-        elif _oper == "<=":
+        elif _oper == LTE:
 
             return value1 <= value2
 
-        elif _oper == ">":
+        elif _oper == GT:
 
             return value1 > value2
 
-        elif _oper == ">=":
+        elif _oper == GTE:
 
             return value1 >= value2
 
