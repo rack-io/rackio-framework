@@ -68,25 +68,37 @@ class TagResource(RackioResource):
         _cvt = self.tag_engine
         _type = _cvt.read_type(tag_id)
 
-        if _type == "float":
-            value = float(value)
-        elif _type == "int":
-            value = int(value)
-        elif _type == "bool":
-            if value == "true":
-                value = True
-            elif value == "false":
-                value = False
-            else:
-                value = bool(value)
+        if not "." in tag_id:
+            if _type == "float":
+                value = float(value)
+            elif _type == "int":
+                value = int(value)
+            elif _type == "str":
+                value = str(value)
+            elif _type == "bool":
+                if value == "true":
+                    value = True
+                elif value == "false":
+                    value = False
+                else:
+                    value = bool(value)
 
-        _cvt.write_tag(tag_id, value)
+        resp = _cvt.write_tag(tag_id, value)
 
-        doc = {
-            'result': True
-        }
+        if resp["result"]:
 
+            doc = {
+                'result': True
+            }
+
+        else:
+
+            doc = {
+                'result': False
+            }
+        
         resp.body = json.dumps(doc, ensure_ascii=False)
+
 
 
 class TagHistoryResource(RackioResource):

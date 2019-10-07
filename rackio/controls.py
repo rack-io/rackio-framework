@@ -13,7 +13,6 @@ from pybigparser.evaluator import get_vars, MathParser
 from .engine import CVTEngine
 from .models import TagObserver
 
-
 GT = ">"
 LT = "<"
 GTE = ">="

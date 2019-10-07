@@ -111,7 +111,7 @@ class CVT:
             values = name.split(".")
             name = values[0]
             _property = values[1]
-            print(name, _property, value)
+            # print(name, _property, value)
             # self._tags[name].value.set_attr(_property, value)
             setattr(self._tags[name].value, _property, value)
             self._tags[name].notify()
