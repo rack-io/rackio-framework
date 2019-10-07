@@ -19,6 +19,8 @@ tag_egine.set_tag("T1", "float")
 tag_egine.set_tag("T2", "float")
 tag_egine.set_tag("T3", "float")
 
+tag_egine.set_tag("message", "str")
+
 # Conditions definitions
 
 cond1 = Condition("T1",">=", "T2")

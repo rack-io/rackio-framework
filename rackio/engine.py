@@ -46,16 +46,18 @@ class CVT:
         name (str):
             Tag name.
         _type (str): 
-            Tag value type ("int", "float", "bool")
+            Tag value type ("int", "float", "bool", "str")
         """
 
         if isinstance(_type, str):
         
-            if _type in ["float", "int", "bool"]:
+            if _type in ["float", "int", "bool", "str"]:
                 if _type == "float":
                     value = 0.0
                 elif _type == "int":
                     value = 0
+                elif _type == "str":
+                    value = ""
                 else:
                     value = False
 
