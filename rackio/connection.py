@@ -3,11 +3,9 @@
 
 This module implements all Rackio Instance Connections.
 """
-import requests
-import json
 
-WRITE = 0
-READ = 1
+WRITE = "write"
+READ = "read"
 
 
 class TagBinding:
@@ -17,26 +15,6 @@ class TagBinding:
         self.local_tag = local_tag
         self.remote_tag = remote_tag
         self.direction = direction
-
-    def sync(self, host, port):
-
-        url = "http://{}:{}/api/tags/{}".format(host, port, self.remote_tag)
-
-        if self.direction == "read":
-            
-            response = requests.get(url)
-            response = json.loads(response.content)
-
-        elif self.direction == "write":
-
-            value = 45.4
-            
-            response = requests.post('', json={"value": value})
-
-        if response.status_code == 200:
-            return True
-        else:
-            return False
 
 
 class RackioBinding:

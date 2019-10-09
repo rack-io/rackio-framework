@@ -18,6 +18,8 @@ tag_egine.set_tag("SINE_WAVE", "float")
 tag_egine.set_tag("T1", "float")
 tag_egine.set_tag("T2", "float")
 tag_egine.set_tag("T3", "float")
+tag_egine.set_tag("T4", "float")
+tag_egine.set_tag("T5", "float")
 
 tag_egine.set_tag("message", "str")
 
@@ -98,6 +100,8 @@ def reader():
     T1 = tag_egine.read_tag("T1")
     T2 = tag_egine.read_tag("T2")
     T3 = tag_egine.read_tag("T3")
+    T4 = tag_egine.read_tag("T4")
+    T5 = tag_egine.read_tag("T5")
         
     print("")
     print("RAND1    : {}".format(rand1))
@@ -105,6 +109,8 @@ def reader():
     print("T1       : {}".format(T1))
     print("T2       : {}".format(T2))
     print("T3       : {}".format(T3))
+    print("T4       : {}".format(T4))
+    print("T5       : {}".format(T5))
         
 
 if __name__ == "__main__":

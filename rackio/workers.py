@@ -6,6 +6,8 @@ This module implements all thread classes for workers.
 import time
 import logging
 import asyncio
+import requests
+import json
 
 from threading import Thread
 from wsgiref.simple_server import make_server
@@ -367,11 +369,34 @@ class LoggerWorker(BaseWorker):
                 time.sleep(self._period - elapsed)
             else:
                 logging.warning("Logger Worker: Failed to log items on time...")
-    
+
+async def sync(binding, host, port):
+
+    url = "http://{}:{}/api/tags/{}".format(host, port, binding.remote_tag)
+
+    if binding.direction == "read":
+            
+        response = requests.get(url)
+        payload = json.loads(response.content)
+
+    elif binding.direction == "write":
+
+        value = 45.4
+        
+        response = requests.post(url, json={"value": value})
+        payload = json.loads(response.content)
+        
+    await asyncio.sleep(0.0001)
+
+    if response.status_code == 200:
+        return True
+    else:
+        return False
+
 
 class BindingWorker(BaseWorker):
 
-    def __init__(self, manager, period=0.1):
+    def __init__(self, manager, period=0.2):
 
         super(BindingWorker, self).__init__()
         
@@ -393,11 +418,18 @@ class BindingWorker(BaseWorker):
     async def _run(self, bindings, host_ip, host_port):
 
         while True:
+
+            now = time.time()
             
             loop = asyncio.get_event_loop()
-            await asyncio.sleep(self._period)
 
-            futures = [loop.run_in_executor(None, i.sync, host_ip, host_port) for i in bindings]
+            await asyncio.wait([sync(i, host_ip, host_port) for i in bindings])
 
-            for response in await asyncio.gather(*futures):
-                pass
+            elapsed = time.time() - now
+
+            print(elapsed)
+
+            if elapsed < self._period:
+                
+                time.sleep(self._period - elapsed)
+                
