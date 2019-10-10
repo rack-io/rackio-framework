@@ -285,6 +285,8 @@ class Model(object):
 
         return result
 
-    def _load(self, value):
+    def _load(self, values):
 
-        pass
+        for key, value in values.items():
+
+            setattr(self, key, value)
