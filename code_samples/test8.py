@@ -9,10 +9,11 @@ class Car(Model):
     engine_size = FloatField(default=1.8)
     seats = IntegerField(default=5)
     air_conditioning = BooleanField(default=True)
+    mileage = FloatField(default=0.0)
 
-    def inc_seats(self):
+    def drive(self):
 
-        self.seats += 1
+        self.mileage += 0.5
 
 new_car = Car(engine_size=2.2)
 
@@ -24,6 +25,6 @@ tag_engine.set_tag("car1", Car)
 
 tag_engine.write_tag("car1", new_car)
 
-new_car.inc_seats()
+new_car.drive()
 
 another_car = tag_engine.read_tag("car1")

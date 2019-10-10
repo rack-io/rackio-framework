@@ -232,7 +232,9 @@ class Model(object):
 
     def get_attr(self, name):
 
-        return getattr(self, name)
+        result = getattr(self, name)
+        print(result)
+        return result
 
     @classmethod
     def set(cls, tag, obj):

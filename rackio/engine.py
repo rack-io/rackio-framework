@@ -111,16 +111,16 @@ class CVT:
             values = name.split(".")
             name = values[0]
             _property = values[1]
-            # print(name, _property, value)
-            # self._tags[name].value.set_attr(_property, value)
             setattr(self._tags[name].value, _property, value)
             self._tags[name].notify()
 
         else:
             _type = self._tags[name].get_type()
 
-            if not _type in ["int", "float", "bool"]:
+            if not _type in ["int", "float", "bool", "str"]:
+                value = copy.copy(value)
                 value.tag = name
+                
             self._tags[name].set_value(value)
 
     def get_value(self, name):
@@ -130,11 +130,12 @@ class CVT:
         name (str):
             Tag name.
         """
+        
         if "." in name:
             values = name.split(".")
             name = values[0]
             _property = values[1]
-            _new_object = copy.copy(self._tags[name].value.get_attr(_property))
+            _new_object = copy.copy(getattr(self._tags[name].value, _property))
         else:
             _new_object = copy.copy(self._tags[name].get_value())
         

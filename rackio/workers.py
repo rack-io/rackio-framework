@@ -420,14 +420,10 @@ class BindingWorker(BaseWorker):
         while True:
 
             now = time.time()
-            
-            loop = asyncio.get_event_loop()
 
             await asyncio.wait([sync(i, host_ip, host_port) for i in bindings])
 
             elapsed = time.time() - now
-
-            print(elapsed)
 
             if elapsed < self._period:
                 
