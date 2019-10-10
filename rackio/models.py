@@ -153,8 +153,11 @@ class Model(object):
             if key in kwargs:
                 default = kwargs[key]
             else:
-                default = value.default
-                _type = value._type
+                try:
+                    default = value.default
+                    _type = value._type
+                except:
+                    continue
 
             if default:
                 setattr(self, key, default)
@@ -169,6 +172,7 @@ class Model(object):
                     setattr(self, key, "")
 
         self.attrs = attrs
+        #setattr(self, "save", attrs["save"])
 
     def __getattribute__(self, attr):
         
@@ -225,6 +229,12 @@ class Model(object):
         from .engine import CVTEngine
 
         _cvt = CVTEngine()
+        
+        try:
+            _cvt.write_tag(self.tag, self)
+            return True
+        except:
+            return False
 
     def set_attr(self, name, value):
         
@@ -274,3 +284,7 @@ class Model(object):
             result[key] = value
 
         return result
+
+    def _load(self, value):
+
+        pass

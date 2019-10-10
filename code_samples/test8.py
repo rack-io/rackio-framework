@@ -27,4 +27,6 @@ tag_engine.write_tag("car1", new_car)
 
 new_car.drive()
 
-another_car = tag_engine.read_tag("car1")
+same_car = tag_engine.read_tag("car1")
+same_car.seats = 6
+same_car.commit()
