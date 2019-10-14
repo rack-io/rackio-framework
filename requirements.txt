@@ -3,3 +3,4 @@ pyBigParser==2.1
 peewee==3.9.6
 python-statemachine==0.7.1
 requests==2.22.0
+aiohttp==3.6.2

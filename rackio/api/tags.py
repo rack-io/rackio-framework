@@ -83,9 +83,9 @@ class TagResource(RackioResource):
                 else:
                     value = bool(value)
 
-        resp = _cvt.write_tag(tag_id, value)
+        result = _cvt.write_tag(tag_id, value)
 
-        if resp["result"]:
+        if result["result"]:
 
             doc = {
                 'result': True

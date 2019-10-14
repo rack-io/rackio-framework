@@ -10,7 +10,9 @@ import requests
 import json
 
 from threading import Thread
+from random import randint
 from wsgiref.simple_server import make_server
+from aiohttp import ClientSession
 
 from .controls import ControlManager
 from .engine import CVTEngine
@@ -370,28 +372,20 @@ class LoggerWorker(BaseWorker):
             else:
                 logging.warning("Logger Worker: Failed to log items on time...")
 
-async def sync(binding, host, port):
+async def sync(session, binding, host, port):
 
     url = "http://{}:{}/api/tags/{}".format(host, port, binding.remote_tag)
-
+    
     if binding.direction == "read":
-            
-        response = requests.get(url)
-        payload = json.loads(response.content)
+        
+        async with session.get(url) as response:
+             return await response.json()
 
     elif binding.direction == "write":
 
-        value = 45.4
-        
-        response = requests.post(url, json={"value": value})
-        payload = json.loads(response.content)
-        
-    await asyncio.sleep(0.0001)
-
-    if response.status_code == 200:
-        return True
-    else:
-        return False
+        value = randint(10, 50)
+        async with session.post(url, json={"value": value}) as response:
+            return await response.json()
 
 
 class BindingWorker(BaseWorker):
@@ -403,29 +397,38 @@ class BindingWorker(BaseWorker):
         self._manager = manager
         self._period = period
 
+        self.loop = asyncio.new_event_loop()
+
     def run(self):
         
         bindings = self._manager.get_bindings()
+
         if not bindings:
             return
-
+        
         host_ip, host_port = self._manager.get_host()
+
+        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
         
         loop = asyncio.new_event_loop()
-        loop.run_until_complete(self._run(bindings, host_ip, host_port))
+        asyncio.set_event_loop(loop)
+
+        future = asyncio.ensure_future(self._run(loop, bindings, host_ip, host_port))
+        loop.run_until_complete(future)
         loop.close()
 
-    async def _run(self, bindings, host_ip, host_port):
+    async def _run(self, loop, bindings, host_ip, host_port):
+
+        tasks = list()
 
         while True:
 
-            now = time.time()
+            async with ClientSession(loop=loop) as session:
+        
+                for binding in bindings:
+            
+                    task = asyncio.ensure_future(sync(session, binding, host_ip, host_port))
+                    tasks.append(task)
 
-            await asyncio.wait([sync(i, host_ip, host_port) for i in bindings])
-
-            elapsed = time.time() - now
-
-            if elapsed < self._period:
-                
-                time.sleep(self._period - elapsed)
+                responses = await asyncio.gather(*tasks)
                 
