@@ -12,7 +12,9 @@ import json
 from threading import Thread
 from random import randint
 from wsgiref.simple_server import make_server
+
 from aiohttp import ClientSession
+from apscheduler.schedulers.background import BackgroundScheduler
 
 from .controls import ControlManager
 from .engine import CVTEngine
@@ -133,14 +135,40 @@ class AlarmWorker(BaseWorker):
                 self._manager.execute(_tag)
 
 
-class StateMachineWorker(BaseWorker):
+class StateMachineWorker():
 
     def __init__(self, manager):
 
-        super(StateMachineWorker, self).__init__()
+        # super(StateMachineWorker, self).__init__()
         
         self._manager = manager
         self._period = manager.get_period()
+        self._scheduler = BackgroundScheduler()
+
+        self.jobs = list()
+
+    def loop_closure(self, machine):
+
+        def loop():
+
+            state_name = machine.current_state.identifier.lower()
+            method_name = "while_" + state_name
+
+            if method_name in dir(machine):
+                method = getattr(machine, method_name)
+            
+                method()
+        
+        return loop
+
+    def start(self):
+
+        for machine, interval in self._manager.get_machines():
+            
+            loop = self.loop_closure(machine)
+            job = self._scheduler.add_job(loop, 'interval', seconds=interval)
+
+            self.jobs.append(job)
 
     def run(self):
 

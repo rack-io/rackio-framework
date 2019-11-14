@@ -118,22 +118,13 @@ class RackioStateMachine(StateMachine):
 
 class StateMachineManager:
 
-    def __init__(self, period=1):
+    def __init__(self):
 
         self._machines = list()
-        self._period = period
 
-    def set_period(self, period):
-
-        self._period
-
-    def get_period(self):
-
-        return self._period
-
-    def append_machine(self, machine):
+    def append_machine(self, machine, interval=1):
         
-        self._machines.append(machine)
+        self._machines.append((machine, interval,))
 
     def get_machines(self):
 
@@ -143,7 +134,7 @@ class StateMachineManager:
 
     def get_machine(self, name):
 
-        for _machine in self._machines:
+        for _machine, interval in self._machines:
 
             if name == _machine.name:
 
@@ -151,7 +142,7 @@ class StateMachineManager:
 
     def start_machine(self, name):
 
-        for _machine in self._machines:
+        for _machine, interval in self._machines:
 
             if name == _machine.name:
 

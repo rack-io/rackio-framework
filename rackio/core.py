@@ -160,15 +160,6 @@ class Rackio(Singleton):
         for _tag in  tags:
             self._db_manager.add_tag(_tag)
 
-    def set_state_machine(self, period=1.0):
-        """Sets the state machine engine period time.
-        
-        # Parameters
-        period (float): Period time in seconds.
-        """
-
-        self._machine_manager.set_period(period)
-
     def append_rule(self, rule):
         """Append a rule to the control manager.
         
@@ -214,14 +205,14 @@ class Rackio(Singleton):
 
         self._alarm_manager.append_alarm(alarm)
 
-    def append_machine(self, machine):
+    def append_machine(self, machine, interval=1):
         """Append a state machine to the state machine manager.
         
         # Parameters
         machine (RackioStateMachine): a state machine object.
         """
 
-        self._machine_manager.append_machine(machine)
+        self._machine_manager.append_machine(machine, interval=interval)
 
     def get_machine(self, name):
         """Returns a Rackio State Machine defined by its name.
