@@ -366,9 +366,7 @@ class Rackio(Singleton):
             _alarm_worker.start()
             _api_worker.start()
 
-            threads = [_db_worker, _control_worker, _function_worker, _machine_worker, _alarm_worker, _api_worker]
-            
-            # with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            threads = [_db_worker, _control_worker, _function_worker, _alarm_worker, _api_worker]
 
             executor = concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers)
                 

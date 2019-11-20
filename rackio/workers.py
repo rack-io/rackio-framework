@@ -138,11 +138,8 @@ class AlarmWorker(BaseWorker):
 class StateMachineWorker():
 
     def __init__(self, manager):
-
-        # super(StateMachineWorker, self).__init__()
         
         self._manager = manager
-        self._period = manager.get_period()
         self._scheduler = BackgroundScheduler()
 
         self.jobs = list()
@@ -151,14 +148,19 @@ class StateMachineWorker():
 
         def loop():
 
-            state_name = machine.current_state.identifier.lower()
-            method_name = "while_" + state_name
+            try:
+                state_name = machine.current_state.identifier.lower()
+                method_name = "while_" + state_name
 
-            if method_name in dir(machine):
-                method = getattr(machine, method_name)
-            
-                method()
-        
+                if method_name in dir(machine):
+                    method = getattr(machine, method_name)
+                
+                    method()
+
+            except Exception as e:
+                error = str(e)
+                logging.error("Machine - {}:{}".format(machine.name, error))
+                
         return loop
 
     def start(self):
@@ -169,6 +171,8 @@ class StateMachineWorker():
             job = self._scheduler.add_job(loop, 'interval', seconds=interval)
 
             self.jobs.append(job)
+        
+        self._scheduler.start()
 
     def run(self):
 
