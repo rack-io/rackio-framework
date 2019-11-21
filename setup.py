@@ -21,6 +21,7 @@ setuptools.setup(
         'pyBigParser',
         'peewee',
         'python-statemachine',
+		'APScheduler',
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

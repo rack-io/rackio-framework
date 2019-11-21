@@ -210,6 +210,7 @@ class Rackio(Singleton):
         
         # Parameters
         machine (RackioStateMachine): a state machine object.
+        interval (int): Interval execution time in seconds.
         """
 
         self._machine_manager.append_machine(machine, interval=interval)
