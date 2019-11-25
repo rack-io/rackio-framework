@@ -81,8 +81,8 @@ class Rackio(Singleton):
         self._api.add_route('/api/tags/{tag_id}', _tag)
         self._api.add_route('/api/tags', _tags)
 
-        self._api.add_route('/api/tags/history/{tag_id}', _tag_history)
-        self._api.add_route('/api/tags/trends/{tag_id}', _tag_trend)
+        self._api.add_route('/api/history/{tag_id}', _tag_history)
+        self._api.add_route('/api/trends/{tag_id}', _tag_trend)
         self._api.add_route('/api/trends', _tag_trends)
 
         self._api.add_route('/api/controls/{control_name}', _control)
