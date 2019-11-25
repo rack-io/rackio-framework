@@ -145,7 +145,7 @@ class TrendCollectionResource(RackioResource):
     def on_post(self, req, resp):
 
         tags = req.media.get('tags')
-
+        
         result = list()
 
         tstart = req.media.get('tstart')
