@@ -18,7 +18,7 @@ from .controls import ControlManager, FunctionManager
 from .alarms import AlarmManager
 from .state import StateMachineManager
 from .workers import LoggerWorker, ControlWorker, FunctionWorker, StateMachineWorker, AlarmWorker, APIWorker, _ContinousWorker
-from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource
+from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, TrendCollectionResource
 from .api import ControlResource, ControlCollectionResource, RuleResource, RuleCollectionResource
 from .api import AlarmResource, AlarmCollectionResource, EventCollectionResource
 
@@ -69,6 +69,7 @@ class Rackio(Singleton):
         _tags = TagCollectionResource()
         _tag_history = TagHistoryResource()
         _tag_trend = TrendResource()
+        _tag_trends = TrendCollectionResource()
         _control = ControlResource()
         _controls = ControlCollectionResource()
         _rule = RuleResource()
@@ -82,6 +83,7 @@ class Rackio(Singleton):
 
         self._api.add_route('/api/tags/history/{tag_id}', _tag_history)
         self._api.add_route('/api/tags/trends/{tag_id}', _tag_trend)
+        self._api.add_route('/api/trends', _tag_trends)
 
         self._api.add_route('/api/controls/{control_name}', _control)
         self._api.add_route('/api/controls', _controls)

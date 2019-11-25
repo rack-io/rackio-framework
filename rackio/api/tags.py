@@ -138,4 +138,29 @@ class TrendResource(RackioResource):
         }
 
         resp.body = json.dumps(doc, ensure_ascii=False)
+
+
+class TrendCollectionResource(RackioResource):
+
+    def on_post(self, req, resp):
+
+        tags = req.media.get('tags')
+
+        result = list()
+
+        tstart = req.media.get('tstart')
+        tstop = req.media.get('tstop')
+    
+        for tag in tags:
+
+            waveform = self.query_logger.query(tag, tstart, tstop)
+
+            doc = {
+                'tag': tag,
+                'waveform': waveform
+            }
+
+            result.append(doc)
+
+        resp.body = json.dumps(result, ensure_ascii=False)
         
