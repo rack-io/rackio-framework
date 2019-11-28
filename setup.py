@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Rackio",
-    version="0.5.1",
+    version="0.5.2",
     author="Nelson Carrasquel",
     author_email="rackio.framework@outlook.com",
     description="A modern Python Framework for microboard automation and control applications development",
@@ -22,6 +22,8 @@ setuptools.setup(
         'peewee',
         'python-statemachine',
 		'APScheduler',
+		'requests',
+		'aiohttp'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
