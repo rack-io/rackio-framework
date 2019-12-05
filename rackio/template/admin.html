@@ -26,6 +26,8 @@
 
     <script src="/static/js/summary.module.js"></script>
     <script src="/static/js/summary.component.js"></script>
+
+    <script src="/static/js/factories.js"></script>
     
 </head>
 <body>
@@ -118,7 +120,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var elems = document.querySelectorAll('.sidenav');
-            var instances = M.Sidenav.init(elems, options);
+            var instances = M.Sidenav.init(elems);
             });
         
             // Initialize collapsible (uncomment the lines below if you use the dropdown variation)
@@ -128,7 +130,7 @@
             // Or with jQuery
         
             $(document).ready(function(){
-            $('.sidenav').sidenav();
+                $('.sidenav').sidenav();
             });
     </script>
   </body>

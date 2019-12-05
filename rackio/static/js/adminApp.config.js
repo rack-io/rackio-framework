@@ -10,3 +10,7 @@ var schedulizer = angular.module('adminApp').
       otherwise('/');
   }
 ]);
+
+function getService(serviceName){
+  return angular.element(document.body).injector().get(serviceName);
+}
