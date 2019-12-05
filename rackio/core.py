@@ -22,6 +22,7 @@ from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendRe
 from .api import ControlResource, ControlCollectionResource, RuleResource, RuleCollectionResource
 from .api import AlarmResource, AlarmCollectionResource, EventCollectionResource
 from .api import StaticResource, AdminResource
+from .api import AppSummaryResource
 
 from .dbmodels import SQLITE, MYSQL, POSTGRESQL
 
@@ -78,6 +79,7 @@ class Rackio(Singleton):
         _alarm = AlarmResource()
         _alarms = AlarmCollectionResource()
         _events = EventCollectionResource()
+        _summary = AppSummaryResource()
 
         self._api.add_route('/api/tags/{tag_id}', _tag)
         self._api.add_route('/api/tags', _tags)
@@ -96,6 +98,8 @@ class Rackio(Singleton):
         self._api.add_route('/api/alarms', _alarms)
 
         self._api.add_route('/api/events', _events)
+
+        self._api.add_route('/api/summary', _summary)
 
         # Static Resources
         self._api.add_route('/static/{folder}/{filename}', StaticResource())
@@ -232,6 +236,21 @@ class Rackio(Singleton):
         """
 
         return self._machine_manager.get_machine(name)
+
+    def summary(self):
+
+        """Returns a Rackio Application Summary (dict).
+        """
+
+        result = dict()
+
+        result["control_manager"] = self._control_manager.summary()
+        result["data_logger"] = self._db_manager.summary()
+        result["alarm_manager"] = self._alarm_manager.summary()
+        result["machine_manager"] = self._machine_manager.summary()
+        result["function_manager"] = self._function_manager.summary()
+
+        return result
 
     def add_route(self, route, resource):
         """Append a resource and route the api.

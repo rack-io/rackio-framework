@@ -260,6 +260,18 @@ class AlarmManager:
 
         return tuple(result)
 
+    def summary(self):
+
+        result = dict()
+
+        alarms = [_alarm.get_name() for _alarm in self._alarms]
+        
+        result["length"] = len(alarms)
+        result["alarms"] = alarms
+        result["tags"] = self.alarm_tags()
+
+        return result
+
     def attach_all(self):
 
         _cvt = CVTEngine()

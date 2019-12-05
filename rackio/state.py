@@ -196,3 +196,13 @@ class StateMachineManager:
                 _machine.start()
                 break
 
+    def summary(self):
+
+        result = dict()
+
+        machines = [_machine.name for _machine, interval in self.get_machines()]
+
+        result["length"] = len(machines)
+        result["state_machines"] = machines
+
+        return result

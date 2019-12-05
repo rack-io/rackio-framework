@@ -557,6 +557,26 @@ class ControlManager:
 
         return result
 
+    def summary(self):
+
+        result = dict()
+
+        controls = self.get_controls()
+
+        result["controls"] = {
+            "length": len(controls),
+            "items": [control.name for control in controls]
+        }
+
+        rules = self.get_rules()
+
+        result["rules"] = {
+            "length": len(rules),
+            "items": [rule.name for rule in rules]
+        }
+
+        return result
+
     def attach_all(self):
 
         _cvt = CVTEngine()
@@ -618,6 +638,20 @@ class FunctionManager:
             self._tags[tag].append(function)
         except:
             self._tags[tag] = [function]
+
+    def summary(self):
+
+        result = dict()
+
+        length = 0
+
+        for functions in self._tags.values():
+
+            length += len(functions)
+
+        result["length"] = length
+
+        return result
 
     def attach_all(self):
 
