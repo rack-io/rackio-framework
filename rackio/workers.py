@@ -154,13 +154,20 @@ class StateMachineWorker():
 
                 if method_name in dir(machine):
                     method = getattr(machine, method_name)
-                
+                    
+                    # update tag read bindings
+                    machine._update_tags()
+
+                    # loop machine
                     method()
+
+                    #update tag write bindings
+                    machine._update_tags("write")
 
             except Exception as e:
                 error = str(e)
                 logging.error("Machine - {}:{}".format(machine.name, error))
-                
+
         return loop
 
     def start(self):

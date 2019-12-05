@@ -17,12 +17,37 @@ INTEGER = "int"
 BOOL = "bool"
 STRING = "str"
 
+READ = "read"
+WRITE = "write"
+
+class TagBinding:
+
+    tag_engine = CVTEngine()
+
+    def __init__(self, tag, direction="read"):
+        
+        self.tag = tag
+        self.direction = direction
+        self.value = None
+
+    def update(self):
+
+        if self.direction == WRITE:
+
+            self.tag_engine.write_tag(self.tag, self.value)
+
+        if self.direction == READ:
+
+            self.value = self.tag_engine.read_tag(self.tag)
+    
 
 class RackioStateMachine(StateMachine):
 
     tag_engine = CVTEngine()
     logger_engine = LoggerEngine()
     query_logger = QueryLogger()
+
+    _tag_bindings = list()
 
     def __init__(self, name, **kwargs):
         
@@ -34,6 +59,13 @@ class RackioStateMachine(StateMachine):
         for key, value in attrs.items():
 
             try:
+
+                if isinstance(value, TagBinding):
+                    self._tag_bindings.append(value)
+                    _value = self.tag_engine.read_tag(value.tag)
+
+                    setattr(self, key, 0.0)
+
                 if key in kwargs:
                     default = kwargs[key]
                 else:
@@ -69,7 +101,7 @@ class RackioStateMachine(StateMachine):
 
         for key, value in props.items():
 
-            if key in ["states", "transitions", "states_map", "get_attributes"]:
+            if key in ["states", "transitions", "states_map", "get_attributes", "_tag_bindings"]:
                 continue
             if hasattr(value, '__call__'):
                 continue
@@ -83,6 +115,21 @@ class RackioStateMachine(StateMachine):
                     result[key] = value
 
         return result
+
+    def _update_tags(self, direction=READ):
+
+        for _binding in self._tag_bindings:
+
+            if direction == READ and _binding.direction == READ:
+                
+                tag = _binding.tag
+                value = self.tag_engine.read_tag(tag)
+                value = setattr(self, tag, value)
+            
+            elif direction == WRITE and _binding.direction == WRITE:
+                tag = _binding.tag
+                value = getattr(self, tag)
+                self.tag_engine.write_tag(tag, value)
     
     def serialize(self):
 
