@@ -5,7 +5,7 @@ var schedulizer = angular.module('adminApp').
     function config($routeProvider) {
       $routeProvider.
       when('/', {
-        template: '<home></home>'
+        template: '<summary></summary>'
       }).
       otherwise('/');
   }

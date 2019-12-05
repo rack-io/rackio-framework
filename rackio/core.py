@@ -21,7 +21,7 @@ from .workers import LoggerWorker, ControlWorker, FunctionWorker, StateMachineWo
 from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, TrendCollectionResource
 from .api import ControlResource, ControlCollectionResource, RuleResource, RuleCollectionResource
 from .api import AlarmResource, AlarmCollectionResource, EventCollectionResource
-from .api import StaticResource, AdminResource
+from .api import StaticResource, AdminResource, TemplateResource
 from .api import AppSummaryResource
 
 from .dbmodels import SQLITE, MYSQL, POSTGRESQL
@@ -106,6 +106,9 @@ class Rackio(Singleton):
 
         # Admin route
         self._api.add_route('/admin', AdminResource())
+
+        # Template route
+        self._api.add_route('/template/{template}', TemplateResource())
 
     def set_log(self, level=logging.INFO, file=""):
         """Sets the log file and level.
