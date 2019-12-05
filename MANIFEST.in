@@ -1,0 +1,2 @@
+recursive-include rackio/static *
+recursive-include rackio/template *

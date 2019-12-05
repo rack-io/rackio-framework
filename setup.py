@@ -15,6 +15,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     license="MIT",
     url="https://github.com/rack-io/rackio-framework",
+    include_package_data=True,
     packages=setuptools.find_packages(),
     install_requires=[
         'falcon',
