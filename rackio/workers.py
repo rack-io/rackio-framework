@@ -181,38 +181,6 @@ class StateMachineWorker():
         
         self._scheduler.start()
 
-    def run(self):
-
-        if not self._manager.get_machines():
-            return
-
-        def loop(machine):
-
-            state_name = machine.current_state.identifier.lower()
-            method_name = "while_" + state_name
-
-            if method_name in dir(machine):
-                method = getattr(machine, method_name)
-            
-                method()
-
-        while True:
-
-            now = time.time()
-
-            for machine in self._manager.get_machines():
-                
-                try:
-                    loop(machine)
-                except Exception as e:
-                    error = str(e)
-                    logging.error("Machine - {}:{}".format(machine.name, error))
-
-            elapsed = time.time() - now
-
-            if elapsed < self._period:
-                time.sleep(self._period - elapsed)
-
 
 STOP = "Stop"
 PAUSE = "Pause"
