@@ -224,11 +224,22 @@ class CVTEngine(Singleton):
         # Parameters
         name (str):
             Tag name.
-        value (float, int, bool): 
+        _type (float, int, bool): 
             Tag value ("int", "float", "bool")
         """
 
         self._cvt.set_tag(name, _type)
+
+    def set_tags(self, tags):
+        """Sets new values for a defined list of tags, in thread-safe mechanism.
+        
+        # Parameters
+        tags (list):
+            List of tag name and type.
+        """
+
+        for name, _type in tags:
+            self._cvt.set_tag(name, _type)
 
     def get_tags(self):
 
