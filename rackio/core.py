@@ -126,7 +126,7 @@ class Rackio(Singleton):
         self._api.add_route('app/controllers/{controller}', DashboardControllerResource())
         self._api.add_route('app/components/directives/{directive}', DashboardDirectiveResource())
         self._api.add_route('app/components/services/{service}', DashboardServiceResource())
-        self._api.add_route('app/stylesheets/services/{stylesheet}', DashboardStylesheetResource())
+        self._api.add_route('app/stylesheets/{stylesheet}', DashboardStylesheetResource())
 
 
     def set_log(self, level=logging.INFO, file=""):
