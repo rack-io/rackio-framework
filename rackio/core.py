@@ -21,8 +21,11 @@ from .workers import LoggerWorker, ControlWorker, FunctionWorker, StateMachineWo
 from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, TrendCollectionResource
 from .api import ControlResource, ControlCollectionResource, RuleResource, RuleCollectionResource
 from .api import AlarmResource, AlarmCollectionResource, EventCollectionResource
-from .api import StaticResource, AdminResource, TemplateResource
+from .api import StaticResource, AdminResource, TemplateResource, DemoResource
 from .api import AppSummaryResource
+from .api import DashboardResource, DashboardViewResource, DashboardStylesheetResource
+from .api import DashboardControllerResource, DashboardDirectiveResource
+from .api import DashboardPartialResource, DashboardServiceResource
 
 from .dbmodels import SQLITE, MYSQL, POSTGRESQL
 
@@ -65,6 +68,10 @@ class Rackio(Singleton):
         self.db = None
         self._db_manager = LoggerEngine()
 
+        self._init_api()
+
+    def _init_api(self):
+
         self._api = falcon.API()
 
         _tag = TagResource()
@@ -104,11 +111,23 @@ class Rackio(Singleton):
         # Static Resources
         self._api.add_route('/static/{folder}/{filename}', StaticResource())
 
+        # Template route
+        self._api.add_route('/template/{template}', TemplateResource())
+        
         # Admin route
         self._api.add_route('/admin', AdminResource())
 
-        # Template route
-        self._api.add_route('/template/{template}', TemplateResource())
+        # Demo route
+        self._api.add_route('/demo', DemoResource())
+
+        # dashboard routes
+        self._api.add_route('/dashboard', DashboardResource())
+        self._api.add_route('app/views/{view}', DashboardViewResource())
+        self._api.add_route('app/controllers/{controller}', DashboardControllerResource())
+        self._api.add_route('app/components/directives/{directive}', DashboardDirectiveResource())
+        self._api.add_route('app/components/services/{service}', DashboardServiceResource())
+        self._api.add_route('app/stylesheets/services/{stylesheet}', DashboardStylesheetResource())
+
 
     def set_log(self, level=logging.INFO, file=""):
         """Sets the log file and level.

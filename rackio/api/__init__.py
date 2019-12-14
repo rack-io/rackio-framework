@@ -12,3 +12,5 @@ from .static import *
 from .admin import *
 from .summary import *
 from .template import *
+from .demo import *
+from .dashboard import *
