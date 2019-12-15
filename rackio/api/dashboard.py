@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # rackio/api/dashboard.py
 
 import os
@@ -49,7 +50,7 @@ class DashboardPartialResource(object):
             "dashboard",
             "views",
             "partials",
-            "{}.html".format(partial)
+            "{}".format(partial)
         )
         
         with open(path, 'r') as f:

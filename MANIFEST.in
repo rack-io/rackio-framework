@@ -1,2 +1,3 @@
 recursive-include rackio/static *
 recursive-include rackio/template *
+recursive-include rackio/dashboard *
