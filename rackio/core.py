@@ -21,11 +21,11 @@ from .workers import LoggerWorker, ControlWorker, FunctionWorker, StateMachineWo
 from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, TrendCollectionResource
 from .api import ControlResource, ControlCollectionResource, RuleResource, RuleCollectionResource
 from .api import AlarmResource, AlarmCollectionResource, EventCollectionResource
-from .api import StaticResource, AdminResource, TemplateResource, DemoResource
+from .api import StaticResource, TemplateResource
 from .api import AppSummaryResource
-from .api import DashboardResource, DashboardViewResource, DashboardStylesheetResource
-from .api import DashboardControllerResource, DashboardDirectiveResource
-from .api import DashboardPartialResource, DashboardServiceResource
+from .api import AdminResource, AdminViewResource, AdminStylesheetResource
+from .api import AdminControllerResource, AdminDirectiveResource
+from .api import AdminPartialResource, AdminServiceResource
 
 from .dbmodels import SQLITE, MYSQL, POSTGRESQL
 
@@ -114,20 +114,14 @@ class Rackio(Singleton):
         # Template route
         self._api.add_route('/template/{template}', TemplateResource())
         
-        # Admin route
+        # Admin routes
         self._api.add_route('/admin', AdminResource())
-
-        # Demo route
-        self._api.add_route('/demo', DemoResource())
-
-        # dashboard routes
-        self._api.add_route('/dashboard', DashboardResource())
-        self._api.add_route('/app/views/{view}', DashboardViewResource())
-        self._api.add_route('/app/views/partials/{partial}', DashboardPartialResource())
-        self._api.add_route('/app/controllers/{controller}', DashboardControllerResource())
-        self._api.add_route('/app/components/directives/{directive}', DashboardDirectiveResource())
-        self._api.add_route('/app/components/services/{service}', DashboardServiceResource())
-        self._api.add_route('/app/stylesheets/{stylesheet}', DashboardStylesheetResource())
+        self._api.add_route('/app/views/{view}', AdminViewResource())
+        self._api.add_route('/app/views/partials/{partial}', AdminPartialResource())
+        self._api.add_route('/app/controllers/{controller}', AdminControllerResource())
+        self._api.add_route('/app/components/directives/{directive}', AdminDirectiveResource())
+        self._api.add_route('/app/components/services/{service}', AdminServiceResource())
+        self._api.add_route('/app/stylesheets/{stylesheet}', AdminStylesheetResource())
 
 
     def set_log(self, level=logging.INFO, file=""):

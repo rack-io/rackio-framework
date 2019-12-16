@@ -1,108 +1,71 @@
-<!DOCTYPE html>
-<html lang="en" ng-app="adminApp">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Rackio Framework - Web Admin</title>
+<!doctype html>
+<html class="no-js" ng-app="angularMaterialAdmin">
+    <head>
+        <meta charset="utf-8">
+        <title>Angular Material Dashboard</title>
+        <meta name="description" content="Angular admin dashboard with material design">
+        <meta name="author" content="flatlogic.com">
+        <meta name="viewport" content="width=device-width">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="/static/css/angular-material.css" rel="stylesheet">
+        <link href="/app/stylesheets/custom.css" rel="stylesheet">
+        <link href="/app/stylesheets/table.css" rel="stylesheet">
+        <link href="/static/css/md-data-table.css" rel="stylesheet">
+        <link href="/static/css/md-data-table-style.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <!-- CSS  -->
-    <link href="/static/css/angular-material.css" rel="stylesheet">
-    <link href="/static/css/chartist.css" rel="stylesheet">
-    <link href="/app/stylesheets/custom.css" rel="stylesheet">
-    <link href="/app/stylesheets/table.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
-</head>
-<body>
-    <!-- Javascript -->
-    <!--  Scripts-->
-    <script src="/static/js/angular.js"></script>
-    <script src="/static/js/angular-route.js"></script>
-    <script src="/static/js/angular-animate.js"></script>
-    <script src="/static/js/angular-aria.js"></script>
-    <script src="/static/js/angular-messages.js"></script>
+         <!-- Javascript -->
+        <!--  Scripts-->
+        <script src="/static/js/d3.min.js"></script>        
+        <script src="/static/js/angular.js"></script>
+        <script src="/static/js/angular-nvd3.js"></script>
+        <script src="/static/js/angular-route.js"></script>
+        <script src="/static/js/angular-cookies.js"></script>
+        <script src="/static/js/angular-sanitize.js"></script>
+        <script src="/static/js/angular-ui-router.js"></script>
+        <script src="/static/js/md-data-table.js"></script>
+        <script src="/static/js/md-data-table-templates.js"></script>
+        <script src="/static/js/angular-animate.js"></script>
+        <script src="/static/js/angular-aria.js"></script>
+        <script src="/static/js/angular-messages.js"></script>
+        <script src="/static/js/svg-assets-cache.js"></script>
 
-    <script src="/static/js/angular-material.js"></script>
-    
-    <script src="/static/js/chartist.js"></script>
-    <script src="/static/js/moment.js"></script>
+        <script src="/static/js/angular-material.js"></script>
 
-    <script src="/static/js/adminApp.module.js"></script>
-    <script src="/static/js/adminApp.config.js"></script>
+    </head>
+    <body>
+       
+        <div ui-view layout="row" layout-fill></div>
 
-    <script src="/static/js/summary.module.js"></script>
-    <script src="/static/js/summary.component.js"></script>
+        <script src="/static/js/app.js"></script>
+        <script src="/static/js/index.js"></script>
 
-    <script src="/static/js/factories.js"></script>
+        <!-- Directives -->
+        <script src="/app/components/directives/messagesSection.js"></script>
+        <script src="/app/components/directives/panelWidget.js"></script>
 
-    <nav role="navigation">
-        <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Rackio Framework - Admin</a>
-            <ul class="right hide-on-med-and-down">
-                <li><a href="#">Navbar Link</a></li>
-            </ul>
+        <!-- Services -->
+        <script src="/app/components/services/CountriesService.js"></script>
+        <script src="/app/components/services/MessagesService.js"></script>
+        <script src="/app/components/services/NavService.js"></script>
+        <script src="/app/components/services/PerformanceService.js"></script>
+        <script src="/app/components/services/TableService.js"></script>
+        <script src="/app/components/services/TodoListService.js"></script>
 
-            <ul id="nav-mobile" class="sidenav">
-                <li><a href="#">Navbar Link</a></li>
-            </ul>
-            <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-        </div>
-    </nav>
+        <!-- Controllers -->
+        <script src="/app/controllers/MainController.js"></script>
+        <script src="/app/controllers/ControlPanelController.js"></script>
+        <script src="/app/controllers/DataTableController.js"></script>
+        <script src="/app/controllers/MemoryController.js"></script>
+        <script src="/app/controllers/MessagesController.js"></script>
+        <script src="/app/controllers/PerformanceController.js"></script>
+        <script src="/app/controllers/ProfileController.js"></script>
+        <script src="/app/controllers/SearchController.js"></script>
+        <script src="/app/controllers/TableController.js"></script>
+        <script src="/app/controllers/TodoController.js"></script>
+        <script src="/app/controllers/UsageController.js"></script>
+        <script src="/app/controllers/VisitorsController.js"></script>
+        <script src="/app/controllers/WarningsController.js"></script>
 
-    <ul id="slide-out" class="sidenav">
-        <li><div class="user-view">
-            <div class="background">
-            <img src="images/office.jpg">
-            </div>
-            <a href="#user"><img class="circle" src="images/yuna.jpg"></a>
-            <a href="#name"><span class="white-text name">John Doe</span></a>
-            <a href="#email"><span class="white-text email">jdandturk@gmail.com</span></a>
-        </div></li>
-        <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
-        <li><a href="#!">Second Link</a></li>
-        <li><div class="divider"></div></li>
-        <li><a class="subheader">Subheader</a></li>
-        <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
-    </ul>
-    <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-
-    <div class="container">
-        <div ng-view></div>
-    </div>
-
-    <footer class="page-footer">
-        <div class="container">
-            <div class="row">
-                <div class="col l6 s12">
-                    <h5 class="white-text">Company Bio</h5>
-                    <p class="text-lighten-4">We are a team of college students working on this project like it's our full time job. Any amount would help support and continue development on this project and is greatly appreciated.</p>
-
-
-                </div>
-                <div class="col l3 s12">
-                    <h5 class="white-text">Settings</h5>
-                    <ul>
-                        <li><a class="white-text" href="#!">Link 1</a></li>
-                        <li><a class="white-text" href="#!">Link 2</a></li>
-                        <li><a class="white-text" href="#!">Link 3</a></li>
-                        <li><a class="white-text" href="#!">Link 4</a></li>
-                    </ul>
-                </div>
-                <div class="col l3 s12">
-                    <h5 class="white-text">Connect</h5>
-                    <ul>
-                        <li><a class="white-text" href="#!">Link 1</a></li>
-                        <li><a class="white-text" href="#!">Link 2</a></li>
-                        <li><a class="white-text" href="#!">Link 3</a></li>
-                        <li><a class="white-text" href="#!">Link 4</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="footer-copyright">
-            <div class="container">
-                Made by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>
-            </div>
-        </div>
-    </footer>
-  </body>
+    </body>
 </html>
