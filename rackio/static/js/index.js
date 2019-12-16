@@ -8,21 +8,21 @@ angular.module('angularMaterialAdmin', ['ngAnimate', 'ngCookies',
     $stateProvider
       .state('home', {
         url: '',
-        templateUrl: 'app/views/main',
+        templateUrl: 'admin/views/main',
         controller: 'MainController',
         controllerAs: 'vm',
         abstract: true
       })
       .state('home.dashboard', {
         url: '/dashboard',
-        templateUrl: 'app/views/dashboard',
+        templateUrl: 'admin/views/dashboard',
         data: {
           title: 'Dashboard'
         }
       })
       .state('home.profile', {
         url: '/profile',
-        templateUrl: 'app/views/profile',
+        templateUrl: 'admin/views/profile',
         controller: 'ProfileController',
         controllerAs: 'vm',
         data: {
@@ -33,7 +33,7 @@ angular.module('angularMaterialAdmin', ['ngAnimate', 'ngCookies',
         url: '/table',
         controller: 'TableController',
         controllerAs: 'vm',
-        templateUrl: 'app/views/table',
+        templateUrl: 'admin/views/table',
         data: {
           title: 'Table'
         }
@@ -42,7 +42,7 @@ angular.module('angularMaterialAdmin', ['ngAnimate', 'ngCookies',
         url: '/data-table',
         controller: 'DataTableController',
         controllerAs: 'vm',
-        templateUrl: 'app/views/data-table',
+        templateUrl: 'admin/views/data-table',
         data: {
           title: 'Table'
         }

@@ -116,12 +116,12 @@ class Rackio(Singleton):
         
         # Admin routes
         self._api.add_route('/admin', AdminResource())
-        self._api.add_route('/app/views/{view}', AdminViewResource())
-        self._api.add_route('/app/views/partials/{partial}', AdminPartialResource())
-        self._api.add_route('/app/controllers/{controller}', AdminControllerResource())
-        self._api.add_route('/app/components/directives/{directive}', AdminDirectiveResource())
-        self._api.add_route('/app/components/services/{service}', AdminServiceResource())
-        self._api.add_route('/app/stylesheets/{stylesheet}', AdminStylesheetResource())
+        self._api.add_route('/admin/views/{view}', AdminViewResource())
+        self._api.add_route('/admin/views/partials/{partial}', AdminPartialResource())
+        self._api.add_route('/admin/controllers/{controller}', AdminControllerResource())
+        self._api.add_route('/admin/components/directives/{directive}', AdminDirectiveResource())
+        self._api.add_route('/admin/components/services/{service}', AdminServiceResource())
+        self._api.add_route('/admin/stylesheets/{stylesheet}', AdminStylesheetResource())
 
 
     def set_log(self, level=logging.INFO, file=""):
