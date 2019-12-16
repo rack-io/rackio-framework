@@ -2,8 +2,8 @@
 <html class="no-js" ng-app="angularMaterialAdmin">
     <head>
         <meta charset="utf-8">
-        <title>Angular Material Dashboard</title>
-        <meta name="description" content="Angular admin dashboard with material design">
+        <title>Rackio Framework - Admin</title>
+        <meta name="description" content="Admin system for Rackio Applications">
         <meta name="author" content="flatlogic.com">
         <meta name="viewport" content="width=device-width">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -14,58 +14,33 @@
         <link href="/static/css/md-data-table-style.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-         <!-- Javascript -->
-        <!--  Scripts-->
-        <script src="/static/js/d3.min.js"></script>        
-        <script src="/static/js/angular.js"></script>
-        <script src="/static/js/angular-nvd3.js"></script>
-        <script src="/static/js/angular-route.js"></script>
-        <script src="/static/js/angular-cookies.js"></script>
-        <script src="/static/js/angular-sanitize.js"></script>
-        <script src="/static/js/angular-ui-router.js"></script>
-        <script src="/static/js/md-data-table.js"></script>
-        <script src="/static/js/md-data-table-templates.js"></script>
-        <script src="/static/js/angular-animate.js"></script>
-        <script src="/static/js/angular-aria.js"></script>
-        <script src="/static/js/angular-messages.js"></script>
-        <script src="/static/js/svg-assets-cache.js"></script>
-
-        <script src="/static/js/angular-material.js"></script>
+        {% for module in rackio_modules -%}
+        <script src="/{{ module.folder }}/{{ module.subfolder }}/{{ module.module }}"></script>
+        {% endfor %}
 
     </head>
     <body>
        
         <div ui-view layout="row" layout-fill></div>
 
-        <script src="/static/js/app.js"></script>
-        <script src="/static/js/index.js"></script>
+        {% for module in admin_modules -%}
+        <script src="/{{ module.folder }}/{{ module.subfolder }}/{{ module.module }}"></script>
+        {% endfor %}
 
         <!-- Directives -->
-        <script src="/admin/components/directives/messagesSection.js"></script>
-        <script src="/admin/components/directives/panelWidget.js"></script>
+        {% for directive in directives -%}
+        <script src="/admin/components/directives/{{ directive }}"></script>
+        {% endfor %}
 
         <!-- Services -->
-        <script src="/admin/components/services/CountriesService.js"></script>
-        <script src="/admin/components/services/MessagesService.js"></script>
-        <script src="/admin/components/services/NavService.js"></script>
-        <script src="/admin/components/services/PerformanceService.js"></script>
-        <script src="/admin/components/services/TableService.js"></script>
-        <script src="/admin/components/services/TodoListService.js"></script>
+        {% for service in services -%}
+        <script src="/admin/components/services/{{ service }}"></script>
+        {% endfor %}
 
         <!-- Controllers -->
-        <script src="/admin/controllers/MainController.js"></script>
-        <script src="/admin/controllers/ControlPanelController.js"></script>
-        <script src="/admin/controllers/DataTableController.js"></script>
-        <script src="/admin/controllers/MemoryController.js"></script>
-        <script src="/admin/controllers/MessagesController.js"></script>
-        <script src="/admin/controllers/PerformanceController.js"></script>
-        <script src="/admin/controllers/ProfileController.js"></script>
-        <script src="/admin/controllers/SearchController.js"></script>
-        <script src="/admin/controllers/TableController.js"></script>
-        <script src="/admin/controllers/TodoController.js"></script>
-        <script src="/admin/controllers/UsageController.js"></script>
-        <script src="/admin/controllers/VisitorsController.js"></script>
-        <script src="/admin/controllers/WarningsController.js"></script>
+        {% for controller in controllers -%}
+        <script src="/admin/controllers/{{ controller }}"></script>
+        {% endfor %}
 
     </body>
 </html>

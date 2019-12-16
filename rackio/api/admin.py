@@ -3,8 +3,12 @@
 
 import os
 
+from jinja2 import Template
+
 from rackio import status_code
 
+from .config import rackio_modules, admin_modules
+from .config import admin_directives, admin_services, admin_controllers
 
 class AdminResource(object):
 
@@ -16,7 +20,15 @@ class AdminResource(object):
         path = os.path.join(os.path.dirname(status_code.__file__), "template", "admin.html")
         
         with open(path, 'r') as f:
-            resp.body = f.read()
+
+            tm = Template(f.read())
+            resp.body = tm.render(
+                rackio_modules=rackio_modules, 
+                admin_modules=admin_modules,
+                directives=admin_directives,
+                services=admin_services,
+                controllers=admin_controllers
+            )
 
 
 class AdminViewResource(object):

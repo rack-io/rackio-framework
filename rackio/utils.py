@@ -79,4 +79,3 @@ def process_waveform(waveform, tstart, tstop):
     result_waveform["values"] = result
 
     return result_waveform
-    

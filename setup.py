@@ -24,7 +24,8 @@ setuptools.setup(
         'python-statemachine',
 		'APScheduler',
 		'requests',
-		'aiohttp'
+		'aiohttp',
+        'Jinja2'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
