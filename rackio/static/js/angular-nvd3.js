@@ -1,18 +1,10 @@
 /**************************************************************************
-* AngularJS-nvD3, v1.0.9; MIT
+* AngularJS-nvD3, v1.0.0-rc; MIT License; 29/06/2015 15:12
 * http://krispo.github.io/angular-nvd3
 **************************************************************************/
-(function(window){
+(function(){
 
     'use strict';
-    var nv = window.nv;
-
-    // Node.js or CommonJS
-    if (typeof(exports) !== 'undefined') {
-        /* jshint -W020 */
-        nv = require('nvd3');
-        /* jshint +W020 */
-    }
 
     angular.module('nvd3', [])
 
@@ -24,24 +16,18 @@
                     options: '=',   //chart options, according to nvd3 core api, [required]
                     api: '=?',      //directive global api, [optional]
                     events: '=?',   //global events that directive would subscribe to, [optional]
-                    config: '=?',    //global directive configuration, [optional]
-                    onReady: '&?' //callback function that is called with internal scope when directive is created [optional]
+                    config: '=?'    //global directive configuration, [optional]
                 },
                 link: function(scope, element, attrs){
                     var defaultConfig = {
                         extended: false,
                         visible: true,
                         disabled: false,
-                        refreshDataOnly: true,
-                        deepWatchOptions: true,
+                        autorefresh: true,
+                        refreshDataOnly: false,
                         deepWatchData: true,
-                        deepWatchDataDepth: 2, // 0 - by reference (cheap), 1 - by collection item (the middle), 2 - by value (expensive)
-                        debounce: 10, // default 10ms, time silence to prevent refresh while multiple options changes at a time
-                        debounceImmediate: true // immediate flag for debounce function
+                        debounce: 10 // default 10ms, time silence to prevent refresh while multiple options changes at a time
                     };
-
-                    //flag indicates if directive and chart is ready
-                    scope.isReady = false;
 
                     //basic directive configuration
                     scope._config = angular.extend(defaultConfig, scope.config);
@@ -50,49 +36,16 @@
                     scope.api = {
                         // Fully refresh directive
                         refresh: function(){
-                            scope.api.updateWithOptions();
-                            scope.isReady = true;
-                        },
-
-                        // Fully refresh directive with specified timeout
-                        refreshWithTimeout: function(t){
-                            setTimeout(function(){
-                                scope.api.refresh();
-                            }, t);
+                            scope.api.updateWithOptions(scope.options);
                         },
 
                         // Update chart layout (for example if container is resized)
                         update: function() {
-                            if (scope.chart && scope.svg) {
-                                if (scope.options.chart.type === 'sunburstChart') {
-                                    scope.svg.datum(angular.copy(scope.data)).call(scope.chart);
-                                } else {
-                                    scope.svg.datum(scope.data).call(scope.chart);
-                                }
-                            } else {
-                                scope.api.refresh();
-                            }
-                        },
-
-                        // Update chart layout with specified timeout
-                        updateWithTimeout: function(t){
-                            setTimeout(function(){
-                                scope.api.update();
-                            }, t);
+                            scope.chart.update();
                         },
 
                         // Update chart with new options
                         updateWithOptions: function(options){
-                            // set options
-                            if (!arguments.length) {
-                                options = scope.options;
-                            } else {
-                                scope.options = options;
-
-                                // return if options $watch is enabled
-                                if (scope._config.deepWatchOptions && !scope._config.disabled) return;
-                            }
-
                             // Clearing
                             scope.api.clearElement();
 
@@ -111,16 +64,13 @@
                             angular.forEach(scope.chart, function(value, key){
                                 if (key[0] === '_');
                                 else if ([
-                                        'clearHighlights',
-                                        'highlightPoint',
-                                        'id',
-                                        'options',
-                                        'resizeHandler',
-                                        'state',
-                                        'open',
-                                        'close',
-                                        'tooltipContent'
-                                    ].indexOf(key) >= 0);
+                                    'clearHighlights',
+                                    'highlightPoint',
+                                    'id',
+                                    'options',
+                                    'resizeHandler',
+                                    'state'
+                                ].indexOf(key) >= 0);
 
                                 else if (key === 'dispatch') {
                                     if (options.chart[key] === undefined || options.chart[key] === null) {
@@ -130,43 +80,40 @@
                                 }
 
                                 else if ([
-                                        'bars',
-                                        'bars1',
-                                        'bars2',
-                                        'boxplot',
-                                        'bullet',
-                                        'controls',
-                                        'discretebar',
-                                        'distX',
-                                        'distY',
-                                        'focus',
-                                        'interactiveLayer',
-                                        'legend',
-                                        'lines',
-                                        'lines1',
-                                        'lines2',
-                                        'multibar',
-                                        'pie',
-                                        'scatter',
-                                        'scatters1',
-                                        'scatters2',
-                                        'sparkline',
-                                        'stack1',
-                                        'stack2',
-                                        'sunburst',
-                                        'tooltip',
-                                        'x2Axis',
-                                        'xAxis',
-                                        'y1Axis',
-                                        'y2Axis',
-                                        'y3Axis',
-                                        'y4Axis',
-                                        'yAxis',
-                                        'yAxis1',
-                                        'yAxis2'
-                                    ].indexOf(key) >= 0 ||
+                                    'bars',
+                                    'bars1',
+                                    'bars2',
+                                    'boxplot',
+                                    'bullet',
+                                    'controls',
+                                    'discretebar',
+                                    'distX',
+                                    'distY',
+                                    'interactiveLayer',
+                                    'legend',
+                                    'lines',
+                                    'lines1',
+                                    'lines2',
+                                    'multibar',
+                                    'pie',
+                                    'scatter',
+                                    'sparkline',
+                                    'stack1',
+                                    'stack2',
+                                    'sunburst',
+                                    'tooltip',
+                                    'x2Axis',
+                                    'xAxis',
+                                    'y1Axis',
+                                    'y2Axis',
+                                    'y3Axis',
+                                    'y4Axis',
+                                    'yAxis',
+                                    'yAxis1',
+                                    'yAxis2'
+                                ].indexOf(key) >= 0 ||
                                         // stacked is a component for stackedAreaChart, but a boolean for multiBarChart and multiBarHorizontalChart
-                                    (key === 'stacked' && options.chart.type === 'stackedAreaChart')) {
+                                        (key === 'stacked' && options.chart.type === 'stackedAreaChart')) {
                                     if (options.chart[key] === undefined || options.chart[key] === null) {
                                         if (scope._config.extended) options.chart[key] = {};
                                     }
@@ -174,27 +121,17 @@
                                 }
 
                                 //TODO: need to fix bug in nvd3
-                                else if ((key === 'focusHeight') && options.chart.type === 'lineChart');
-                                else if ((key === 'focusHeight') && options.chart.type === 'lineWithFocusChart');
                                 else if ((key === 'xTickFormat' || key === 'yTickFormat') && options.chart.type === 'lineWithFocusChart');
-                                else if ((key === 'tooltips') && options.chart.type === 'boxPlotChart');
-                                else if ((key === 'tooltipXContent' || key === 'tooltipYContent') && options.chart.type === 'scatterChart');
-                                else if ((key === 'x' || key === 'y') && options.chart.type === 'forceDirectedGraph');
 
                                 else if (options.chart[key] === undefined || options.chart[key] === null){
-                                    if (scope._config.extended) {
-                                        if (key==='barColor')
-                                            options.chart[key] = value()();
-                                        else
-                                            options.chart[key] = value();
-                                    }
+                                    if (scope._config.extended) options.chart[key] = value();
                                 }
 
                                 else scope.chart[key](options.chart[key]);
                             });
 
                             // Update with data
-                            scope.api.updateWithData();
+                            scope.api.updateWithData(scope.data);
 
                             // Configure wrappers
                             if (options['title'] || scope._config.extended) configureWrapper('title');
@@ -206,72 +143,29 @@
                             if (options['styles'] || scope._config.extended) configureStyles();
 
                             nv.addGraph(function() {
-                                if (!scope.chart) return;
-
                                 // Remove resize handler. Due to async execution should be placed here, not in the clearElement
                                 if (scope.chart.resizeHandler) scope.chart.resizeHandler.clear();
-
                                 // Update the chart when window resizes
-                                scope.chart.resizeHandler = nv.utils.windowResize(function() {
-                                    scope.chart && scope.chart.update && scope.chart.update();
-                                });
-
-                                /// Zoom feature
-                                if (options.chart.zoom !== undefined && [
-                                        'scatterChart',
-                                        'lineChart',
-                                        'candlestickBarChart',
-                                        'cumulativeLineChart',
-                                        'historicalBarChart',
-                                        'ohlcBarChart',
-                                        'stackedAreaChart'
-                                    ].indexOf(options.chart.type) > -1) {
-                                    nvd3Utils.zoom(scope, options);
-                                }
-
+                                scope.chart.resizeHandler = nv.utils.windowResize(function() { scope.chart.update && scope.chart.update(); });
                                 return scope.chart;
                             }, options.chart['callback']);
                         },
 
                         // Update chart with new data
                         updateWithData: function (data){
-                            // set data
-                            if (!arguments.length) {
-                                if (scope.options.chart.type === 'sunburstChart') {
-                                    data = angular.copy(scope.data);
-                                } else {
-                                    data = scope.data;
-                                }
-                            } else {
-                                scope.data = data;
-
-                                // return if data $watch is enabled
-                                if (scope._config.deepWatchData && !scope._config.disabled) return;
-                            }
-
                             if (data) {
+                                // TODO this triggers one more refresh. Refactor it!
+                                scope.options.chart.transitionDuration = +scope.options.chart.transitionDuration || 250;
                                 // remove whole svg element with old data
                                 d3.select(element[0]).select('svg').remove();
 
-                                var h, w;
-
                                 // Select the current element to add <svg> element and to render the chart in
-                                scope.svg = d3.select(element[0]).insert('svg', '.caption');
-                                if (h = scope.options.chart.height) {
-                                    if (!isNaN(+h)) h += 'px'; //check if height is number
-                                    scope.svg.attr('height', h).style({height: h});
-                                }
-                                if (w = scope.options.chart.width) {
-                                    if (!isNaN(+w)) w += 'px'; //check if width is number
-                                    scope.svg.attr('width', w).style({width: w});
-                                } else {
-                                    scope.svg.attr('width', '100%').style({width: '100%'});
-                                }
-
-                                scope.svg.datum(data).call(scope.chart);
-
-                                // update zooming if exists
-                                if (scope.chart && scope.chart.zoomRender) scope.chart.zoomRender();
+                                d3.select(element[0]).append('svg')
+                                    .attr('height', scope.options.chart.height)
+                                    .attr('width', scope.options.chart.width  || '100%')
+                                    .datum(data)
+                                    .transition().duration(scope.options.chart.transitionDuration)
+                                    .call(scope.chart);
                             }
                         },
 
@@ -282,15 +176,10 @@
                             element.find('.caption').remove();
                             element.empty();
 
-                            // remove tooltip if exists
-                            if (scope.chart && scope.chart.tooltip && scope.chart.tooltip.id) {
-                                d3.select('#' + scope.chart.tooltip.id()).remove();
-                            }
-
                             // To be compatible with old nvd3 (v1.7.1)
                             if (nv.graphs && scope.chart) {
-                                for (var i = nv.graphs.length - 1; i >= 0; i--) {
-                                    if (nv.graphs[i] && (nv.graphs[i].id === scope.chart.id)) {
+                                for(var i = nv.graphs.length - 1; i >= 0; i--) {
+                                    if(nv.graphs[i].id === scope.chart.id) {
                                         nv.graphs.splice(i, 1);
                                     }
                                 }
@@ -298,15 +187,11 @@
                             if (nv.tooltip && nv.tooltip.cleanup) {
                                 nv.tooltip.cleanup();
                             }
-                            if (scope.chart && scope.chart.resizeHandler) scope.chart.resizeHandler.clear();
                             scope.chart = null;
                         },
 
                         // Get full directive scope
-                        getScope: function(){ return scope; },
-
-                        // Get directive element
-                        getElement: function(){ return element; }
+                        getScope: function(){ return scope; }
                     };
 
                     // Configure the chart model with the passed options
@@ -320,29 +205,17 @@
                                     }
                                     configureEvents(value, options[key]);
                                 }
-                                else if (key === 'tooltip') {
-                                    if (options[key] === undefined || options[key] === null) {
-                                        if (scope._config.extended) options[key] = {};
-                                    }
-                                    configure(chart[key], options[key], chartType);
-                                }
-                                else if (key === 'contentGenerator') {
-                                    if (options[key]) chart[key](options[key]);
-                                }
                                 else if ([
-                                        'axis',
-                                        'clearHighlights',
-                                        'defined',
-                                        'highlightPoint',
-                                        'nvPointerEventsClass',
-                                        'options',
-                                        'rangeBand',
-                                        'rangeBands',
-                                        'scatter',
-                                        'open',
-                                        'close',
-                                        'node'
-                                    ].indexOf(key) === -1) {
+                                    'axis',
+                                    'clearHighlights',
+                                    'defined',
+                                    'highlightPoint',
+                                    'nvPointerEventsClass',
+                                    'options',
+                                    'rangeBand',
+                                    'rangeBands',
+                                    'scatter'
+                                ].indexOf(key) === -1) {
                                     if (options[key] === undefined || options[key] === null){
                                         if (scope._config.extended) options[key] = value();
                                     }
@@ -381,7 +254,7 @@
 
                         if (_.enable) {
                             if (name === 'title') element.prepend(wrapElement);
-                            else if (name === 'subtitle') angular.element(element[0].querySelector('.title')).after(wrapElement);
+                            else if (name === 'subtitle') element.find('.title').after(wrapElement);
                             else if (name === 'caption') element.append(wrapElement);
                         }
                     }
@@ -444,27 +317,18 @@
 
                     /* Event Handling */
                     // Watching on options changing
-                    if (scope._config.deepWatchOptions) {
-                        scope.$watch('options', nvd3Utils.debounce(function(newOptions){
-                            if (!scope._config.disabled) scope.api.refresh();
-                        }, scope._config.debounce, scope._config.debounceImmediate), true);
-                    }
+                    scope.$watch('options', nvd3Utils.debounce(function(newOptions){
+                        if (!scope._config.disabled && scope._config.autorefresh) scope.api.refresh();
+                    }, scope._config.debounce, true), true);
 
                     // Watching on data changing
-                    function dataWatchFn(newData, oldData) {
-                        if (newData !== oldData){
-                            if (!scope._config.disabled) {
-                                scope._config.refreshDataOnly ? scope.api.update() : scope.api.refresh(); // if wanted to refresh data only, use update method, otherwise use full refresh.
+                    scope.$watch('data', function(newData, oldData){
+                        if (newData !== oldData && scope.chart){
+                            if (!scope._config.disabled && scope._config.autorefresh) {
+                                scope._config.refreshDataOnly ? scope.chart.update() : scope.api.refresh(); // if wanted to refresh data only, use chart.update method, otherwise use full refresh.
                             }
                         }
-                    }
-                    if (scope._config.deepWatchData) {
-                        if (scope._config.deepWatchDataDepth === 1) {
-                            scope.$watchCollection('data', dataWatchFn);
-                        } else {
-                            scope.$watch('data', dataWatchFn, scope._config.deepWatchDataDepth === 2);
-                        }
-                    }
+                    }, scope._config.deepWatchData);
 
                     // Watching on config changing
                     scope.$watch('config', function(newConfig, oldConfig){
@@ -474,28 +338,16 @@
                         }
                     }, true);
 
-                    // Refresh chart first time if deepWatchOptions and deepWatchData are false
-                    if (!scope._config.deepWatchOptions && !scope._config.deepWatchData) {
-                        scope.api.refresh();
-                    }
-
                     //subscribe on global events
                     angular.forEach(scope.events, function(eventHandler, event){
-                        scope.$on(event, function(e, args){
-                            return eventHandler(e, scope, args);
+                        scope.$on(event, function(e){
+                            return eventHandler(e, scope);
                         });
                     });
 
                     // remove completely when directive is destroyed
                     element.on('$destroy', function () {
                         scope.api.clearElement();
-                    });
-
-                    // trigger onReady callback if directive is ready
-                    scope.$watch('isReady', function(isReady){
-                        if (isReady) {
-                            if (scope.onReady && typeof scope.onReady() === 'function') scope.onReady()(scope, element);
-                        }
                     });
                 }
             };
@@ -531,123 +383,7 @@
                         }
                     });
                     return dst;
-                },
-                zoom: function(scope, options) {
-                    var zoom = options.chart.zoom;
-
-                    // check if zoom enabled
-                    var enabled = (typeof zoom.enabled === 'undefined' || zoom.enabled === null) ? true : zoom.enabled;
-                    if (!enabled) return;
-
-                    var xScale = scope.chart.xAxis.scale()
-                        , yScale = scope.chart.yAxis.scale()
-                        , xDomain = scope.chart.xDomain || xScale.domain
-                        , yDomain = scope.chart.yDomain || yScale.domain
-                        , x_boundary = xScale.domain().slice()
-                        , y_boundary = yScale.domain().slice()
-
-                    // initialize zoom options
-                        , scale = zoom.scale || 1
-                        , translate = zoom.translate || [0, 0]
-                        , scaleExtent = zoom.scaleExtent || [1, 10]
-                        , useFixedDomain = zoom.useFixedDomain || false
-                        , useNiceScale = zoom.useNiceScale || false
-                        , horizontalOff = zoom.horizontalOff || false
-                        , verticalOff = zoom.verticalOff || false
-                        , unzoomEventType = zoom.unzoomEventType || 'dblclick.zoom'
-
-                    // auxiliary functions
-                        , fixDomain
-                        , d3zoom
-                        , zoomed
-                        , unzoomed
-                        , zoomend
-                        ;
-
-                    // ensure nice axis
-                    if (useNiceScale) {
-                        xScale.nice();
-                        yScale.nice();
-                    }
-
-                    // fix domain
-                    fixDomain = function (domain, boundary) {
-                        domain[0] = Math.min(Math.max(domain[0], boundary[0]), boundary[1] - boundary[1] / scaleExtent[1]);
-                        domain[1] = Math.max(boundary[0] + boundary[1] / scaleExtent[1], Math.min(domain[1], boundary[1]));
-                        return domain;
-                    };
-
-                    // zoom event handler
-                    zoomed = function () {
-                        if (zoom.zoomed !== undefined) {
-                            var domains = zoom.zoomed(xScale.domain(), yScale.domain());
-                            if (!horizontalOff) xDomain([domains.x1, domains.x2]);
-                            if (!verticalOff) yDomain([domains.y1, domains.y2]);
-                        } else {
-                            if (!horizontalOff) xDomain(useFixedDomain ? fixDomain(xScale.domain(), x_boundary) : xScale.domain());
-                            if (!verticalOff) yDomain(useFixedDomain ? fixDomain(yScale.domain(), y_boundary) : yScale.domain());
-                        }
-                        if (scope.chart) scope.chart.update();
-                    };
-
-                    // unzoomed event handler
-                    unzoomed = function () {
-                        if (zoom.unzoomed !== undefined) {
-                            var domains = zoom.unzoomed(xScale.domain(), yScale.domain());
-                            if (!horizontalOff) xDomain([domains.x1, domains.x2]);
-                            if (!verticalOff) yDomain([domains.y1, domains.y2]);
-                        } else {
-                            if (!horizontalOff) xDomain(x_boundary);
-                            if (!verticalOff) yDomain(y_boundary);
-                        }
-                        d3zoom.scale(scale).translate(translate);
-                        if (scope.chart) scope.chart.update();
-                    };
-
-                    // zoomend event handler
-                    zoomend = function () {
-                        if (zoom.zoomend !== undefined) {
-                            zoom.zoomend();
-                        }
-                    };
-
-                    // create d3 zoom handler
-                    d3zoom = d3.behavior.zoom()
-                        .x(xScale)
-                        .y(yScale)
-                        .scaleExtent(scaleExtent)
-                        .on('zoom', zoomed)
-                        .on('zoomend', zoomend);
-
-                    if (scope.svg) {
-                        scope.svg.call(d3zoom);
-
-                        d3zoom.scale(scale).translate(translate).event(scope.svg);
-
-                        if (unzoomEventType !== 'none') scope.svg.on(unzoomEventType, unzoomed);
-                    }
-
-                    if (scope.chart)
-                        scope.chart.zoomRender = function(){
-                            // reset zoom scale and translate
-                            d3zoom.scale(scale).translate(translate);
-
-                            // update scale
-                            xScale = scope.chart.xAxis.scale();
-                            yScale = scope.chart.yAxis.scale();
-                            xDomain = scope.chart.xDomain || xScale.domain;
-                            yDomain = scope.chart.yDomain || yScale.domain;
-                            x_boundary = xScale.domain().slice();
-                            y_boundary = yScale.domain().slice();
-
-                            // update zoom scale
-                            d3zoom.x(xScale).y(yScale);
-
-                            scope.svg.call(d3zoom);
-
-                            if (unzoomEventType !== 'none') scope.svg.on(unzoomEventType, unzoomed);
-                        };
                 }
             };
         });
-})(window);
+})();

@@ -4,21 +4,23 @@
 ## Base Modules
 
 rackio_modules = [
-    {'folder': 'static', 'subfolder': 'js', 'module': 'd3.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'nv.d3.min.js'},
+    {'folder': 'static', 'subfolder': 'js', 'module': 'jquery.js'},
     {'folder': 'static', 'subfolder': 'js', 'module': 'angular.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-nvd3.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-route.js'},
+    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-touch.js'},
     {'folder': 'static', 'subfolder': 'js', 'module': 'angular-cookies.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-sanitize.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-ui-router.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'md-data-table.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'md-data-table-templates.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-animate.js'},
+    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-animate.js'}, 
     {'folder': 'static', 'subfolder': 'js', 'module': 'angular-aria.js'},
     {'folder': 'static', 'subfolder': 'js', 'module': 'angular-messages.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'svg-assets-cache.js'},
+    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-sanitize.js'},
+    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-ui-router.js'},
+    {'folder': 'static', 'subfolder': 'js', 'module': 'd3.min.js'},
+    {'folder': 'static', 'subfolder': 'js', 'module': 'nv.d3.min.js'},
+    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-nvd3.js'},
     {'folder': 'static', 'subfolder': 'js', 'module': 'angular-material.js'},
+    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-mocks.js'},
+    {'folder': 'static', 'subfolder': 'js', 'module': 'md-data-table.js'},
+    {'folder': 'static', 'subfolder': 'js', 'module': 'svg-assets-cache.js'},
+    
 ]
 
 ## Admin Application Modules

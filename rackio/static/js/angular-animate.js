@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.7.8
+ * @license AngularJS v1.7.5
  * (c) 2010-2018 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -334,6 +334,15 @@ function clearGeneratedClasses(element, options) {
   }
 }
 
+function blockTransitions(node, duration) {
+  // we use a negative delay value since it performs blocking
+  // yet it doesn't kill any existing transitions running on the
+  // same element which makes this safe for class-based animations
+  var value = duration ? '-' + duration + 's' : '';
+  applyInlineStyle(node, [TRANSITION_DELAY_PROP, value]);
+  return [TRANSITION_DELAY_PROP, value];
+}
+
 function blockKeyframeAnimations(node, applyBlock) {
   var value = applyBlock ? 'paused' : '';
   var key = ANIMATION_PROP + ANIMATION_PLAYSTATE_KEY;
@@ -352,17 +361,6 @@ function concatWithSpace(a,b) {
   if (!b) return a;
   return a + ' ' + b;
 }
-
-var helpers = {
-  blockTransitions: function(node, duration) {
-    // we use a negative delay value since it performs blocking
-    // yet it doesn't kill any existing transitions running on the
-    // same element which makes this safe for class-based animations
-    var value = duration ? '-' + duration + 's' : '';
-    applyInlineStyle(node, [TRANSITION_DELAY_PROP, value]);
-    return [TRANSITION_DELAY_PROP, value];
-  }
-};
 
 var $$rAFSchedulerFactory = ['$$rAF', function($$rAF) {
   var queue, cancelFn;
@@ -1072,7 +1070,7 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
       // that if there is no transition defined then nothing will happen and this will also allow
       // other transitions to be stacked on top of each other without any chopping them out.
       if (isFirst && !options.skipBlocking) {
-        helpers.blockTransitions(node, SAFE_FAST_FORWARD_DURATION_VALUE);
+        blockTransitions(node, SAFE_FAST_FORWARD_DURATION_VALUE);
       }
 
       var timings = computeTimings(node, fullClassName, cacheKey, !isStructural);
@@ -1158,7 +1156,7 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
       if (flags.blockTransition || flags.blockKeyframeAnimation) {
         applyBlocking(maxDuration);
       } else if (!options.skipBlocking) {
-        helpers.blockTransitions(node, false);
+        blockTransitions(node, false);
       }
 
       // TODO(matsko): for 1.5 change this code to have an animator object for better debugging
@@ -1211,7 +1209,7 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
         }
 
         blockKeyframeAnimations(node, false);
-        helpers.blockTransitions(node, false);
+        blockTransitions(node, false);
 
         forEach(temporaryStyles, function(entry) {
           // There is only one way to remove inline style properties entirely from elements.
@@ -1262,7 +1260,7 @@ var $AnimateCssProvider = ['$animateProvider', /** @this */ function($animatePro
 
       function applyBlocking(duration) {
         if (flags.blockTransition) {
-          helpers.blockTransitions(node, duration);
+          blockTransitions(node, duration);
         }
 
         if (flags.blockKeyframeAnimation) {
@@ -3449,8 +3447,7 @@ var ngAnimateSwapDirective = ['$animate', function($animate) {
     restrict: 'A',
     transclude: 'element',
     terminal: true,
-    priority: 550, // We use 550 here to ensure that the directive is caught before others,
-                   // but after `ngIf` (at priority 600).
+    priority: 600, // we use 600 here to ensure that the directive is caught before others
     link: function(scope, $element, attrs, ctrl, $transclude) {
       var previousElement, previousScope;
       scope.$watchCollection(attrs.ngAnimateSwap || attrs['for'], function(value) {
@@ -4252,7 +4249,7 @@ angular.module('ngAnimate', [], function initAngularHelpers() {
   isFunction  = angular.isFunction;
   isElement   = angular.isElement;
 })
-  .info({ angularVersion: '1.7.8' })
+  .info({ angularVersion: '1.7.5' })
   .directive('ngAnimateSwap', ngAnimateSwapDirective)
 
   .directive('ngAnimateChildren', $$AnimateChildrenDirective)
