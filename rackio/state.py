@@ -61,7 +61,7 @@ class RackioStateMachine(StateMachine):
             try:
 
                 if isinstance(value, TagBinding):
-                    self._tag_bindings.append(value)
+                    self._tag_bindings.append((key, value))
                     _value = self.tag_engine.read_tag(value.tag)
 
                     setattr(self, key, 0.0)
@@ -118,17 +118,17 @@ class RackioStateMachine(StateMachine):
 
     def _update_tags(self, direction=READ):
 
-        for _binding in self._tag_bindings:
+        for attr, _binding in self._tag_bindings:
 
             if direction == READ and _binding.direction == READ:
                 
                 tag = _binding.tag
                 value = self.tag_engine.read_tag(tag)
-                value = setattr(self, tag, value)
+                value = setattr(self, attr, value)
             
             elif direction == WRITE and _binding.direction == WRITE:
                 tag = _binding.tag
-                value = getattr(self, tag)
+                value = getattr(self, attr)
                 self.tag_engine.write_tag(tag, value)
     
     def serialize(self):
