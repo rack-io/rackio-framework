@@ -3,6 +3,8 @@
 
 This module implements all state machine classes.
 """
+import logging
+
 from inspect import ismethod
 
 from statemachine import StateMachine, State
@@ -101,7 +103,7 @@ class RackioStateMachine(StateMachine):
 
         for key, value in props.items():
 
-            if key in ["states", "transitions", "states_map", "get_attributes", "_tag_bindings"]:
+            if key in ["states", "transitions", "states_map", "_loop", "get_attributes", "_tag_bindings"]:
                 continue
             if hasattr(value, '__call__'):
                 continue
@@ -120,16 +122,45 @@ class RackioStateMachine(StateMachine):
 
         for attr, _binding in self._tag_bindings:
 
-            if direction == READ and _binding.direction == READ:
+            try:
+                if direction == READ and _binding.direction == READ:
                 
-                tag = _binding.tag
-                value = self.tag_engine.read_tag(tag)
-                value = setattr(self, attr, value)
+                    tag = _binding.tag
+                    value = self.tag_engine.read_tag(tag)
+                    value = setattr(self, attr, value)
+                
+                elif direction == WRITE and _binding.direction == WRITE:
+                    tag = _binding.tag
+                    value = getattr(self, attr)
+                    self.tag_engine.write_tag(tag, value)
             
-            elif direction == WRITE and _binding.direction == WRITE:
-                tag = _binding.tag
-                value = getattr(self, attr)
-                self.tag_engine.write_tag(tag, value)
+            except Exception as e:
+                error = str(e)
+                logging.error("Machine - {}:{}".format(self.name, error))
+
+
+    def _loop(self):
+
+        try:
+            state_name = self.current_state.identifier.lower()
+            method_name = "while_" + state_name
+
+            if method_name in dir(self):
+                update = getattr(self, '_update_tags')
+                method = getattr(self, method_name)
+                
+                # update tag read bindings
+                update()
+
+                # loop machine
+                method()
+
+                #update tag write bindings
+                update("write")
+
+        except Exception as e:
+            error = str(e)
+            logging.error("Machine - {}:{}".format(self.name, error))
     
     def serialize(self):
 
