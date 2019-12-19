@@ -121,15 +121,15 @@ class Rackio(Singleton):
         
         # Admin routes
 
-        def register_admin(api):
+        def register_directory(directory, api):
 
-            paths = directory_paths('admin')
+            paths = directory_paths(directory)
 
             for path in paths:
 
                 route = path.replace(sep, "/")
-                route = "/admin" + route + "/{resource}"
-                
+                route = "/" + directory + route + "/{resource}"
+
                 api.add_route(route, DynamicAdminResource())
 
         self._api.add_route('/admin', AdminResource())
@@ -140,7 +140,8 @@ class Rackio(Singleton):
         # self._api.add_route('/admin/components/services/{service}', AdminServiceResource())
         # self._api.add_route('/admin/stylesheets/{stylesheet}', AdminStylesheetResource())
 
-        register_admin(self._api)
+        register_directory('admin', self._api)
+        register_directory('static', self._api)
 
 
     def set_log(self, level=logging.INFO, file=""):

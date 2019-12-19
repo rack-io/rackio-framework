@@ -4,30 +4,30 @@
 ## Base Modules
 
 rackio_modules = [
-    {'folder': 'static', 'subfolder': 'js', 'module': 'jquery.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-touch.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-cookies.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-animate.min.js'}, 
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-aria.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-messages.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-sanitize.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-ui-router.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'd3.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'nv.d3.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-nvd3.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-material.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'angular-mocks.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'md-data-table.min.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'svg-assets-cache.js'},
+    {'folder': 'static', 'subfolder': 'js/jquery', 'module': 'jquery.min.js'},
+    {'folder': 'static', 'subfolder': 'js/angular', 'module': 'angular.min.js'},
+    {'folder': 'static', 'subfolder': 'js/angular', 'module': 'angular-touch.min.js'},
+    {'folder': 'static', 'subfolder': 'js/angular', 'module': 'angular-cookies.min.js'},
+    {'folder': 'static', 'subfolder': 'js/angular', 'module': 'angular-animate.min.js'}, 
+    {'folder': 'static', 'subfolder': 'js/angular', 'module': 'angular-aria.min.js'},
+    {'folder': 'static', 'subfolder': 'js/angular', 'module': 'angular-messages.min.js'},
+    {'folder': 'static', 'subfolder': 'js/angular', 'module': 'angular-sanitize.min.js'},
+    {'folder': 'static', 'subfolder': 'js/angular', 'module': 'angular-ui-router.min.js'},
+    {'folder': 'static', 'subfolder': 'js/jquery', 'module': 'd3.min.js'},
+    {'folder': 'static', 'subfolder': 'js/jquery', 'module': 'nv.d3.min.js'},
+    {'folder': 'static', 'subfolder': 'js/angular', 'module': 'angular-nvd3.min.js'},
+    {'folder': 'static', 'subfolder': 'js/angular', 'module': 'angular-material.min.js'},
+    {'folder': 'static', 'subfolder': 'js/angular', 'module': 'angular-mocks.js'},
+    {'folder': 'static', 'subfolder': 'js/angular', 'module': 'md-data-table.min.js'},
+    {'folder': 'static', 'subfolder': 'js/angular', 'module': 'svg-assets-cache.js'},
     
 ]
 
 ## Admin Application Modules
 
 admin_modules = [
-    {'folder': 'static', 'subfolder': 'js', 'module': 'app.js'},
-    {'folder': 'static', 'subfolder': 'js', 'module': 'index.js'},
+    {'folder': 'static', 'subfolder': 'js/admin', 'module': 'app.js'},
+    {'folder': 'static', 'subfolder': 'js/admin', 'module': 'index.js'},
 ]
 
 admin_directives = [
