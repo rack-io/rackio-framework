@@ -3,6 +3,8 @@
 
 import os
 
+from urllib.parse import urlparse
+
 from jinja2 import Template
 
 from rackio import status_code
@@ -135,6 +137,36 @@ class AdminStylesheetResource(object):
             "stylesheets",
             stylesheet
             )
+
+        with open(path, 'r') as f:
+            resp.body = f.read()
+
+
+class DynamicAdminResource(object):
+
+    def on_get(self, req, resp, **params):
+        
+        resource = params["resource"]
+
+        parsed = urlparse(req.url)
+        paths = parsed.path.split("/")[1:-1]
+
+        if ".js" in resource:
+            resp.content_type = 'application/javascript'
+        elif ".css" in resource:
+            resp.content_type = 'text/css'
+        else:
+            resp.content_type = 'text/html'
+            if not ".html"in resource:
+                resource = "{}.html".format(resource)
+
+        path = os.path.dirname(status_code.__file__)
+
+        for _dir in paths:
+
+            path = os.path.join(path, _dir)
+
+        path = os.path.join(path, resource)
 
         with open(path, 'r') as f:
             resp.body = f.read()

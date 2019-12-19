@@ -8,6 +8,8 @@ import logging
 import sys
 import concurrent.futures
 
+from os.path import sep
+
 import falcon
 
 from peewee import SqliteDatabase, MySQLDatabase, PostgresqlDatabase
@@ -26,6 +28,9 @@ from .api import AppSummaryResource
 from .api import AdminResource, AdminViewResource, AdminStylesheetResource
 from .api import AdminControllerResource, AdminDirectiveResource
 from .api import AdminPartialResource, AdminServiceResource
+from .api import DynamicAdminResource
+
+from .utils import directory_path, directory_files, directory_paths
 
 from .dbmodels import SQLITE, MYSQL, POSTGRESQL
 
@@ -115,13 +120,27 @@ class Rackio(Singleton):
         self._api.add_route('/template/{template}', TemplateResource())
         
         # Admin routes
+
+        def register_admin(api):
+
+            paths = directory_paths('admin')
+
+            for path in paths:
+
+                route = path.replace(sep, "/")
+                route = "/admin" + route + "/{resource}"
+                
+                api.add_route(route, DynamicAdminResource())
+
         self._api.add_route('/admin', AdminResource())
-        self._api.add_route('/admin/views/{view}', AdminViewResource())
-        self._api.add_route('/admin/views/partials/{partial}', AdminPartialResource())
-        self._api.add_route('/admin/controllers/{controller}', AdminControllerResource())
-        self._api.add_route('/admin/components/directives/{directive}', AdminDirectiveResource())
-        self._api.add_route('/admin/components/services/{service}', AdminServiceResource())
-        self._api.add_route('/admin/stylesheets/{stylesheet}', AdminStylesheetResource())
+        # self._api.add_route('/admin/views/{view}', AdminViewResource())
+        # self._api.add_route('/admin/views/partials/{partial}', AdminPartialResource())
+        # self._api.add_route('/admin/controllers/{controller}', AdminControllerResource())
+        # self._api.add_route('/admin/components/directives/{directive}', AdminDirectiveResource())
+        # self._api.add_route('/admin/components/services/{service}', AdminServiceResource())
+        # self._api.add_route('/admin/stylesheets/{stylesheet}', AdminStylesheetResource())
+
+        register_admin(self._api)
 
 
     def set_log(self, level=logging.INFO, file=""):
