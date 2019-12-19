@@ -49,12 +49,11 @@ class RackioStateMachine(StateMachine):
     logger_engine = LoggerEngine()
     query_logger = QueryLogger()
 
-    _tag_bindings = list()
-
     def __init__(self, name, **kwargs):
         
         super(RackioStateMachine, self).__init__()
         self.name = name
+        self._tag_bindings = list()
 
         attrs = self.get_attributes()
 
