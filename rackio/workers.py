@@ -19,6 +19,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from .controls import ControlManager
 from .engine import CVTEngine
 from .dbmodels import TagTrend, TagValue, Event
+from .handlers import NoLoggingWSGIRequestHandler
 
 
 class BaseWorker(Thread):
@@ -141,6 +142,7 @@ class StateMachineWorker():
         
         self._manager = manager
         self._scheduler = BackgroundScheduler()
+        logging.getLogger('apscheduler.executors.default').setLevel(logging.WARNING)
 
         self.jobs = list()
 
@@ -305,7 +307,7 @@ class APIWorker(BaseWorker):
 
     def run(self):
 
-        with make_server('', self._port, self._api_app) as httpd:
+        with make_server('', self._port, self._api_app, handler_class=NoLoggingWSGIRequestHandler) as httpd:
             logging.info('Serving on port {}...'.format(self._port))
             httpd.serve_forever()
 
