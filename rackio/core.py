@@ -6,6 +6,7 @@ This module implements the core app class and methods for Rackio.
 
 import logging
 import sys
+import time
 import concurrent.futures
 
 from os.path import sep
@@ -133,12 +134,6 @@ class Rackio(Singleton):
                 api.add_route(route, DynamicAdminResource())
 
         self._api.add_route('/admin', AdminResource())
-        # self._api.add_route('/admin/views/{view}', AdminViewResource())
-        # self._api.add_route('/admin/views/partials/{partial}', AdminPartialResource())
-        # self._api.add_route('/admin/controllers/{controller}', AdminControllerResource())
-        # self._api.add_route('/admin/components/directives/{directive}', AdminDirectiveResource())
-        # self._api.add_route('/admin/components/services/{service}', AdminServiceResource())
-        # self._api.add_route('/admin/stylesheets/{stylesheet}', AdminStylesheetResource())
 
         register_directory('admin', self._api)
         register_directory('static', self._api)
@@ -425,6 +420,13 @@ class Rackio(Singleton):
         _api_worker = APIWorker(self._api, port)
         
         try:
+
+            _db_worker.daemon = True
+            _control_worker.daemon = True
+            _function_worker.daemon = True
+            _alarm_worker.daemon = True
+            _api_worker.daemon = True
+
             _db_worker.start()
             _control_worker.start()
             _function_worker.start()
@@ -441,18 +443,21 @@ class Rackio(Singleton):
                 try:
                     executor.submit(_f)
                 except Exception as e:
-                    print(e)
+                    error = str(e)
+                    logging.error(error)
 
             for _f in self._continous_functions:
 
                 try:
                     executor.submit(_f)
                 except Exception as e:
-                    print(e)
-
-            threads = [t.join() for t in threads]
+                    error = str(e)
+                    logging.error(error)
+                    
+            while True:
+                time.sleep(100)
 
         except (KeyboardInterrupt, SystemExit):
-            print("Shutting down!!!")
+            logging.info("Manual Shutting down!!!")
             sys.exit()
             

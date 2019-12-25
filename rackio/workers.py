@@ -19,7 +19,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from .controls import ControlManager
 from .engine import CVTEngine
 from .dbmodels import TagTrend, TagValue, Event
-from .handlers import NoLoggingWSGIRequestHandler
+from .handlers import CustomWSGIRequestHandler
 
 
 class BaseWorker(Thread):
@@ -307,7 +307,7 @@ class APIWorker(BaseWorker):
 
     def run(self):
 
-        with make_server('', self._port, self._api_app, handler_class=NoLoggingWSGIRequestHandler) as httpd:
+        with make_server('', self._port, self._api_app, handler_class=CustomWSGIRequestHandler) as httpd:
             logging.info('Serving on port {}...'.format(self._port))
             httpd.serve_forever()
 
@@ -336,7 +336,8 @@ class LoggerWorker(BaseWorker):
         try:
             self._manager.drop_tables([TagTrend, TagValue, Event])
         except Exception as e:
-            print(e)
+            error = str(e)
+            logging.error("Database:{}".format(error))
 
         self._manager.create_tables([TagTrend, TagValue, Event])
         
