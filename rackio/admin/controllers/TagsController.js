@@ -3,16 +3,20 @@
   angular
     .module('app')
     .controller('TagsController', [
-      'tableService',
+      'tagsService',
       TagsController
     ]);
 
-  function TagsController(tableService) {
+  function TagsController(tagsService) {
     
     var vm = this;
 
+    tagsService.getTags.then(function(response){
+      console.log(response.data);
+    });
+
     vm.tagsData = [];
-    
+
   }
 
 })();

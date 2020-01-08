@@ -61,4 +61,3 @@ admin_controllers = [
     'WarningsController.js',
     'TagsController.js',
 ]
-
