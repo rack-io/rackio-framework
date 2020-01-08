@@ -1,0 +1,21 @@
+<!-- TODO: Replace table to table component when https://github.com/angular/material/issues/796 will closed -->
+<div class="table-responsive-vertical md-whiteframe-z1">
+    <table id="table" class="table table-hover table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Tag</th>
+            <th>Type</th>
+            <th>Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="data in vm.tagsData track by $index">
+            <td data-title="ID">{{$index + 1}}</td>
+            <td data-title="Tag">{{data.tag}}</td>
+            <td data-title="Type">{{data.type}}</td>
+            <td data-title="Type">{{data.value}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

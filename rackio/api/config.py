@@ -42,6 +42,7 @@ admin_services = [
     'PerformanceService.js',
     'TableService.js',
     'TodoListService.js',
+    'TagsService.js',
 ]
 
 admin_controllers = [
@@ -58,5 +59,6 @@ admin_controllers = [
     'UsageController.js',
     'VisitorsController.js',
     'WarningsController.js',
+    'TagsController.js',
 ]
 

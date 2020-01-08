@@ -20,6 +20,11 @@
         sref: '.profile'
       },
       {
+        name: 'Tags',
+        icon: 'view_module',
+        sref: '.tags'
+      },
+      {
         name: 'Table',
         icon: 'view_module',
         sref: '.table'

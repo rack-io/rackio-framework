@@ -4,4 +4,5 @@
 angular.module('adminApp', [
   'ngRoute',
   'summary',
+  'tags',
 ]);

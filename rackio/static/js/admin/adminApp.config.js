@@ -7,6 +7,9 @@ var schedulizer = angular.module('adminApp').
       when('/', {
         template: '<summary></summary>'
       }).
+      when('/tags', {
+        template: '<tags></tags>'
+      }).
       otherwise('/');
   }
 ]);

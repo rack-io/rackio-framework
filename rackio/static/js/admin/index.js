@@ -38,6 +38,15 @@ angular.module('angularMaterialAdmin', ['ngAnimate', 'ngCookies',
           title: 'Table'
         }
       })
+      .state('home.tags', {
+        url: '/tags',
+        controller: 'TagsController',
+        controllerAs: 'vm',
+        templateUrl: 'admin/views/tags',
+        data: {
+          title: 'Table'
+        }
+      })
       .state('home.data-table', {
         url: '/data-table',
         controller: 'DataTableController',
