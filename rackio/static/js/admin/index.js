@@ -3,8 +3,21 @@
 angular.module('angularMaterialAdmin', ['ngAnimate', 'ngCookies',
   'ngSanitize', 'ui.router', 'ngMaterial', 'nvd3', 'app' , 'md.data.table'])
 
-  .config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider,
-                    $mdIconProvider) {
+  .config(function ($stateProvider, $urlRouterProvider, $mdThemingProvider, $mdIconProvider, $httpProvider) {
+
+    if (!$httpProvider.defaults.headers.get) {
+      $httpProvider.defaults.headers.get = {};
+    };
+     
+    //disable IE ajax request caching
+    $httpProvider.defaults.headers.get['If-Modified-Since'] = 'Mon, 26 Jul 1997 05:00:00 GMT';
+    // extra
+    $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
+    $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
+
+    $httpProvider.defaults.headers.common['Cache-Control'] = 'no-cache';
+    $httpProvider.defaults.cache = false;
+
     $stateProvider
       .state('home', {
         url: '',
@@ -42,6 +55,7 @@ angular.module('angularMaterialAdmin', ['ngAnimate', 'ngCookies',
         url: '/tags',
         controller: 'TagsController',
         controllerAs: 'vm',
+        cache: false,
         templateUrl: 'admin/views/tags',
         data: {
           title: 'Table'
@@ -99,4 +113,9 @@ angular.module('angularMaterialAdmin', ['ngAnimate', 'ngCookies',
     });
 
     $mdIconProvider.icon('user', 'assets/images/user.svg', 64);
-  });
+});
+
+
+function getService(serviceName){
+  return angular.element(document.body).injector().get(serviceName);
+};

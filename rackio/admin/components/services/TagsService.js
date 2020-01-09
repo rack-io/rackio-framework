@@ -9,8 +9,10 @@
 
   function tagsService($http){
 
+    $http.defaults.cache = false;
+
     return {
-      getTags: $http.get('/api/tags', { cache: true })
+      getTags: $http.get('/api/tags', {cache: false})
     };
   }
 })();
