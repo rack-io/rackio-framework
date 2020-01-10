@@ -23,16 +23,19 @@ class TagCollectionResource(RackioResource):
         for _tag in tags:
 
             value = _cvt.read_tag(_tag)
+            _type = _cvt.get_type(_tag)
             
             try:
                 result = {
                     'tag': _tag,
-                    'value': value._serialize()
+                    'value': value._serialize(),
+                    'type': _type,
                 }
             except:
                 result = {
                     'tag': _tag,
-                    'value': value
+                    'value': value,
+                    'type': _type,
                 }
 
             doc.append(result)
@@ -47,16 +50,20 @@ class TagResource(RackioResource):
         _cvt = self.tag_engine
 
         value = _cvt.read_tag(tag_id)
+        _type = _cvt.get_type(tag_id)
 
         try:
             doc = {
                 'tag': tag_id,
-                'value': value._serialize()
+                'value': value._serialize(),
+                'type': _type,
             }
         except:
             doc = {
                 'tag': tag_id,
-                'value': value
+                'value': value,
+                'type': _type
+
             }
 
         resp.body = json.dumps(doc, ensure_ascii=False)

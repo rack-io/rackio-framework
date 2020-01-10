@@ -215,8 +215,18 @@ class CVTEngine(Singleton):
         _type (str):
             Type.
         """
-        if not _type in ["int", "float", "bool"]:
+        if not _type in ["int", "float", "bool", "str"]:
             self._cvt.set_type(_type)
+
+    def get_type(self, name):
+        """Gets a tag type as string format.
+        
+        # Parameters
+        name (str):
+            Tag name.
+        """
+
+        return self._cvt.get_type(name)
 
     def set_tag(self, name, _type):
         """Sets a new value for a defined tag, in thread-safe mechanism.

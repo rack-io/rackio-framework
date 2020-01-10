@@ -3,25 +3,25 @@
   angular
     .module('app')
     .controller('TagsController', [
-      'tagsService',
+      '$http',
       '$interval',
       TagsController
     ]);
 
-  function TagsController(tagsService, $interval) {
+  function TagsController($http, $interval) {
     
     var vm = this;
 
     vm.tagsData = [];
 
     vm.loadTags = function(){
-      tagsService.getTags.then(function(response){
-        console.log(response.data);
+      $http.get('/api/tags', {cache: false})
+      .then(function(response){
         vm.tagsData = response.data;
       });
     };
 
-    $interval( function(){ vm.loadTags(); }, 2000);
+    $interval( function(){ vm.loadTags(); }, 1000);
 
   }
 
