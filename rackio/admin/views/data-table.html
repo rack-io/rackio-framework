@@ -8,7 +8,7 @@
 
     <!-- exact table from live demo -->
     <md-table-container>
-    <table md-table md-row-select multiple ng-model="selected" class="table table-hover table-bordered" >
+    <table md-table md-row-select="true" multiple="false" ng-model="selected" class="table table-hover table-bordered" >
         <thead md-head md-order="query.order" md-on-reorder="vm.getItems()">
         <tr md-row>
             <th md-column md-numeric>ID</th>
