@@ -22,6 +22,18 @@ STRING = "str"
 READ = "read"
 WRITE = "write"
 
+def detailed_exception():
+    exc_type, exc_obj, tb = sys.exc_info()
+    f = tb.tb_frame
+    lineno = tb.tb_lineno
+    filename = f.f_code.co_filename
+    linecache.checkcache(filename)
+    line = linecache.getline(filename, lineno, f.f_globals)
+    message =  'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj)
+
+    return message
+
+
 class TagBinding:
 
     tag_engine = CVTEngine()
@@ -152,7 +164,12 @@ class RackioStateMachine(StateMachine):
                 update()
 
                 # loop machine
-                method()
+                try:
+                    method()
+                except Exception as e:
+                    error = str(e)
+                    logging.error("Machine - {}:{}".format(self.name, error))
+                    logging.error("Machine - {}:{}".format(self.name, detailed_exception()))
 
                 #update tag write bindings
                 update("write")
