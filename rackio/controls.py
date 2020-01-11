@@ -624,6 +624,18 @@ class ControlManager:
                 for _rule in _rules:
                     _rule.execute()
 
+    def execute_all(self):
+
+        for _tags, _controls in self._controls.items():
+            
+            for _control in _controls:
+                _control.execute()
+
+        for _tags, _rules in self._rules.items():
+
+            for _rule in _rules:
+                _rule.execute()
+
 
 class FunctionManager:
 

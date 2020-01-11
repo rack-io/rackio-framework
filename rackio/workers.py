@@ -62,6 +62,8 @@ class ControlWorker(BaseWorker):
         if (not self._manager.rule_tags()) and (not self._manager.control_tags()):
             return
 
+        self._manager.execute_all()
+
         _queue = self._manager._tag_queue
 
         while True:
