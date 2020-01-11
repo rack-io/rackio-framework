@@ -26,6 +26,9 @@ USER = "System"
 
 class Alarm:
 
+    tag_engine = CVTEngine()
+    logger_engine = LoggerEngine()
+
     def __init__(self, name, tag, description):
 
         self._name = name
@@ -34,6 +37,7 @@ class Alarm:
 
         self._trigger_value = None
         self._trigger_type = None       # ["HI", "LO", "BOOL"]
+        self._tag_alarm = None
 
         self._enabled = True            # True: Enable       - False: Disable
         
@@ -63,6 +67,16 @@ class Alarm:
 
         self._trigger_value = value
         self._trigger_type = _type
+
+    def set_tag_alarm(self, tag):
+
+        self._tag_alarm = tag
+
+    def write_tag_alarm(self, value):
+
+        if self._tag_alarm:
+
+            self.tag_engine.write_tag(self._tag_alarm, value)
     
     def get_name(self):
 
@@ -80,8 +94,6 @@ class Alarm:
 
         self._state = _state
 
-        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
         if _state == NORMAL:
             
             self._process = True
@@ -89,10 +101,9 @@ class Alarm:
             self._acknowledged = True
 
             message = "Alarm {} back to normal".format(self.get_name())
-            event = Event(user=USER, message=message, priority=2, datetime=now)
+            priority = 2
 
-            _logger = LoggerEngine()
-            _logger.write_event(event)
+            self.write_tag_alarm(False)
 
         elif _state == UNACKNOWLEDGED:
 
@@ -101,10 +112,9 @@ class Alarm:
             self._acknowledged = False
 
             message = "Alarm {} triggered".format(self.get_name())
-            event = Event(user=USER, message=message, priority=1, date_time=now)
-
-            _logger = LoggerEngine()
-            _logger.write_event(event)
+            priority = 1
+            
+            self.write_tag_alarm(True)
 
         elif _state == ACKNOWLEDGED:
 
@@ -113,10 +123,9 @@ class Alarm:
             self._acknowledged = True
 
             message = "Alarm {} has been acknowledged".format(self.get_name())
-            event = Event(user=USER, message=message, priority=2, date_time=now)
+            priority = 2
 
-            _logger = LoggerEngine()
-            _logger.write_event(event)
+            self.write_tag_alarm(True)
 
         elif _state == RTN_UNACKNOWLEDGED:
 
@@ -125,15 +134,20 @@ class Alarm:
             self._acknowledged = False
 
             message = "Alarm {} back to normal unacknowledged".format(self.get_name())
-            event = Event(user=USER, message=message, priority=2, date_time=now)
+            priority = 2
 
-            _logger = LoggerEngine()
-            _logger.write_event(event)
+            self.write_tag_alarm(False)
+
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        event = Event(user=USER, message=message, priority=priority, date_time=now)
+
+        self.logger_engine.write_event(event)
 
     def trigger(self):
 
-        self._triggered = True
+        self._triggered = True        
         self._tripped_timestamp = datetime.now()
+        self.set_state(UNACKNOWLEDGED)
 
     def disable(self):
 
@@ -158,6 +172,10 @@ class Alarm:
     def clear(self):
 
         self._triggered = False
+
+        if self._tag_alarm:
+
+            self.tag_engine.write_tag(self._tag_alarm, False)
         
     def reset(self):
 
@@ -178,54 +196,36 @@ class Alarm:
 
         if _state == NORMAL or _state == RTN_UNACKNOWLEDGED:
 
-            if _type == HI:
+            if _type == HI and value >= self._trigger_value:
+                    self.trigger()
 
-                if value >= self._trigger_value:
-                    self.set_state(UNACKNOWLEDGED)
+            elif _type == LO and value <= self._trigger_value:
+                    self.trigger()
 
-            elif _type == LO:
-
-                if value <= self._trigger_value:
-                    self.set_state(UNACKNOWLEDGED)
-
-            elif _type == BOOL:
-
-                if value:
-                    self.set_state(UNACKNOWLEDGED)
+            elif _type == BOOL and value:
+                    self.trigger()
 
         elif _state == UNACKNOWLEDGED:
 
-            if _type == HI:
+            if _type == HI and value < self._trigger_value:
+                self.set_state(RTN_UNACKNOWLEDGED)
 
-                if value < self._trigger_value:
-                    self.set_state(RTN_UNACKNOWLEDGED)
+            elif _type == LO and value > self._trigger_value:
+                self.set_state(RTN_UNACKNOWLEDGED)
 
-            elif _type == LO:
-
-                if value > self._trigger_value:
-                    self.set_state(RTN_UNACKNOWLEDGED)
-
-            elif _type == BOOL:
-
-                if not value:
-                    self.set_state(RTN_UNACKNOWLEDGED)
+            elif _type == BOOL and not value:
+                self.set_state(RTN_UNACKNOWLEDGED)
 
         elif _state == ACKNOWLEDGED:
 
-            if _type == HI:
+            if _type == HI and value < self._trigger_value:
+                self.set_state(NORMAL)
 
-                if value < self._trigger_value:
-                    self.set_state(NORMAL)
+            elif _type == LO and value > self._trigger_value:
+                self.set_state(NORMAL)
 
-            elif _type == LO:
-
-                if value > self._trigger_value:
-                    self.set_state(NORMAL)
-
-            elif _type == BOOL:
-
-                if not value:
-                    self.set_state(NORMAL)
+            elif _type == BOOL and not value:
+                self.set_state(NORMAL)
 
 
 class AlarmManager:
