@@ -322,6 +322,7 @@ class LoggerWorker(BaseWorker):
         
         self._manager = manager
         self._period = manager.get_period()
+        self._delay = manager.get_delay()
 
     def run(self):
 
@@ -349,6 +350,7 @@ class LoggerWorker(BaseWorker):
 
         _cvt = CVTEngine()
 
+        time.sleep(self._delay)
         time.sleep(self._period)
 
         while True:

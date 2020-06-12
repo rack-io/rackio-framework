@@ -38,6 +38,7 @@ class DataLogger:
         self._db = None
         self.tags_dbo = dict()
         self._period = None
+        self._delay = None
 
     def set_db(self, db):
 
@@ -136,7 +137,7 @@ class LoggerEngine(Singleton):
 
     """
 
-    def __init__(self, period=0.5):
+    def __init__(self, period=0.5, delay=1.0):
 
         super(LoggerEngine, self).__init__()
 
@@ -144,6 +145,7 @@ class LoggerEngine(Singleton):
         self._logging_tags = list()
 
         self._logger._period = period
+        self._logger._delay = delay
 
         self._request_lock = threading.Lock()
         self._response_lock = threading.Lock()
@@ -187,6 +189,14 @@ class LoggerEngine(Singleton):
     def get_period(self):
 
         return self._logger._period
+
+    def set_delay(self, delay):
+
+        self._logger._delay = delay
+
+    def get_delay(self):
+
+        return self._logger._delay
 
     def summary(self):
 

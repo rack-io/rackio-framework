@@ -225,7 +225,17 @@ class RackioStateMachine(StateMachine):
 
             if not is_serializable(value):
                 try:
-                    value = str(value)
+                    obj = attrs[key]
+
+                    if isinstance(obj, FloatField):
+                        value = float(value)
+                    elif isinstance(obj, IntegerField):
+                        value = int(value)
+                    elif isinstance(obj, BooleanField):
+                        value = bool(value)
+                    else:
+                        value = str(value)
+
                 except Exception as e:
                     
                     error = str(e)
