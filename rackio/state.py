@@ -180,6 +180,22 @@ class RackioStateMachine(StateMachine):
     
     def serialize(self):
 
+        def is_serializable(value):
+
+            if isinstance(value, float):
+                return True
+
+            if isinstance(value, int):
+                return True
+
+            if isinstance(value, bool):
+                return True
+
+            if isinstance(value, str):
+                return True
+
+            return False
+
         def ismodel_instance(obj):
 
             for cls in [FloatField, IntegerField, BooleanField, StringField]:
@@ -204,7 +220,19 @@ class RackioStateMachine(StateMachine):
                 continue
             if not ismodel_instance(attrs[key]):
                 continue
+            
             value = getattr(self, key)
+
+            if not is_serializable(value):
+                try:
+                    value = str(value)
+                except Exception as e:
+                    
+                    error = str(e)
+
+                    logging.error("Machine - {}:{}".format(self.name, error))
+                    value = None
+
             result[key] = value
 
         return result

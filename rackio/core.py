@@ -113,12 +113,6 @@ class Rackio(Singleton):
         self._api.add_route('/api/events', _events)
 
         self._api.add_route('/api/summary', _summary)
-
-        # Static Resources
-        self._api.add_route('/static/{folder}/{filename}', StaticResource())
-
-        # Template route
-        self._api.add_route('/template/{template}', TemplateResource())
         
         # Admin routes
 
@@ -133,11 +127,8 @@ class Rackio(Singleton):
 
                 api.add_route(route, DynamicAdminResource())
 
-        self._api.add_route('/admin', AdminResource())
-
-        register_directory('admin', self._api)
-        register_directory('static', self._api)
-
+        # register_directory('admin', self._api)
+        # register_directory('static', self._api)
 
     def set_log(self, level=logging.INFO, file=""):
         """Sets the log file and level.
