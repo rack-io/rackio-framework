@@ -20,6 +20,8 @@ tag_egine.set_tag("T2", "float")
 tag_egine.set_tag("T3", "float")
 tag_egine.set_tag("T4", "float")
 tag_egine.set_tag("T5", "float")
+tag_egine.set_tag("ALARM1", "bool")
+tag_egine.set_tag("ALARM2", "bool")
 
 tag_egine.set_tag("message", "str")
 
@@ -47,9 +49,11 @@ from rackio.alarms import Alarm
 
 alarm1 = Alarm("sine1", "SINE_WAVE", "Sine wave alarm")
 alarm1.set_trigger(18.5, HI)
+alarm1.set_tag_alarm("ALARM1")
 
 alarm2 = Alarm("sine2", "SINE_WAVE", "Sine wave alarm")
 alarm2.set_trigger(-18.20, LO)
+alarm2.set_tag_alarm("ALARM2")
 
 app.append_alarm(alarm1)
 app.append_alarm(alarm2)
@@ -116,5 +120,7 @@ def reader():
 if __name__ == "__main__":
 
     app.set_db("tags.db")
+    app.set_log(file="app.log")
     app.set_dbtags(["RAND1", "RAND2", "T1", "T2", "T3"])
     app.run()
+

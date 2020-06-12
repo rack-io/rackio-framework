@@ -6,7 +6,10 @@ This module implements the core app class and methods for Rackio.
 
 import logging
 import sys
+import time
 import concurrent.futures
+
+from os.path import sep
 
 import falcon
 
@@ -21,7 +24,14 @@ from .workers import LoggerWorker, ControlWorker, FunctionWorker, StateMachineWo
 from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, TrendCollectionResource
 from .api import ControlResource, ControlCollectionResource, RuleResource, RuleCollectionResource
 from .api import AlarmResource, AlarmCollectionResource, EventCollectionResource
-from .api import StaticResource, AdminResource
+from .api import StaticResource, TemplateResource
+from .api import AppSummaryResource
+from .api import AdminResource, AdminViewResource, AdminStylesheetResource
+from .api import AdminControllerResource, AdminDirectiveResource
+from .api import AdminPartialResource, AdminServiceResource
+from .api import DynamicAdminResource
+
+from .utils import directory_path, directory_files, directory_paths
 
 from .dbmodels import SQLITE, MYSQL, POSTGRESQL
 
@@ -64,6 +74,10 @@ class Rackio(Singleton):
         self.db = None
         self._db_manager = LoggerEngine()
 
+        self._init_api()
+
+    def _init_api(self):
+
         self._api = falcon.API()
 
         _tag = TagResource()
@@ -78,6 +92,7 @@ class Rackio(Singleton):
         _alarm = AlarmResource()
         _alarms = AlarmCollectionResource()
         _events = EventCollectionResource()
+        _summary = AppSummaryResource()
 
         self._api.add_route('/api/tags/{tag_id}', _tag)
         self._api.add_route('/api/tags', _tags)
@@ -97,11 +112,32 @@ class Rackio(Singleton):
 
         self._api.add_route('/api/events', _events)
 
+        self._api.add_route('/api/summary', _summary)
+
         # Static Resources
         self._api.add_route('/static/{folder}/{filename}', StaticResource())
 
-        # Admin route
+        # Template route
+        self._api.add_route('/template/{template}', TemplateResource())
+        
+        # Admin routes
+
+        def register_directory(directory, api):
+
+            paths = directory_paths(directory)
+
+            for path in paths:
+
+                route = path.replace(sep, "/")
+                route = "/" + directory + route + "/{resource}"
+
+                api.add_route(route, DynamicAdminResource())
+
         self._api.add_route('/admin', AdminResource())
+
+        register_directory('admin', self._api)
+        register_directory('static', self._api)
+
 
     def set_log(self, level=logging.INFO, file=""):
         """Sets the log file and level.
@@ -232,6 +268,21 @@ class Rackio(Singleton):
         """
 
         return self._machine_manager.get_machine(name)
+
+    def summary(self):
+
+        """Returns a Rackio Application Summary (dict).
+        """
+
+        result = dict()
+
+        result["control_manager"] = self._control_manager.summary()
+        result["data_logger"] = self._db_manager.summary()
+        result["alarm_manager"] = self._alarm_manager.summary()
+        result["machine_manager"] = self._machine_manager.summary()
+        result["function_manager"] = self._function_manager.summary()
+
+        return result
 
     def add_route(self, route, resource):
         """Append a resource and route the api.
@@ -369,6 +420,13 @@ class Rackio(Singleton):
         _api_worker = APIWorker(self._api, port)
         
         try:
+
+            _db_worker.daemon = True
+            _control_worker.daemon = True
+            _function_worker.daemon = True
+            _alarm_worker.daemon = True
+            _api_worker.daemon = True
+
             _db_worker.start()
             _control_worker.start()
             _function_worker.start()
@@ -385,18 +443,21 @@ class Rackio(Singleton):
                 try:
                     executor.submit(_f)
                 except Exception as e:
-                    print(e)
+                    error = str(e)
+                    logging.error(error)
 
             for _f in self._continous_functions:
 
                 try:
                     executor.submit(_f)
                 except Exception as e:
-                    print(e)
-
-            threads = [t.join() for t in threads]
+                    error = str(e)
+                    logging.error(error)
+                    
+            while True:
+                time.sleep(100)
 
         except (KeyboardInterrupt, SystemExit):
-            print("Shutting down!!!")
+            logging.info("Manual Shutting down!!!")
             sys.exit()
             

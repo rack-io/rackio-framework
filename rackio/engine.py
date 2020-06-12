@@ -32,7 +32,7 @@ class CVT:
     def __init__(self):
 
         self._tags = dict()
-        self._types = ["float", "int", "bool"]
+        self._types = ["float", "int", "bool", "str"]
 
     def set_type(self, type):
 
@@ -51,7 +51,7 @@ class CVT:
 
         if isinstance(_type, str):
         
-            if _type in ["float", "int", "bool", "str"]:
+            if _type in self._types:
                 if _type == "float":
                     value = 0.0
                 elif _type == "int":
@@ -117,7 +117,7 @@ class CVT:
         else:
             _type = self._tags[name].get_type()
 
-            if not _type in ["int", "float", "bool", "str"]:
+            if not _type in self._types:
                 value = copy.copy(value)
                 value.tag = name
                 
@@ -215,8 +215,18 @@ class CVTEngine(Singleton):
         _type (str):
             Type.
         """
-        if not _type in ["int", "float", "bool"]:
+        if not _type in self._cvt._types:
             self._cvt.set_type(_type)
+
+    def get_type(self, name):
+        """Gets a tag type as string format.
+        
+        # Parameters
+        name (str):
+            Tag name.
+        """
+
+        return self._cvt.get_type(name)
 
     def set_tag(self, name, _type):
         """Sets a new value for a defined tag, in thread-safe mechanism.

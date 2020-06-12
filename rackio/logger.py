@@ -188,6 +188,15 @@ class LoggerEngine(Singleton):
 
         return self._logger._period
 
+    def summary(self):
+
+        result = dict()
+
+        result["period"] = self.get_period()
+        result["tags"] = self.get_tags()
+
+        return result
+
     def write_tag(self, tag, value):
 
         _query = dict()

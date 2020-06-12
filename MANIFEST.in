@@ -1,0 +1,6 @@
+<<<<<<< HEAD
+=======
+recursive-include rackio/static *
+recursive-include rackio/template *
+recursive-include rackio/admin *
+>>>>>>> f40fcbb910fa620373e1776f78f2b339ed13a00b

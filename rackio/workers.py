@@ -19,6 +19,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from .controls import ControlManager
 from .engine import CVTEngine
 from .dbmodels import TagTrend, TagValue, Event
+from .handlers import CustomWSGIRequestHandler
 
 
 class BaseWorker(Thread):
@@ -60,6 +61,8 @@ class ControlWorker(BaseWorker):
 
         if (not self._manager.rule_tags()) and (not self._manager.control_tags()):
             return
+
+        self._manager.execute_all()
 
         _queue = self._manager._tag_queue
 
@@ -141,6 +144,7 @@ class StateMachineWorker():
         
         self._manager = manager
         self._scheduler = BackgroundScheduler()
+        logging.getLogger('apscheduler.executors.default').setLevel(logging.WARNING)
 
         self.jobs = list()
 
@@ -148,25 +152,7 @@ class StateMachineWorker():
 
         def loop():
 
-            try:
-                state_name = machine.current_state.identifier.lower()
-                method_name = "while_" + state_name
-
-                if method_name in dir(machine):
-                    method = getattr(machine, method_name)
-                    
-                    # update tag read bindings
-                    machine._update_tags()
-
-                    # loop machine
-                    method()
-
-                    #update tag write bindings
-                    machine._update_tags("write")
-
-            except Exception as e:
-                error = str(e)
-                logging.error("Machine - {}:{}".format(machine.name, error))
+            machine._loop()
 
         return loop
 
@@ -323,7 +309,7 @@ class APIWorker(BaseWorker):
 
     def run(self):
 
-        with make_server('', self._port, self._api_app) as httpd:
+        with make_server('', self._port, self._api_app, handler_class=CustomWSGIRequestHandler) as httpd:
             logging.info('Serving on port {}...'.format(self._port))
             httpd.serve_forever()
 
@@ -352,7 +338,8 @@ class LoggerWorker(BaseWorker):
         try:
             self._manager.drop_tables([TagTrend, TagValue, Event])
         except Exception as e:
-            print(e)
+            error = str(e)
+            logging.error("Database:{}".format(error))
 
         self._manager.create_tables([TagTrend, TagValue, Event])
         

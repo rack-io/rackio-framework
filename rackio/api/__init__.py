@@ -10,3 +10,5 @@ from .events import *
 from .workers import *
 from .static import *
 from .admin import *
+from .summary import *
+from .template import *
