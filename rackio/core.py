@@ -184,7 +184,7 @@ class Rackio(Singleton):
 
         self.max_workers = nworkers
 
-    def set_dbtags(self, tags, period=0.5):
+    def set_dbtags(self, tags, period=0.5, delay=1.0):
         """Sets the database tags for logging.
         
         # Parameters
@@ -192,7 +192,8 @@ class Rackio(Singleton):
         """
 
         self._db_manager.set_period(period)
-        
+        self._db_manager.set_delay(delay)
+
         for _tag in  tags:
             self._db_manager.add_tag(_tag)
 

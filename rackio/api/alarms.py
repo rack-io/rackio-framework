@@ -66,6 +66,10 @@ class AlarmResource(RackioResource):
 
                 alarm.disable()
 
+            elif action == "Reset":
+
+                alarm.reset()
+
             doc = alarm.serialize()
 
             resp.body = json.dumps(doc, ensure_ascii=False)
