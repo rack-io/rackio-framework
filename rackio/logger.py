@@ -366,7 +366,7 @@ class QueryLogger:
 
     def get_values(self, tag):
 
-        trend = TagTrend.select().order_by(TagTrend.start).where(TagTrend.name == tag).get()
+        trend = TagTrend.select().order_by(TagTrend.start.desc()).where(TagTrend.name == tag).get()
         values = trend.values
         
         return values
