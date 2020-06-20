@@ -336,13 +336,14 @@ class LoggerWorker(BaseWorker):
         if not db:
             return
 
-        try:
-            self._manager.drop_tables([TagTrend, TagValue, Event])
-        except Exception as e:
-            error = str(e)
-            logging.error("Database:{}".format(error))
+        if self._manager.get_dropped():
+            try:
+                self._manager.drop_tables([TagTrend, TagValue, Event])
+            except Exception as e:
+                error = str(e)
+                logging.error("Database:{}".format(error))
 
-        self._manager.create_tables([TagTrend, TagValue, Event])
+            self._manager.create_tables([TagTrend, TagValue, Event])
         
         for tag in tags:
 
