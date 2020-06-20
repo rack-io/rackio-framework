@@ -137,7 +137,7 @@ class LoggerEngine(Singleton):
 
     """
 
-    def __init__(self, period=0.5, delay=1.0):
+    def __init__(self, period=0.5, delay=1.0, drop_tables=True):
 
         super(LoggerEngine, self).__init__()
 
@@ -146,6 +146,7 @@ class LoggerEngine(Singleton):
 
         self._logger._period = period
         self._logger._delay = delay
+        self._drop_tables = drop_tables
 
         self._request_lock = threading.Lock()
         self._response_lock = threading.Lock()
@@ -161,6 +162,14 @@ class LoggerEngine(Singleton):
     def get_db(self):
 
         return self._logger.get_db()
+
+    def set_dropped(self, drop_tables):
+
+        self._drop_tables = drop_tables
+
+    def get_dropped(self):
+
+        return self._drop_tables
 
     def create_tables(self, tables):
 

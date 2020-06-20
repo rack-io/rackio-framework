@@ -143,7 +143,7 @@ class Rackio(Singleton):
         if file:
             self._log_file = file
 
-    def set_db(self, dbfile=':memory:', dbtype=SQLITE, **kwargs):
+    def set_db(self, dbfile=':memory:', dbtype=SQLITE, drop_table=True, **kwargs):
         """Sets the database file.
         
         # Parameters
@@ -174,6 +174,7 @@ class Rackio(Singleton):
         
         proxy.initialize(self._db)
         self._db_manager.set_db(self._db)
+        self._db_manager.set_dropped(drop_table)
 
     def set_workers(self, nworkers):
         """Sets the maximum workers in the ThreadPoolExecutor.
