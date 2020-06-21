@@ -47,13 +47,18 @@ class TwoStep(RackioStateMachine):
 
         self.count = 0
 
+    def on_forward(self, *args):
+
+        param = args[0]
+        print("Forwarded : {}".format(param))
+
     def while_state1(self):
 
         self.count += 1
         
         logging.warning("{}: {}".format(self.name, self.count))
         if self.count == 5:
-            self.forward()
+            self.forward("Flag")
 
     def while_state2(self):
 
