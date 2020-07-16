@@ -95,4 +95,5 @@ if __name__ == "__main__":
 
     app.set_db("tags.db")
     app.set_dbtags(["RAND1", "RAND2", "T1", "T2", "T3"])
+    app.set_log(file="app.log")
     app.run()

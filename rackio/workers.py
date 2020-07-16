@@ -343,7 +343,7 @@ class LoggerWorker(BaseWorker):
                 error = str(e)
                 logging.error("Database:{}".format(error))
 
-            self._manager.create_tables([TagTrend, TagValue, Event])
+        self._manager.create_tables([TagTrend, TagValue, Event])
         
         for tag in tags:
 
