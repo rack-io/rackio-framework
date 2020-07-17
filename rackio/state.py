@@ -3,6 +3,8 @@
 
 This module implements all state machine classes.
 """
+import sys
+import linecache
 import logging
 
 from inspect import ismethod
