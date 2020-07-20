@@ -19,6 +19,9 @@ from .controls import ControlManager, FunctionManager
 from .alarms import AlarmManager
 from .state import StateMachineManager
 from .workers import LoggerWorker, ControlWorker, FunctionWorker, StateMachineWorker, AlarmWorker, APIWorker, _ContinousWorker
+
+from .web import StaticResource, resource_pairs
+
 from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, TrendCollectionResource
 from .api import ControlResource, ControlCollectionResource, RuleResource, RuleCollectionResource
 from .api import AlarmResource, AlarmCollectionResource, EventCollectionResource
@@ -68,6 +71,7 @@ class Rackio(Singleton):
         self._db_manager = LoggerEngine()
 
         self._init_api()
+        self._init_web()
 
     def _init_api(self):
 
@@ -107,6 +111,20 @@ class Rackio(Singleton):
 
         self._api.add_route('/api/summary', _summary)
 
+    def _init_web(self):
+
+        web = self._api
+
+        _static = StaticResource()
+
+        pairs = resource_pairs()
+        
+        for path, route in pairs:
+
+            route += "/{filename}"
+
+            web.add_route(route, _static)
+        
     def set_log(self, level=logging.INFO, file=""):
         """Sets the log file and level.
         

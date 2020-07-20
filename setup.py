@@ -23,8 +23,6 @@ setuptools.setup(
         'peewee',
         'python-statemachine',
 		'APScheduler',
-		'requests',
-		'aiohttp',
         'Jinja2'
     ],
     classifiers=[
