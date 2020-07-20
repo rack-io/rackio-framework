@@ -4,7 +4,6 @@
 This module implements classes for
 modelling the trending process.
 """
-from datetime import datetime
 
 from peewee import Proxy, Model, CharField, TextField, DateTimeField, IntegerField, FloatField, ForeignKeyField
 

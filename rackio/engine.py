@@ -34,9 +34,9 @@ class CVT:
         self._tags = dict()
         self._types = ["float", "int", "bool", "str"]
 
-    def set_type(self, type):
+    def set_type(self, _type):
 
-        self._types.append(type)
+        self._types.append(_type)
         self._types = list(set(self._types))
 
     def set_tag(self, name, _type):
@@ -104,7 +104,7 @@ class CVT:
         else:
             tag_name = name
         
-        if not tag_name in self._tags:
+        if tag_name not in self._tags:
             raise KeyError
 
         if "." in name:
@@ -117,7 +117,7 @@ class CVT:
         else:
             _type = self._tags[name].get_type()
 
-            if not _type in self._types:
+            if _type not in self._types:
                 value = copy.copy(value)
                 value.tag = name
                 
@@ -150,6 +150,14 @@ class CVT:
         """
 
         return self._tags[name].get_type()
+
+    def get_types(self):
+        """Returns all tag types.
+        
+        # Parameters
+        """
+
+        return self._types
 
     def attach_observer(self, name, observer):
         """Attaches a new observer to a tag object defined by name.
@@ -215,7 +223,7 @@ class CVTEngine(Singleton):
         _type (str):
             Type.
         """
-        if not _type in self._cvt._types:
+        if _type not in self._cvt.get_types():
             self._cvt.set_type(_type)
 
     def get_type(self, name):

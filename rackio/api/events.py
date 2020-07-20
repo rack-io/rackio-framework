@@ -12,6 +12,7 @@ from rackio import status_code
 from .core import RackioResource
 
 from ..events import Event
+from ..utils import serialize_dbo
 
 
 class EventCollectionResource(RackioResource):

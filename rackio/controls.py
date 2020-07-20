@@ -6,8 +6,6 @@ actions into Tags oberservers.
 """
 import queue
 
-from threading import Thread
-
 from pybigparser.evaluator import get_vars, MathParser
 
 from .engine import CVTEngine
@@ -213,32 +211,36 @@ class Condition:
         
         value2 = response["response"]
 
+        result = False
+
         if _oper == EQ:
 
-            return value1 == value2
+            result = value1 == value2
 
         elif _oper == NEQ:
 
-            return value1 != value2
+            result = value1 != value2
         
         elif _oper == LT:
 
-            return value1 < value2
+            result = value1 < value2
 
         elif _oper == LTE:
 
-            return value1 <= value2
+            result = value1 <= value2
 
         elif _oper == GT:
 
-            return value1 > value2
+            result = value1 > value2
 
         elif _oper == GTE:
 
-            return value1 >= value2
+            result = value1 >= value2
 
         else:
-            return False
+            result = False
+
+        return result
 
 
 class OrCondition:
@@ -485,7 +487,7 @@ class ControlManager:
         
         result = list()
         
-        for _tags in self._rules.keys():
+        for _tags in self._rules:
             for _tag in _tags:
                 result.append(_tag)
 
@@ -495,7 +497,7 @@ class ControlManager:
         
         result = list()
         
-        for _tags in self._controls.keys():
+        for _tags in self._controls:
             for _tag in _tags:
                 result.append(_tag)
 
@@ -503,7 +505,7 @@ class ControlManager:
     
     def append_rule(self, rule):
 
-        tags = rule._condition.tags()
+        tags = rule.condition.tags()
         try:
             self._rules[tags].append(rule)
         except:
@@ -511,7 +513,7 @@ class ControlManager:
 
     def append_control(self, control):
 
-        tags = control._condition.tags()
+        tags = control.condition.tags()
         try:
             self._controls[tags].append(control)
         except:
@@ -669,7 +671,7 @@ class FunctionManager:
 
         _cvt = CVTEngine()
 
-        for _tag in self._tags.keys():
+        for _tag in self._tags:
 
             observer = TagObserver(self._tag_queue)
             query = dict()
@@ -690,4 +692,3 @@ class FunctionManager:
                 _function()
         except:
             pass
-

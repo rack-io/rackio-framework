@@ -6,8 +6,6 @@ This module implements all thread classes for workers.
 import time
 import logging
 import asyncio
-import requests
-import json
 
 from threading import Thread
 from random import randint
@@ -16,7 +14,6 @@ from wsgiref.simple_server import make_server
 from aiohttp import ClientSession
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from .controls import ControlManager
 from .engine import CVTEngine
 from .dbmodels import TagTrend, TagValue, Event
 from .handlers import CustomWSGIRequestHandler

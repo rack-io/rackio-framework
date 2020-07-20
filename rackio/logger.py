@@ -6,11 +6,8 @@ will create a time-serie for each tag in a short memory sqlite data base.
 """
 
 import threading
-import os
 
 from datetime import datetime
-
-from peewee import SqliteDatabase
 
 from .dbmodels import TagTrend, TagValue, Event
 from .utils import serialize_dbo
@@ -39,6 +36,22 @@ class DataLogger:
         self.tags_dbo = dict()
         self._period = None
         self._delay = None
+
+    def set_period(self, period):
+
+        self._period = period
+
+    def get_period(self):
+
+        return self._period
+
+    def set_delay(self, delay):
+
+        self._delay = delay
+        
+    def get_delay(self):
+
+        return self._delay
 
     def set_db(self, db):
 
@@ -144,8 +157,8 @@ class LoggerEngine(Singleton):
         self._logger = DataLogger()
         self._logging_tags = list()
 
-        self._logger._period = period
-        self._logger._delay = delay
+        self._logger.set_period(period)
+        self._logger.set_delay(delay)
         self._drop_tables = drop_tables
 
         self._request_lock = threading.Lock()
@@ -193,19 +206,19 @@ class LoggerEngine(Singleton):
 
     def set_period(self, period):
 
-        self._logger._period = period
+        self._logger.set_period(period)
 
     def get_period(self):
 
-        return self._logger._period
+        return self._logger.get_period()
 
     def set_delay(self, delay):
 
-        self._logger._delay = delay
+        self._logger.set_delay(delay)
 
     def get_delay(self):
 
-        return self._logger._delay
+        return self._logger.get_delay()
 
     def summary(self):
 

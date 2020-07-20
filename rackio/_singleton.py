@@ -25,4 +25,3 @@ class Singleton(metaclass=SingletonMeta):
     """
     The Singleton with simple class name.
     """
-    pass

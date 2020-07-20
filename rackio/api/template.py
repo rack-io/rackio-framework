@@ -5,7 +5,7 @@ import os
 from rackio import status_code
 
 
-class TemplateResource(object):
+class TemplateResource:
 
     def on_get(self, req, resp, template):
         # do some sanity check on the filename

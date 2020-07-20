@@ -9,8 +9,6 @@ import sys
 import time
 import concurrent.futures
 
-from os.path import sep
-
 import falcon
 
 from peewee import SqliteDatabase, MySQLDatabase, PostgresqlDatabase
@@ -24,14 +22,9 @@ from .workers import LoggerWorker, ControlWorker, FunctionWorker, StateMachineWo
 from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, TrendCollectionResource
 from .api import ControlResource, ControlCollectionResource, RuleResource, RuleCollectionResource
 from .api import AlarmResource, AlarmCollectionResource, EventCollectionResource
-from .api import StaticResource, TemplateResource
 from .api import AppSummaryResource
-from .api import AdminResource, AdminViewResource, AdminStylesheetResource
-from .api import AdminControllerResource, AdminDirectiveResource
-from .api import AdminPartialResource, AdminServiceResource
-from .api import DynamicAdminResource
 
-from .utils import directory_path, directory_files, directory_paths
+from .utils import directory_paths
 
 from .dbmodels import SQLITE, MYSQL, POSTGRESQL
 
@@ -113,22 +106,6 @@ class Rackio(Singleton):
         self._api.add_route('/api/events', _events)
 
         self._api.add_route('/api/summary', _summary)
-        
-        # Admin routes
-
-        def register_directory(directory, api):
-
-            paths = directory_paths(directory)
-
-            for path in paths:
-
-                route = path.replace(sep, "/")
-                route = "/" + directory + route + "/{resource}"
-
-                api.add_route(route, DynamicAdminResource())
-
-        # register_directory('admin', self._api)
-        # register_directory('static', self._api)
 
     def set_log(self, level=logging.INFO, file=""):
         """Sets the log file and level.
@@ -262,6 +239,24 @@ class Rackio(Singleton):
 
         return self._machine_manager.get_machine(name)
 
+    def get_manager(self, name):
+        """Returns a specified application manager.
+        
+        # Parameters
+        name (str): a manager name.
+        """
+
+        if name == "control":
+            manager = self._control_manager
+        elif name == "alarm":
+            manager = self._alarm_manager
+        elif name == "state":
+            manager = self._machine_manager
+        else:
+            manager = self._function_manager
+
+        return manager
+
     def summary(self):
 
         """Returns a Rackio Application Summary (dict).
@@ -321,7 +316,7 @@ class Rackio(Singleton):
         
         return decorator
 
-    def rackit_on(self, function=None, worker_name=None, period=0.5, error_message=None, pause_tag=None, stop_tag=None):
+    def rackit_on(self, function=None, **kwargs):
         """Decorator method to register functions plugins with continous execution.
         
         This method will register into the Rackio application
@@ -346,8 +341,9 @@ class Rackio(Singleton):
         if function:
             return _ContinousWorker(function)
         else:
+
             def wrapper(function):
-                return _ContinousWorker(function, worker_name, period, error_message, pause_tag, stop_tag)
+                return _ContinousWorker(function, **kwargs)
 
             return wrapper
 

@@ -16,7 +16,7 @@ class ContinousWorkerResource(RackioResource):
     def on_get(self, req, resp, worker_name):
 
         app = self.get_app()
-        manager = app._alarm_manager
+        manager = app.get_manager("alarm")
 
         alarm = manager.get_alarm(worker_name)
 
@@ -39,7 +39,7 @@ class ContinousWorkerResource(RackioResource):
         action = req.media.get('action')
 
         app = self.get_app()
-        manager = app._alarm_manager
+        manager = app.get_manager("alarm")
 
         alarm = manager.get_alarm(alarm_name)
 

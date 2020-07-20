@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 class ManagementUtility(object):
 
     def __init__(self, argv):

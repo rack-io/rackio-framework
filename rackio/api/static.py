@@ -5,7 +5,7 @@ import os
 from rackio import status_code
 
 
-class StaticResource(object):
+class StaticResource:
     
     def on_get(self, req, resp, folder, filename):
         # do some sanity check on the filename

@@ -273,13 +273,13 @@ class Model(object):
         except:
             raise KeyError
 
-    def _serialize(self):
+    def serialize(self):
 
         result = dict()
 
         attrs = self.get_attributes()
 
-        for key in attrs.keys():
+        for key in attrs:
             value = getattr(self, key)
             result[key] = value
 

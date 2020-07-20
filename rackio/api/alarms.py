@@ -53,27 +53,27 @@ class AlarmResource(RackioResource):
 
         alarm = manager.get_alarm(alarm_name)
 
-        if alarm:
-            if action == "Acknowledge":
-
-                alarm.acknowledge()
-            
-            elif action == "Enable":
-
-                alarm.enable()
-
-            elif action == "Disable":
-
-                alarm.disable()
-
-            elif action == "Reset":
-
-                alarm.reset()
-
-            doc = alarm.serialize()
-
-            resp.body = json.dumps(doc, ensure_ascii=False)
-
-        else:
+        if not alarm:
             resp.status = status_code.HTTP_NOT_FOUND
+        
+        if action == "Acknowledge":
+
+            alarm.acknowledge()
+        
+        elif action == "Enable":
+
+            alarm.enable()
+
+        elif action == "Disable":
+
+            alarm.disable()
+
+        elif action == "Reset":
+
+            alarm.reset()
+
+        doc = alarm.serialize()
+
+        resp.body = json.dumps(doc, ensure_ascii=False)
+            
             

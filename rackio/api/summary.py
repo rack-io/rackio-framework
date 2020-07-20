@@ -6,8 +6,6 @@ This module implements all class Resources for the Alarm Manager.
 
 import json
 
-from rackio import status_code
-
 from .core import RackioResource
 
 

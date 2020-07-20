@@ -194,16 +194,16 @@ class Alarm:
         _state = self._state
         _type = self._trigger_type
 
-        if _state == NORMAL or _state == RTN_UNACKNOWLEDGED:
+        if _state in (NORMAL, RTN_UNACKNOWLEDGED):
 
             if _type == HI and value >= self._trigger_value:
-                    self.trigger()
+                self.trigger()
 
             elif _type == LO and value <= self._trigger_value:
-                    self.trigger()
+                self.trigger()
 
             elif _type == BOOL and value:
-                    self.trigger()
+                self.trigger()
 
         elif _state == UNACKNOWLEDGED:
 
@@ -244,6 +244,8 @@ class AlarmManager:
         for _alarm in self._alarms:
             if name == _alarm.get_name():
                 return _alarm
+
+        return
 
     def get_alarms(self):
 

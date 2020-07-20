@@ -6,8 +6,6 @@ This module implements all class Resources for the Tag Engine.
 
 import json
 
-from rackio import status_code
-
 from .core import RackioResource
 
 
@@ -28,7 +26,7 @@ class TagCollectionResource(RackioResource):
             try:
                 result = {
                     'tag': _tag,
-                    'value': value._serialize(),
+                    'value': value.serialize(),
                     'type': _type,
                 }
             except:
@@ -55,7 +53,7 @@ class TagResource(RackioResource):
         try:
             doc = {
                 'tag': tag_id,
-                'value': value._serialize(),
+                'value': value.serialize(),
                 'type': _type,
             }
         except:

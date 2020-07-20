@@ -36,5 +36,4 @@ class RackioBinding:
     def get_bindings(self):
 
         return self.tag_bindings
-
     

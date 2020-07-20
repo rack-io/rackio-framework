@@ -16,7 +16,7 @@ class ControlCollectionResource(RackioResource):
     def on_get(self, req, resp):
 
         app = self.get_app()
-        manager = app._control_manager
+        manager = app.get_manager("control")
 
         doc = list()
 
@@ -32,7 +32,7 @@ class ControlResource(RackioResource):
     def on_get(self, req, resp, control_name):
 
         app = self.get_app()
-        manager = app._control_manager
+        manager = app.get_manager("control")
 
         control = manager.get_control(control_name)
 
@@ -50,7 +50,7 @@ class RuleCollectionResource(RackioResource):
     def on_get(self, req, resp):
 
         app = self.get_app()
-        manager = app._control_manager
+        manager = app.get_manager("control")
 
         doc = list()
 
@@ -66,7 +66,7 @@ class RuleResource(RackioResource):
     def on_get(self, req, resp, rule_name):
         
         app = self.get_app()
-        manager = app._control_manager
+        manager = app.get_manager("control")
 
         rule = manager.get_rule(rule_name)
 
