@@ -5,13 +5,11 @@ This module implements all thread classes for workers.
 """
 import time
 import logging
-import asyncio
 
 from threading import Thread
 from random import randint
 from wsgiref.simple_server import make_server
 
-from aiohttp import ClientSession
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from .engine import CVTEngine
@@ -365,64 +363,4 @@ class LoggerWorker(BaseWorker):
                 time.sleep(self._period - elapsed)
             else:
                 logging.warning("Logger Worker: Failed to log items on time...")
-
-async def sync(session, binding, host, port):
-
-    url = "http://{}:{}/api/tags/{}".format(host, port, binding.remote_tag)
-    
-    if binding.direction == "read":
-        
-        async with session.get(url) as response:
-             return await response.json()
-
-    elif binding.direction == "write":
-
-        value = randint(10, 50)
-        async with session.post(url, json={"value": value}) as response:
-            return await response.json()
-
-
-class BindingWorker(BaseWorker):
-
-    def __init__(self, manager, period=0.2):
-
-        super(BindingWorker, self).__init__()
-        
-        self._manager = manager
-        self._period = period
-
-        self.loop = asyncio.new_event_loop()
-
-    def run(self):
-        
-        bindings = self._manager.get_bindings()
-
-        if not bindings:
-            return
-        
-        host_ip, host_port = self._manager.get_host()
-
-        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
-        
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-        future = asyncio.ensure_future(self._run(loop, bindings, host_ip, host_port))
-        loop.run_until_complete(future)
-        loop.close()
-
-    async def _run(self, loop, bindings, host_ip, host_port):
-
-        tasks = list()
-
-        while True:
-
-            async with ClientSession(loop=loop) as session:
-        
-                for binding in bindings:
             
-                    task = asyncio.ensure_future(sync(session, binding, host_ip, host_port))
-                    tasks.append(task)
-
-                responses = await asyncio.gather(*tasks)
-                

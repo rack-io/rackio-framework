@@ -410,21 +410,16 @@ class Rackio(Singleton):
         
         try:
 
-            _db_worker.daemon = True
-            _control_worker.daemon = True
-            _function_worker.daemon = True
-            _alarm_worker.daemon = True
-            _api_worker.daemon = True
-
-            _db_worker.start()
-            _control_worker.start()
-            _function_worker.start()
-            _machine_worker.start()
-            _alarm_worker.start()
-            _api_worker.start()
-
             threads = [_db_worker, _control_worker, _function_worker, _alarm_worker, _api_worker]
 
+            for thread in threads:
+
+                thread.daemon = True
+
+            for thread in threads:
+
+                thread.start()
+                
             executor = concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers)
                 
             for _f, period in self._worker_functions:
@@ -444,7 +439,7 @@ class Rackio(Singleton):
                     logging.error(error)
                     
             while True:
-                time.sleep(100)
+                time.sleep(0.5)
 
         except (KeyboardInterrupt, SystemExit):
             logging.info("Manual Shutting down!!!")
