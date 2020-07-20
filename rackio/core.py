@@ -351,7 +351,7 @@ class Rackio(Singleton):
         """Decorator method to register functions as tag observers.
         
         This method will register into the Rackio application
-        a new function as a custom observer  to be executed by 
+        a new function as a custom observer to be executed by 
         the Thread Pool Executor. If the tag associated changes 
         its value, the function registered will be executed.
 
