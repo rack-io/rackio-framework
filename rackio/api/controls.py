@@ -54,7 +54,7 @@ class RuleCollectionResource(RackioResource):
 
         doc = list()
 
-        for rule in manager._rules:
+        for rule in manager.get_rules():
 
             doc.append(rule.serialize())
             

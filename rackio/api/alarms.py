@@ -16,7 +16,7 @@ class AlarmCollectionResource(RackioResource):
     def on_get(self, req, resp):
 
         app = self.get_app()
-        manager = app._alarm_manager
+        manager = app.get_manager("alarm")
 
         doc = list()
 
@@ -32,7 +32,7 @@ class AlarmResource(RackioResource):
     def on_get(self, req, resp, alarm_name):
 
         app = self.get_app()
-        manager = app._alarm_manager
+        manager = app.get_manager("alarm")
 
         alarm = manager.get_alarm(alarm_name)
 
@@ -49,7 +49,7 @@ class AlarmResource(RackioResource):
         action = req.media.get('action')
 
         app = self.get_app()
-        manager = app._alarm_manager
+        manager = app.get_manager("alarm")
 
         alarm = manager.get_alarm(alarm_name)
 
