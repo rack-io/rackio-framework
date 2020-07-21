@@ -440,14 +440,14 @@ class Rackio(Singleton):
 
     def _start_scheduler(self):
         
-        executor = concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers)
+        scheduler = concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers)
 
         try:
 
             for _f, period in self._worker_functions:
 
                 try:
-                    executor.submit(_f)
+                    scheduler.submit(_f)
                 except Exception as e:
                     error = str(e)
                     logging.error(error)
@@ -455,7 +455,7 @@ class Rackio(Singleton):
             for _f in self._continous_functions:
 
                 try:
-                    executor.submit(_f)
+                    scheduler.submit(_f)
                 except Exception as e:
                     error = str(e)
                     logging.error(error)

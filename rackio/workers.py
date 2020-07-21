@@ -7,7 +7,6 @@ import time
 import logging
 
 from threading import Thread
-from random import randint
 from wsgiref.simple_server import make_server
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -59,7 +58,7 @@ class ControlWorker(BaseWorker):
 
         self._manager.execute_all()
 
-        _queue = self._manager._tag_queue
+        _queue = self._manager.get_queue()
 
         while True:
 
@@ -89,7 +88,7 @@ class FunctionWorker(BaseWorker):
         if not self._manager._tags:
             return
         
-        _queue = self._manager._tag_queue
+        _queue = self._manager.get_queue()
 
         while True:
 
@@ -119,7 +118,7 @@ class AlarmWorker(BaseWorker):
         if not self._manager.alarm_tags():
             return
 
-        _queue = self._manager._tag_queue
+        _queue = self._manager.get_queue()
 
         while True:
             
@@ -147,7 +146,7 @@ class StateMachineWorker():
 
         def loop():
 
-            machine._loop()
+            machine.loop()
 
         return loop
 
@@ -353,7 +352,7 @@ class LoggerWorker(BaseWorker):
 
             now = time.time()
 
-            for _tag in self._manager._logging_tags:
+            for _tag in self._manager.get_tags():
                 value = _cvt.read_tag(_tag)
                 self._manager.write_tag(_tag, value)
             

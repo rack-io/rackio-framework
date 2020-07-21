@@ -234,6 +234,10 @@ class AlarmManager:
 
         self._alarms = list()
         self._tag_queue = queue.Queue()
+
+    def get_queue(self):
+
+        return self._tag_queue
     
     def append_alarm(self, alarm):
 

@@ -4,7 +4,7 @@
 This module defines the events history classes and function.
 """
 
-from .models import Model, IntegerField, BooleanField, StringField
+from .models import Model, IntegerField, StringField
 
 
 class Event(Model):

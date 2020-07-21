@@ -483,6 +483,10 @@ class ControlManager:
         self._controls = dict()
         self._tag_queue = queue.Queue()
 
+    def get_queue(self):
+
+        return self._tag_queue
+
     def rule_tags(self):
         
         result = list()
@@ -645,6 +649,10 @@ class FunctionManager:
 
         self._tags = dict()
         self._tag_queue = queue.Queue()
+
+    def get_queue(self):
+
+        return self._tag_queue
 
     def append_function(self, tag, function):
 

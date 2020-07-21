@@ -179,6 +179,10 @@ class RackioStateMachine(StateMachine):
         except Exception as e:
             error = str(e)
             logging.error("Machine - {}:{}".format(self.name, error))
+
+    def loop(self):
+
+        self._loop()
     
     def serialize(self):
 
