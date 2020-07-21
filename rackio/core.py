@@ -58,6 +58,7 @@ class Rackio(Singleton):
         self.max_workers = 10
         self._logging_level = logging.INFO
         self._log_file = ""
+        self._port = 8000
 
         self._worker_functions = list()
         self._continous_functions = list()
@@ -124,6 +125,10 @@ class Rackio(Singleton):
             route += "/{filename}"
 
             web.add_route(route, _static)
+
+    def set_port(self, port):
+
+        self._port = port
         
     def set_log(self, level=logging.INFO, file=""):
         """Sets the log file and level.
@@ -399,18 +404,7 @@ class Rackio(Singleton):
         
         return decorator
 
-    def run(self, port=8000):
-
-        """Runs the main execution for the application to start serving.
-        
-        This will put all the components of the application at run
-
-        # Example
-    
-        ```python
-        >>> app.run()
-        ```
-        """
+    def _start_logger(self):
 
         log_format = "%(asctime)s:%(levelname)s:%(message)s"
 
@@ -419,13 +413,15 @@ class Rackio(Singleton):
         else:
             logging.basicConfig(level=self._logging_level, format=log_format)
 
+    def _start_workers(self):
+
         _db_worker = LoggerWorker(self._db_manager)
         _control_worker = ControlWorker(self._control_manager)
         _function_worker = FunctionWorker(self._function_manager)
         _machine_worker = StateMachineWorker(self._machine_manager)
         _alarm_worker = AlarmWorker(self._alarm_manager)
-        _api_worker = APIWorker(self._api, port)
-        
+        _api_worker = APIWorker(self._api, self._port)
+
         try:
 
             threads = [_db_worker, _control_worker, _function_worker, _machine_worker, _alarm_worker, _api_worker]
@@ -437,9 +433,17 @@ class Rackio(Singleton):
             for thread in threads:
 
                 thread.start()
-                
-            executor = concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers)
-                
+
+        except Exception as e:
+            error = str(e)
+            logging.error(error)
+
+    def _start_scheduler(self):
+        
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers)
+
+        try:
+
             for _f, period in self._worker_functions:
 
                 try:
@@ -455,7 +459,31 @@ class Rackio(Singleton):
                 except Exception as e:
                     error = str(e)
                     logging.error(error)
-                    
+
+        except Exception as e:
+            error = str(e)
+            logging.error(error)
+
+    def run(self, port=8000):
+
+        """Runs the main execution for the application to start serving.
+        
+        This will put all the components of the application at run
+
+        # Example
+    
+        ```python
+        >>> app.run()
+        ```
+        """
+
+        self.set_port(port)
+
+        self._start_logger()
+        self._start_workers()
+        self._start_scheduler()
+
+        try:         
             while True:
                 time.sleep(0.5)
 
