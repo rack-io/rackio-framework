@@ -79,5 +79,9 @@ class StaticResource:
         resp.status = falcon.HTTP_200
         resp.content_type = get_content_type(filename)
 
-        with open(path, 'r') as f:
-            resp.body = f.read()
+        try:
+            with open(path, 'r', encoding='utf8', errors='ignore') as f:
+                resp.body = f.read()
+        except:
+            with open(path, 'rb') as f:
+                resp.body = f.read()
