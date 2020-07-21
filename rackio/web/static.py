@@ -5,6 +5,12 @@ import mimetypes
 
 import falcon
 
+external_mimetypes = {
+    ".ttf": "font/ttf",
+    ".woff": "font/woff",
+    ".woff2": "font/woff2" 
+}
+
 def get_extension(filename):
 
     filename, file_extension = os.path.splitext(filename)
@@ -14,6 +20,9 @@ def get_extension(filename):
 def get_content_type(filename):
 
     ext = get_extension(filename)
+
+    if ext in (".ttf", ".woff", ".woff2"):
+        return external_mimetypes[ext]
 
     return mimetypes.types_map[ext]
 
