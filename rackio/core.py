@@ -428,7 +428,7 @@ class Rackio(Singleton):
         
         try:
 
-            threads = [_db_worker, _control_worker, _function_worker, _alarm_worker, _api_worker]
+            threads = [_db_worker, _control_worker, _function_worker, _machine_worker, _alarm_worker, _api_worker]
 
             for thread in threads:
 
