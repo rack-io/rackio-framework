@@ -7,6 +7,7 @@ import time
 import logging
 
 from threading import Thread
+from threading import Event as ThreadEvent
 from wsgiref.simple_server import make_server
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -21,6 +22,13 @@ class BaseWorker(Thread):
     def  __init__(self):
 
         super(BaseWorker, self).__init__()
+
+        self.stop_event = ThreadEvent()
+        self.tag_engine = CVTEngine()
+
+    def get_stop_event(self):
+
+        return self.stop_event
 
 
 class ThreadWorker(BaseWorker):
@@ -318,17 +326,38 @@ class LoggerWorker(BaseWorker):
         self._period = manager.get_period()
         self._delay = manager.get_delay()
 
-    def run(self):
+        self.last = None
+
+    def set_last(self):
+
+        self.last = time.time()
+
+    def sleep_elapsed(self):
+
+        elapsed = time.time() - self.last
+
+        if elapsed < self._period:
+            time.sleep(self._period - elapsed)
+        else:
+            logging.warning("Logger Worker: Failed to log items on time...")
+
+        self.set_last()
+
+    def verify_workload(self):
 
         tags = self._manager.get_tags()
 
         if not tags:
-            return
+            return False
 
         db = self._manager.get_db()
 
         if not db:
-            return
+            return False
+
+        return True
+
+    def init_database(self):
 
         if self._manager.get_dropped():
             try:
@@ -338,28 +367,38 @@ class LoggerWorker(BaseWorker):
                 logging.error("Database:{}".format(error))
 
         self._manager.create_tables([TagTrend, TagValue, Event])
+
+    def set_tags(self):
+
+        tags = self._manager.get_tags()
         
         for tag in tags:
 
             self._manager.set_tag(tag)
 
-        _cvt = CVTEngine()
+    def write_tags(self):
 
+        for _tag in self._manager.get_tags():
+            value = self.tag_engine.read_tag(_tag)
+            self._manager.write_tag(_tag, value)
+
+    def run(self):
+
+        if not self.verify_workload():
+            return
+
+        self.init_database()
+        self.set_tags()
+        
         time.sleep(self._delay)
         time.sleep(self._period)
 
+        self.set_last()
+
         while True:
 
-            now = time.time()
+            self.write_tags()
+            self.sleep_elapsed()
 
-            for _tag in self._manager.get_tags():
-                value = _cvt.read_tag(_tag)
-                self._manager.write_tag(_tag, value)
-            
-            elapsed = time.time() - now
-
-            if elapsed < self._period:
-                time.sleep(self._period - elapsed)
-            else:
-                logging.warning("Logger Worker: Failed to log items on time...")
+           
             

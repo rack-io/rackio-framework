@@ -71,6 +71,8 @@ class Rackio(Singleton):
         self.db = None
         self._db_manager = LoggerEngine()
 
+        self.workers = None
+
         self._init_api()
         self._init_web()
 
@@ -424,19 +426,24 @@ class Rackio(Singleton):
 
         try:
 
-            threads = [_db_worker, _control_worker, _function_worker, _machine_worker, _alarm_worker, _api_worker]
+            workers = [_db_worker, _control_worker, _function_worker, _machine_worker, _alarm_worker, _api_worker]
 
-            for thread in threads:
+            for worker in workers:
 
-                thread.daemon = True
-
-            for thread in threads:
-
-                thread.start()
+                worker.daemon = True
+                worker.start()
 
         except Exception as e:
             error = str(e)
             logging.error(error)
+
+        self.workers = workers
+
+    def stop_workers(self):
+
+        for worker in self.workers:
+            stop_event = worker.get_stop_event()
+            stop_event.set()
 
     def _start_scheduler(self):
         
