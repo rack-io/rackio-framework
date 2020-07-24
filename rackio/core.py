@@ -264,6 +264,23 @@ class Rackio(Singleton):
 
         return self._machine_manager.get_machine(name)
 
+    def define_machine(self, name="", interval=1, **kwargs):
+
+        """Append a state machine to the state machine manager
+        by a class decoration.
+        
+        # Parameters
+        interval (int): Interval execution time in seconds.
+        """
+
+        def decorator(cls):
+
+            machine = cls(name, **kwargs)
+            
+            self.append_machine(machine, interval=interval)
+
+        return decorator
+
     def get_manager(self, name):
         """Returns a specified application manager.
         
