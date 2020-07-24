@@ -421,14 +421,17 @@ class CVTEngine(Singleton):
                     "result": False
                 }
         
-        elif action == "attach":
+        elif action in ("attach", "detach"):
 
             try:
                 parameters = _query["parameters"]
                 name = parameters["name"]
                 observer = parameters["observer"]
                 
-                self._cvt.attach_observer(name, observer)
+                if action == "attach":
+                    self._cvt.attach_observer(name, observer)
+                else:
+                    self._cvt.detach_observer(name, observer)
 
                 self._response = {
                     "result": True
@@ -439,26 +442,7 @@ class CVTEngine(Singleton):
                 self._response = {
                     "result": False
                 }
-
-        elif action == "detach":
-
-            try:
-                parameters = _query["parameters"]
-                name = parameters["name"]
-                observer = parameters["observer"]
                 
-                self._cvt.detach_observer(name, observer)
-
-                self._response = {
-                    "result": True
-                }
-
-            except:
-
-                self._response = {
-                    "result": False
-                }
-
         self._response_lock.release()
 
     def response(self):
