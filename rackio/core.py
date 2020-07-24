@@ -324,6 +324,22 @@ class Rackio(Singleton):
 
         self._api.add_route(route, resource)
 
+    def define_route(self, route, **kwargs):
+        """Append a resource and route the api
+        by a class decoration..
+        
+        # Parameters
+        route (str): The url route for this resource.
+        """
+
+        def decorator(cls):
+
+            resource = cls(**kwargs)
+            
+            self.add_route(route, resource)
+
+        return decorator
+
     def rackit(self, period):
         """Decorator method to register functions plugins.
         
