@@ -193,6 +193,10 @@ class _ContinousWorker:
         self._stop_tag = stop_tag
         self._status = STOP       # [STOP, PAUSE, RUNNING, ERROR]
 
+        self.tag_engine = CVTEngine()
+
+        self.last = None
+
         from .core import Rackio
 
         rackio = Rackio()
@@ -208,28 +212,40 @@ class _ContinousWorker:
         result["status"] = self._status
 
         return result
+    
+    def set_last(self):
+
+        self.last = time.time()
+
+    def sleep_elapsed(self):
+
+        elapsed = time.time() - self.last
+
+        if elapsed < self._period:
+            time.sleep(self._period - elapsed)
+        else:
+            logging.warning("Logger Worker: Failed to log items on time...")
+
+        self.set_last()
 
     def pause(self):
 
         if self._pause_tag:
-            _cvt = CVTEngine()
-            _cvt.write_tag(self._pause_tag, True)
+            self.tag_engine.write_tag(self._pause_tag, True)
 
             return True
 
     def resume(self):
 
         if self._pause_tag:
-            _cvt = CVTEngine()
-            _cvt.write_tag(self._pause_tag, False)
+            self.tag_engine.write_tag(self._pause_tag, False)
 
             return True
 
     def stop(self):
 
         if self._stop_tag:
-            _cvt = CVTEngine()
-            _cvt.write_tag(self._stop_tag, True)
+            self.tag_engine.write_tag(self._stop_tag, True)
 
             return True
 
@@ -240,64 +256,61 @@ class _ContinousWorker:
     def get_status(self):
 
         return self._status
+
+    def log_error(self, e):
+        
+        error = str(e)
+
+        if self._error_message:
+            logging.error("Worker - {}:{}:{}".format(self._name, self._error_message, error))
+        else:
+            logging.error("Worker - {}:{}".format(self._name, error))
+
+    def is_paused(self):
+
+        pause = False
+        
+        if self._pause_tag:
+            pause = self.tag_engine.read_tag(self._pause_tag)
+
+        return pause
+
+    def is_stopped(self):
+
+        stop = False
+
+        if self._stop_tag:
+            stop = self.tag_engine.read_tag(self._stop_tag)
+        
+        return stop
     
     def __call__(self, *args):
 
-        _cvt = CVTEngine()
-
         time.sleep(self._period)
+
+        self.set_last()
+
+        self._status = RUNNING
 
         while True:
 
-            self._status = RUNNING
+            if self.is_stopped():
+                self._status = STOP
+                return
 
-            now = time.time()
-
-            if self._stop_tag:
-                stop = _cvt.read_tag(self._stop_tag)
-
-                if stop:
-                    self._status = STOP
-                    return
-
-            if self._pause_tag:
-                pause = _cvt.read_tag(self._pause_tag)
-                
-                if not pause:
-                    
-                    try:
-                        self._f()
-                    except Exception as e:
-                        error = str(e)
-                        
-                        if not self._error_message:
-                            logging.error("Worker - {}:{}".format(self._name, error))
-                        else:
-                            logging.error("Worker - {}:{}:{}".format(self._name, self._error_message, error))
-                        
-                        self._status = ERROR
-
-                else:
-                    self._status = PAUSE
-
+            if self.is_paused():
+                self._status = PAUSE
+                continue
             else:
+                self._status = RUNNING
                 try:
                     self._f()
                 except Exception as e:
-                    error = str(e)
-
-                    if not self._error_message:
-                        logging.error("Worker - {}:{}".format(self._name, error))
-                    else:
-                        logging.error("Worker - {}:{}:{}".format(self._name, self._error_message, error))
+                    
+                    self.log_error(e)
                     self._status = ERROR
 
-            elapsed = time.time() - now
-
-            if elapsed < self._period:
-                time.sleep(self._period - elapsed)
-            else:
-                logging.warning("Worker - {}: Unable to perform on time...".format(self._name))
+            self.sleep_elapsed()
             
 
 class APIWorker(BaseWorker):
@@ -399,6 +412,4 @@ class LoggerWorker(BaseWorker):
 
             self.write_tags()
             self.sleep_elapsed()
-
-           
-            
+    
