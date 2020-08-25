@@ -92,8 +92,9 @@ class DataLogger:
         tag_value.save()
 
     def read_tag(self, tag):
-
-        trend = TagTrend.select().order_by(TagTrend.start).where(TagTrend.name == tag).get()
+        
+        query = TagTrend.select().order_by(TagTrend.start)
+        trend = query.where(TagTrend.name == tag).get()
         
         period = self._period
         values = trend.values.select()
@@ -128,6 +129,7 @@ class DataLogger:
         events = [serialize_dbo(event) for event in events]
 
         return events
+
 
 class LoggerEngine(Singleton):
     """Logger Engine class for Tag thread-safe database logging.
@@ -300,7 +302,7 @@ class LoggerEngine(Singleton):
                 self._response = {
                     "result": True
                 }
-            except:
+            except Exception as e:
                 self._response = {
                     "result": False
                 }
@@ -319,7 +321,7 @@ class LoggerEngine(Singleton):
                     "result": True,
                     "response": result
                 }
-            except:
+            except Exception as e:
                 self._response = {
                     "result": False,
                     "response": None
@@ -337,7 +339,7 @@ class LoggerEngine(Singleton):
                 self._response = {
                     "result": True
                 }
-            except:
+            except Exception as e:
 
                 self._response = {
                     "result": False
@@ -353,7 +355,7 @@ class LoggerEngine(Singleton):
                     "result": True,
                     "response": result
                 }
-            except:
+            except Exception as e:
                 self._response = {
                     "result": False
                 }
@@ -379,21 +381,24 @@ class QueryLogger:
 
     def get_values(self, tag):
 
-        trend = TagTrend.select().order_by(TagTrend.start.desc()).where(TagTrend.name == tag).get()
+        query = TagTrend.select().order_by(TagTrend.start.desc())
+        trend = query.where(TagTrend.name == tag).get()
         values = trend.values
         
         return values
 
     def query(self, tag, start, stop):
 
-        trend = TagTrend.select().order_by(TagTrend.start).where(TagTrend.name == tag).get()
+        _query = TagTrend.select().order_by(TagTrend.start)
+        trend = _query.where(TagTrend.name == tag).get()
         
         start = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
         stop = datetime.strptime(stop, '%Y-%m-%d %H:%M:%S')
 
         period = self._logger.get_period()
         
-        values = trend.values.select().where((TagValue.timestamp > start) & (TagValue.timestamp < stop))
+        _query = trend.values.select()
+        values = _query.where((TagValue.timestamp > start) & (TagValue.timestamp < stop))
         
         result = dict()
 
@@ -430,7 +435,7 @@ class QueryLogger:
             
             try:
                 tag_values = tag_values[values:]
-            except:
+            except Exception as e:
                 tag_values = tag_values[:]
 
             t0 = tag_values[0].timestamp.strftime('%Y-%m-%d %H:%M:%S')
@@ -470,7 +475,7 @@ class QueryLogger:
             
             try:
                 tag_values = tag_values[:values]
-            except:
+            except Exception as e:
                 tag_values = tag_values[:]
                 
             result["t0"] = t0
