@@ -280,9 +280,10 @@ class OrCondition:
 
     def serialize(self):
 
+        conditions = self._conditions
         result = dict()
         result["type"] = "OrCondition"
-        result["conditions"] = [_condition.serialize() for _condition in self._conditions]
+        result["conditions"] = [_cond.serialize() for _cond in conditions]
 
         return result
 
@@ -334,9 +335,10 @@ class AndCondition:
 
     def serialize(self):
 
+        conditions = self._conditions
         result = dict()
         result["type"] = "AndCondition"
-        result["conditions"] = [_condition.serialize() for _condition in self._conditions]
+        result["conditions"] = [_cond.serialize() for _cond in conditions]
 
         return result
     
@@ -512,7 +514,7 @@ class ControlManager:
         tags = rule.condition.tags()
         try:
             self._rules[tags].append(rule)
-        except:
+        except Exception as e:
             self._rules[tags] = [rule]
 
     def append_control(self, control):
@@ -520,7 +522,7 @@ class ControlManager:
         tags = control.condition.tags()
         try:
             self._controls[tags].append(control)
-        except:
+        except Exception as e:
             self._controls[tags] = [control]
 
     def get_rule(self, name):
@@ -658,7 +660,7 @@ class FunctionManager:
 
         try:
             self._tags[tag].append(function)
-        except:
+        except Exception as e:
             self._tags[tag] = [function]
 
     def summary(self):
@@ -696,7 +698,6 @@ class FunctionManager:
 
         try:
             for _function in self._tags[tag]:
-
                 _function()
-        except:
+        except Exception as e:
             pass
