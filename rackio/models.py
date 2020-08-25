@@ -13,6 +13,7 @@ INTEGER = "int"
 BOOL = "bool"
 STRING = "str"
 
+
 class Tag:
 
     def __init__(self, name, value, _type):
@@ -156,7 +157,7 @@ class Model(object):
                 try:
                     default = value.default
                     _type = value._type
-                except:
+                except Exception as e:
                     continue
 
             if default:
@@ -172,7 +173,7 @@ class Model(object):
                     setattr(self, key, "")
 
         self.attrs = attrs
-        #setattr(self, "save", attrs["save"])
+        # setattr(self, "save", attrs["save"])
 
     def __getattribute__(self, attr):
         
@@ -188,10 +189,10 @@ class Model(object):
                 result = method(*args, **kwargs)
                 name = method.__name__
 
-                if (not "__" in name) and (name != "save"):
+                if ("__" not in name) and (name != "save"):
                     try:
                         self.save()
-                    except:
+                    except Exception as e:
                         pass
 
                 return result
@@ -219,7 +220,7 @@ class Model(object):
                 continue
             if not ismethod(value):
 
-                if not "__" in key:
+                if "__" not in key:
                     result[key] = value
 
         return result
@@ -233,7 +234,7 @@ class Model(object):
         try:
             _cvt.write_tag(self.tag, self)
             return True
-        except:
+        except Exception as e:
             return False
 
     def set_attr(self, name, value):
@@ -270,7 +271,7 @@ class Model(object):
             tag = self.tag
 
             _cvt.write_tag(tag, self)
-        except:
+        except Exception as e:
             raise KeyError
 
     def serialize(self):
