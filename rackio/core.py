@@ -18,13 +18,18 @@ from .logger import LoggerEngine
 from .controls import ControlManager, FunctionManager
 from .alarms import AlarmManager
 from .state import StateMachineManager
-from .workers import LoggerWorker, ControlWorker, FunctionWorker, StateMachineWorker, AlarmWorker, APIWorker, _ContinousWorker
+from .workers import LoggerWorker, ControlWorker, FunctionWorker
+from .workers import StateMachineWorker, AlarmWorker, _ContinousWorker
+from .workers import APIWorker
 
 from .web import StaticResource, resource_pairs
 
-from .api import TagResource, TagCollectionResource, TagHistoryResource, TrendResource, TrendCollectionResource
-from .api import ControlResource, ControlCollectionResource, RuleResource, RuleCollectionResource
-from .api import AlarmResource, AlarmCollectionResource, EventCollectionResource
+from .api import TagResource, TagCollectionResource
+from .api import TagHistoryResource, TrendResource, TrendCollectionResource
+from .api import ControlResource, ControlCollectionResource
+from .api import RuleResource, RuleCollectionResource
+from .api import AlarmResource, AlarmCollectionResource
+from .api import EventCollectionResource
 from .api import AppSummaryResource
 
 from .utils import directory_paths
@@ -41,7 +46,7 @@ class Rackio(Singleton):
     code project
 
     # Example
-    
+
     ```python
     >>> from rackio import Rackio
     >>> app = Rackio()
@@ -145,7 +150,7 @@ class Rackio(Singleton):
         if file:
             self._log_file = file
 
-    def set_db(self, dbfile=':memory:', dbtype=SQLITE, drop_table=True, **kwargs):
+    def set_db(self, dbtype=SQLITE, drop_table=True, **kwargs):
         """Sets the database file.
         
         # Parameters
@@ -155,6 +160,8 @@ class Rackio(Singleton):
         from .dbmodels import proxy
 
         if dbtype == SQLITE:
+
+            dbfile = kwargs.get("dbfile", default=":memory:")
             
             self._db = SqliteDatabase(dbfile, pragmas={
                 'journal_mode': 'wal',
@@ -197,7 +204,7 @@ class Rackio(Singleton):
         self._db_manager.set_period(period)
         self._db_manager.set_delay(delay)
 
-        for _tag in  tags:
+        for _tag in tags:
             self._db_manager.add_tag(_tag)
 
     def append_rule(self, rule):
@@ -375,7 +382,7 @@ class Rackio(Singleton):
         return decorator
 
     def rackit_on(self, function=None, **kwargs):
-        """Decorator method to register functions plugins with continous execution.
+        """Decorator to register functions plugins with continous execution.
         
         This method will register into the Rackio application
         a new function to be executed by the Thread Pool Executor
@@ -393,7 +400,8 @@ class Rackio(Singleton):
         ```
 
         # Parameters
-        period (float): Value of the default loop execution time, if period is not defined 0.5 seconds is used.
+        period (float): Value of the default loop execution time, 
+        if period is not defined 0.5 seconds is used by default.
         """
     
         if function:
@@ -443,10 +451,14 @@ class Rackio(Singleton):
 
         log_format = "%(asctime)s:%(levelname)s:%(message)s"
 
-        if self._log_file:
-            logging.basicConfig(filename=self._log_file, level=self._logging_level, format=log_format)
-        else:
-            logging.basicConfig(level=self._logging_level, format=log_format)
+        level = self._logging_level
+        log_file = self._log_file
+
+        if not log_file:
+            logging.basicConfig(level=level, format=log_format)
+            return
+        
+        logging.basicConfig(filename=log_file, level=level, format=log_format)
 
     def _start_workers(self):
 
@@ -459,7 +471,14 @@ class Rackio(Singleton):
 
         try:
 
-            workers = [_db_worker, _control_worker, _function_worker, _machine_worker, _alarm_worker, _api_worker]
+            workers = [
+                _db_worker, 
+                _control_worker, 
+                _function_worker, 
+                _machine_worker, 
+                _alarm_worker, 
+                _api_worker
+            ]
 
             for worker in workers:
 
@@ -480,7 +499,8 @@ class Rackio(Singleton):
 
     def _start_scheduler(self):
         
-        scheduler = concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers)
+        _max = self.max_workers
+        scheduler = concurrent.futures.ThreadPoolExecutor(max_workers=_max)
 
         try:
 
