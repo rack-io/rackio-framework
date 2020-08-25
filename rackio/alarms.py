@@ -12,14 +12,14 @@ from .models import TagObserver
 from .events import Event
 from .logger import LoggerEngine
 
-NORMAL              = "Normal"
-UNACKNOWLEDGED      = "Unacknowledged"
-ACKNOWLEDGED        = "Acknowledged"
-RTN_UNACKNOWLEDGED  = "RTN Unacknowledged"
+NORMAL = "Normal"
+UNACKNOWLEDGED = "Unacknowledged"
+ACKNOWLEDGED = "Acknowledged"
+RTN_UNACKNOWLEDGED = "RTN Unacknowledged"
 
-HI                  = "HI"
-LO                  = "LO"
-BOOL                = "BOOL"
+HI = "HI"
+LO = "LO"
+BOOL = "BOOL"
 
 USER = "System"
 
@@ -36,16 +36,16 @@ class Alarm:
         self._description = description
 
         self._trigger_value = None
-        self._trigger_type = None       # ["HI", "LO", "BOOL"]
+        self._trigger_type = None  # ["HI", "LO", "BOOL"]
         self._tag_alarm = None
 
-        self._enabled = True            # True: Enable       - False: Disable
+        self._enabled = True       # True: Enable - False: Disable
         
-        self._process = True            # True: Normal       - False: Abnormal
-        self._triggered = False         # True: Active       - False: Not Active
-        self._acknowledged = True       # True: Acknowledged - False: Unacknowledged
+        self._process = True       # True: Normal - False: Abnormal
+        self._triggered = False    # True: Active - False: Not Active
+        self._acknowledged = True  # True: Acknowledged - False: Unacknowledged
 
-        self._state = NORMAL            # [NORMAL, UNACKNOWLEDGED, ACKNOWLEDGED, RTN_UNACKNOWLEDGED]
+        self._state = NORMAL       # [NORMAL, UNACKNOWLEDGED, ACKNOWLEDGED, RTN_UNACKNOWLEDGED]
         
         self._tripped_timestamp = None
         self._acknowledged_timestamp = None
@@ -133,13 +133,19 @@ class Alarm:
             self._triggered = False
             self._acknowledged = False
 
-            message = "Alarm {} back to normal unacknowledged".format(self.get_name())
+            message = "Alarm {} back to normal unacknowledged"
+            message = message.format(self.get_name())
             priority = 2
 
             self.write_tag_alarm(False)
 
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        event = Event(user=USER, message=message, priority=priority, date_time=now)
+        event = Event(
+            user=USER, 
+            message=message, 
+            priority=priority, 
+            date_time=now
+        )
 
         self.logger_engine.write_event(event)
 
