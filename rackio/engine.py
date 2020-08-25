@@ -249,7 +249,8 @@ class CVTEngine(Singleton):
         self._cvt.set_tag(name, _type)
 
     def set_tags(self, tags):
-        """Sets new values for a defined list of tags, in thread-safe mechanism.
+        """Sets new values for a defined list of tags, 
+        in thread-safe mechanism.
         
         # Parameters
         tags (list):
@@ -344,7 +345,7 @@ class CVTEngine(Singleton):
                 self._response = {
                     "result": True
                 }
-            except:
+            except Exception as e:
                 self._response = {
                     "result": False
                 }
@@ -359,7 +360,7 @@ class CVTEngine(Singleton):
                     "result": True,
                     "response": tags
                 }
-            except:
+            except Exception as e:
                 self._response = {
                     "result": False,
                     "response": None
@@ -378,7 +379,7 @@ class CVTEngine(Singleton):
                     "result": True,
                     "response": value
                 }
-            except:
+            except Exception as e:
                 self._response = {
                     "result": False,
                     "response": None
@@ -397,7 +398,7 @@ class CVTEngine(Singleton):
                     "result": True,
                     "response": value
                 }
-            except:
+            except Exception as e:
                 self._response = {
                     "result": False,
                     "response": None
@@ -416,7 +417,7 @@ class CVTEngine(Singleton):
                 self._response = {
                     "result": True
                 }
-            except:
+            except Exception as e:
                 self._response = {
                     "result": False
                 }
@@ -437,7 +438,7 @@ class CVTEngine(Singleton):
                     "result": True
                 }
 
-            except:
+            except Exception as e:
 
                 self._response = {
                     "result": False
