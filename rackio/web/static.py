@@ -80,8 +80,8 @@ class StaticResource:
         resp.content_type = get_content_type(filename)
 
         try:
-            with open(path, 'r', encoding='utf8', errors='ignore') as f:
+            with open(path, 'rb') as f:
                 resp.body = f.read()
         except:
-            with open(path, 'rb') as f:
+            with open(path, 'r', encoding='utf8', errors='ignore') as f:
                 resp.body = f.read()
