@@ -161,7 +161,7 @@ class Rackio(Singleton):
 
         if dbtype == SQLITE:
 
-            dbfile = kwargs.get("dbfile", default=":memory:")
+            dbfile = kwargs.get("dbfile", ":memory:")
             
             self._db = SqliteDatabase(dbfile, pragmas={
                 'journal_mode': 'wal',

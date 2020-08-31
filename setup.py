@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="Rackio",
-    version="0.7.0",
+    version="0.7.1",
     author="Nelson Carrasquel",
     author_email="rackio.framework@outlook.com",
     description="A modern Python Framework for microboard automation and control applications development",
