@@ -163,6 +163,8 @@ class LoggerEngine(Singleton):
         self._logger.set_delay(delay)
         self._drop_tables = drop_tables
 
+        self._tables = list()
+
         self._request_lock = threading.Lock()
         self._response_lock = threading.Lock()
 
@@ -186,12 +188,20 @@ class LoggerEngine(Singleton):
 
         return self._drop_tables
 
+    def register_table(self, cls):
+
+        self._tables.append(cls)
+
     def create_tables(self, tables):
+
+        tables += self._tables
 
         self._logger.create_tables(tables)
 
     def drop_tables(self, tables):
 
+        tables += self._tables
+        
         self._logger.drop_tables(tables)
 
     def add_tag(self, tag):

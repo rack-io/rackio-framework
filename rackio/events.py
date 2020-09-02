@@ -4,15 +4,15 @@
 This module defines the events history classes and function.
 """
 
-from .models import Model, IntegerField, StringField
+from .models import Model, IntegerType, StringType
 
 
 class Event(Model):
 
-    user = StringField()
-    message = StringField()
-    description = StringField(default="")
-    classification = StringField()
-    priority = IntegerField(default=4)
-    date_time = StringField()
+    user = StringType()
+    message = StringType()
+    description = StringType(default="")
+    classification = StringType()
+    priority = IntegerType(default=4)
+    date_time = StringType()
     

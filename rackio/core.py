@@ -288,6 +288,24 @@ class Rackio(Singleton):
 
         return decorator
 
+    def append_table(self, table):
+        """Append a database model class definition.
+        
+        # Parameters
+        table (BaseModel): A Base Model Inheritance.
+        """
+
+        self._db_manager.register_table(table)
+
+    def define_table(self, cls):
+        """Append a database model class definition
+        by a class decoration.
+        """
+
+        self.append_table(cls)
+
+        return cls
+
     def get_manager(self, name):
         """Returns a specified application manager.
         

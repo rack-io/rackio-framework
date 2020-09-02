@@ -83,10 +83,10 @@ class TagObserver(Observer):
 # Classes for Custom models design
 
 
-class PropertyField:
+class PropertyType:
 
     """
-    Implement an abstract propery field
+    Implement an abstract propery type
     """
 
     def __init__(self, _type, default=None):
@@ -95,48 +95,48 @@ class PropertyField:
         self.default = default
 
 
-class StringField(PropertyField):
+class StringType(PropertyType):
 
     """
-    Implement a Float Field
-    """
-
-    def __init__(self, default=None):
-
-        super(StringField, self).__init__(STRING, default)
-
-
-class FloatField(PropertyField):
-
-    """
-    Implement a Float Field
+    Implement a Float Type
     """
 
     def __init__(self, default=None):
 
-        super(FloatField, self).__init__(FLOAT, default)
+        super(StringType, self).__init__(STRING, default)
 
 
-class IntegerField(PropertyField):
+class FloatType(PropertyType):
 
     """
-    Implement an Integer Field
+    Implement a Float Type
     """
 
     def __init__(self, default=None):
 
-        super(IntegerField, self).__init__(INTEGER, default)
+        super(FloatType, self).__init__(FLOAT, default)
+
+
+class IntegerType(PropertyType):
+
+    """
+    Implement an Integer Typle
+    """
+
+    def __init__(self, default=None):
+
+        super(IntegerType, self).__init__(INTEGER, default)
 
         
-class BooleanField(PropertyField):
+class BooleanType(PropertyType):
 
     """
-    Implement a Boolean Field
+    Implement a Boolean Type
     """
 
     def __init__(self, default=None):
 
-        super(BooleanField, self).__init__(BOOL, default)
+        super(BooleanType, self).__init__(BOOL, default)
 
 
 class Model(object):

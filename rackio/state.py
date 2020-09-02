@@ -11,7 +11,7 @@ from inspect import ismethod
 
 from statemachine import StateMachine, State
 
-from .models import FloatField, IntegerField, BooleanField, StringField
+from .models import FloatType, IntegerType, BooleanType, StringType
 
 from .engine import CVTEngine
 from .logger import QueryLogger, LoggerEngine
@@ -204,7 +204,7 @@ class RackioStateMachine(StateMachine):
 
         def ismodel_instance(obj):
 
-            for cls in [FloatField, IntegerField, BooleanField, StringField]:
+            for cls in [FloatType, IntegerType, BooleanType, StringType]:
                 if isinstance(obj, cls):
                     return True
             return False
@@ -233,11 +233,11 @@ class RackioStateMachine(StateMachine):
                 try:
                     obj = attrs[key]
 
-                    if isinstance(obj, FloatField):
+                    if isinstance(obj, FloatType):
                         value = float(value)
-                    elif isinstance(obj, IntegerField):
+                    elif isinstance(obj, IntegerType):
                         value = int(value)
-                    elif isinstance(obj, BooleanField):
+                    elif isinstance(obj, BooleanType):
                         value = bool(value)
                     else:
                         value = str(value)

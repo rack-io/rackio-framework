@@ -397,10 +397,11 @@ class LoggerWorker(BaseWorker):
 
     def run(self):
 
+        self.init_database()
+        
         if not self.verify_workload():
             return
-
-        self.init_database()
+            
         self.set_tags()
         
         time.sleep(self._delay)
