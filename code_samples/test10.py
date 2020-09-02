@@ -5,7 +5,7 @@ from rackio import Rackio, TagEngine
 
 from rackio import RackioStateMachine, State, TagBinding
 
-from rackio.models import Model, FloatField, IntegerField, BooleanField
+from rackio.models import Model, FloatType, IntegerType, BooleanType
 
 from random import random
 
@@ -34,9 +34,9 @@ class TwoStep(RackioStateMachine):
 
     count = 0
 
-    engine_size = FloatField(default=1.8)
-    seats = IntegerField(default=5)
-    air_conditioning = BooleanField(default=True)
+    engine_size = FloatType(default=1.8)
+    seats = IntegerType(default=5)
+    air_conditioning = BooleanType(default=True)
 
     # bindings
 

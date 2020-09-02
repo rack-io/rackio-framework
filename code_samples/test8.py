@@ -1,15 +1,15 @@
 import time
 
 from rackio import Rackio, TagEngine
-from rackio.models import Model, FloatField, IntegerField, BooleanField
+from rackio.models import Model, FloatType, IntegerType, BooleanType
 
 
 class Car(Model):
 
-    engine_size = FloatField(default=1.8)
-    seats = IntegerField(default=5)
-    air_conditioning = BooleanField(default=True)
-    mileage = FloatField(default=0.0)
+    engine_size = FloatType(default=1.8)
+    seats = IntegerType(default=5)
+    air_conditioning = BooleanType(default=True)
+    mileage = FloatType(default=0.0)
 
     def drive(self):
 
