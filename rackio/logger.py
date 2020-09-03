@@ -9,7 +9,7 @@ import threading
 
 from datetime import datetime
 
-from .dbmodels import TagTrend, TagValue, Event
+from .dbmodels import TagTrend, TagValue, Event, Blob
 from .utils import serialize_dbo
 from ._singleton import Singleton
 
@@ -171,7 +171,7 @@ class LoggerEngine(Singleton):
         self._logger.set_delay(delay)
         self._drop_tables = drop_tables
 
-        self._tables = [TagTrend, TagValue, Event]
+        self._tables = [TagTrend, TagValue, Event,Blob]
 
         self._request_lock = threading.Lock()
         self._response_lock = threading.Lock()

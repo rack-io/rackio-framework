@@ -10,3 +10,4 @@ from .events import *
 from .workers import *
 from .static import *
 from .summary import *
+from .blobs import *

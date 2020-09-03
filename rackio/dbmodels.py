@@ -5,7 +5,7 @@ This module implements classes for
 modelling the trending process.
 """
 
-from peewee import Proxy, Model, CharField, TextField, DateTimeField, IntegerField, FloatField, ForeignKeyField
+from peewee import Proxy, Model, CharField, TextField, DateTimeField, IntegerField, FloatField, BlobField, ForeignKeyField
 
 proxy = Proxy()
 
@@ -40,3 +40,9 @@ class Event(BaseModel):
     classification = TextField()
     priority = IntegerField(default=4)
     date_time = DateTimeField()
+
+
+class Blob(BaseModel):
+
+    name = CharField()
+    blob = BlobField()

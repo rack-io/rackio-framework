@@ -10,6 +10,7 @@ import time
 import concurrent.futures
 
 import falcon
+from falcon_multipart.middleware import MultipartMiddleware
 
 from peewee import SqliteDatabase, MySQLDatabase, PostgresqlDatabase
 
@@ -34,6 +35,7 @@ from .api import RuleResource, RuleCollectionResource
 from .api import AlarmResource, AlarmCollectionResource
 from .api import EventCollectionResource
 from .api import AppSummaryResource
+from .api import BlobCollectionResource
 
 from .utils import directory_paths
 
@@ -86,7 +88,7 @@ class Rackio(Singleton):
 
     def _init_api(self):
 
-        self._api = falcon.API()
+        self._api = falcon.API(middleware=[MultipartMiddleware()])
 
         _tag = TagResource()
         _tags = TagCollectionResource()
@@ -101,6 +103,7 @@ class Rackio(Singleton):
         _alarms = AlarmCollectionResource()
         _events = EventCollectionResource()
         _summary = AppSummaryResource()
+        _blob = BlobCollectionResource()
 
         self._api.add_route('/api/tags/{tag_id}', _tag)
         self._api.add_route('/api/tags', _tags)
@@ -121,6 +124,8 @@ class Rackio(Singleton):
         self._api.add_route('/api/events', _events)
 
         self._api.add_route('/api/summary', _summary)
+
+        self._api.add_route('/api/blobs', _blob)
 
     def _init_web(self):
 
