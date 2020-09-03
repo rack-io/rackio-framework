@@ -10,6 +10,11 @@ app = Rackio()
 
 tag_egine = TagEngine()
 
+# Tags definitions
+
+tag_egine.set_tag("RAND1", "float")
+tag_egine.set_tag("RAND2", "float")
+
 @app.rackit(1)
 def writer1():
 
