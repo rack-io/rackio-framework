@@ -13,6 +13,8 @@ from .dbmodels import TagTrend, TagValue, Event
 from .utils import serialize_dbo
 from ._singleton import Singleton
 
+DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+
 
 class DataLogger:
 
@@ -163,7 +165,7 @@ class LoggerEngine(Singleton):
         self._logger.set_delay(delay)
         self._drop_tables = drop_tables
 
-        self._tables = list()
+        self._tables = [TagTrend, TagValue, Event]
 
         self._request_lock = threading.Lock()
         self._response_lock = threading.Lock()
@@ -192,15 +194,15 @@ class LoggerEngine(Singleton):
 
         self._tables.append(cls)
 
-    def create_tables(self, tables):
+    def create_tables(self):
 
-        tables += self._tables
+        tables = self._tables
 
         self._logger.create_tables(tables)
 
-    def drop_tables(self, tables):
+    def drop_tables(self):
 
-        tables += self._tables
+        tables = self._tables
         
         self._logger.drop_tables(tables)
 
@@ -402,8 +404,8 @@ class QueryLogger:
         _query = TagTrend.select().order_by(TagTrend.start)
         trend = _query.where(TagTrend.name == tag).get()
         
-        start = datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
-        stop = datetime.strptime(stop, '%Y-%m-%d %H:%M:%S')
+        start = datetime.strptime(start, DATETIME_FORMAT)
+        stop = datetime.strptime(stop, DATETIME_FORMAT)
 
         period = self._logger.get_period()
         
@@ -412,7 +414,7 @@ class QueryLogger:
         
         result = dict()
 
-        t0 = values[0].timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        t0 = values[0].timestamp.strftime(DATETIME_FORMAT)
         values = [value.value for value in values]
 
         result["t0"] = t0
@@ -429,8 +431,8 @@ class QueryLogger:
             stop = datetime.now()
             start = stop - seconds
 
-            start = start.strftime('%Y-%m-%d %H:%M:%S')
-            stop = stop.strftime('%Y-%m-%d %H:%M:%S')
+            start = start.strftime(DATETIME_FORMAT)
+            stop = stop.strftime(DATETIME_FORMAT)
 
             return self.query(tag, start, stop)
 
@@ -448,7 +450,7 @@ class QueryLogger:
             except Exception as e:
                 tag_values = tag_values[:]
 
-            t0 = tag_values[0].timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            t0 = tag_values[0].timestamp.strftime(DATETIME_FORMAT)
             tag_values = [value.value for value in tag_values]
 
             result["t0"] = t0
@@ -467,8 +469,8 @@ class QueryLogger:
             start = tag_values[0].timestamp
             stop = start + seconds
 
-            start = start.strftime('%Y-%m-%d %H:%M:%S')
-            stop = stop.strftime('%Y-%m-%d %H:%M:%S')
+            start = start.strftime(DATETIME_FORMAT)
+            stop = stop.strftime(DATETIME_FORMAT)
 
             return self.query(tag, start, stop)
 
@@ -479,7 +481,7 @@ class QueryLogger:
             tag_values = self.get_values(tag)
             
             period = self._logger.get_period()
-            t0 = tag_values[0].timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            t0 = tag_values[0].timestamp.strftime(DATETIME_FORMAT)
             
             tag_values = [value.value for value in tag_values]
             

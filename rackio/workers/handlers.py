@@ -1,4 +1,4 @@
-# rackio/handlers.py
+# rackio/workers/handlers.py
 
 import logging
 

@@ -15,12 +15,15 @@ from peewee import SqliteDatabase, MySQLDatabase, PostgresqlDatabase
 
 from ._singleton import Singleton
 from .logger import LoggerEngine
-from .controls import ControlManager, FunctionManager
-from .alarms import AlarmManager
-from .state import StateMachineManager
-from .workers import LoggerWorker, ControlWorker, FunctionWorker
-from .workers import StateMachineWorker, AlarmWorker, _ContinousWorker
-from .workers import APIWorker
+
+from .managers import AlarmManager
+from .managers import ControlManager, FunctionManager
+from .managers import StateMachineManager
+
+from .workers import AlarmWorker, APIWorker
+from .workers import ControlWorker, FunctionWorker, LoggerWorker
+from .workers import StateMachineWorker, _ContinuosWorker
+
 
 from .web import StaticResource, resource_pairs
 
@@ -423,11 +426,11 @@ class Rackio(Singleton):
         """
     
         if function:
-            return _ContinousWorker(function)
+            return _ContinuosWorker(function)
         else:
 
             def wrapper(function):
-                return _ContinousWorker(function, **kwargs)
+                return _ContinuosWorker(function, **kwargs)
 
             return wrapper
 
