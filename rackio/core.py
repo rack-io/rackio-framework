@@ -35,7 +35,7 @@ from .api import RuleResource, RuleCollectionResource
 from .api import AlarmResource, AlarmCollectionResource
 from .api import EventCollectionResource
 from .api import AppSummaryResource
-from .api import BlobCollectionResource
+from .api import BlobCollectionResource, BlobResource
 
 from .utils import directory_paths
 
@@ -103,7 +103,8 @@ class Rackio(Singleton):
         _alarms = AlarmCollectionResource()
         _events = EventCollectionResource()
         _summary = AppSummaryResource()
-        _blob = BlobCollectionResource()
+        _blobs = BlobCollectionResource()
+        _blob = BlobResource()
 
         self._api.add_route('/api/tags/{tag_id}', _tag)
         self._api.add_route('/api/tags', _tags)
@@ -125,7 +126,8 @@ class Rackio(Singleton):
 
         self._api.add_route('/api/summary', _summary)
 
-        self._api.add_route('/api/blobs', _blob)
+        self._api.add_route('/api/blobs', _blobs)
+        self._api.add_route('/api/blobs/{blob_name}', _blob)
 
     def _init_web(self):
 

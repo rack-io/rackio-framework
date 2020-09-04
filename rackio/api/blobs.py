@@ -17,7 +17,12 @@ class BlobResource(RackioResource):
 
     def on_get(self, req, resp, blob_name):
 
-        pass
+        resp.status = status_code.HTTP_200
+        resp.content_type = "application/octet-stream"
+        resp.downloadable_as = "{}.pkl".format(blob_name)
+
+        resp.body = Blob.get_value(blob_name)
+    
 
 class BlobCollectionResource(RackioResource):
 

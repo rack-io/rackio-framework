@@ -4,6 +4,7 @@
 This module implements classes for
 modelling the trending process.
 """
+from io import BytesIO
 
 from peewee import Proxy, Model, CharField, TextField, DateTimeField, IntegerField, FloatField, BlobField, ForeignKeyField
 
@@ -46,3 +47,13 @@ class Blob(BaseModel):
 
     name = CharField()
     blob = BlobField()
+
+    @classmethod
+    def get_value(self, blob_name):
+
+        blob = Blob.select().where(Blob.name==blob_name).get()
+        blob = BytesIO(blob.blob)
+
+        blob.seek(0)
+
+        return blob.getvalue()
