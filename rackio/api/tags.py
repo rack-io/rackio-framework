@@ -13,30 +13,7 @@ class TagCollectionResource(RackioResource):
 
     def on_get(self, req, resp):
 
-        doc = list()
-
-        _cvt = self.tag_engine
-        tags = _cvt.get_tags()
-
-        for _tag in tags:
-
-            value = _cvt.read_tag(_tag)
-            _type = _cvt.get_type(_tag)
-            
-            try:
-                result = {
-                    'tag': _tag,
-                    'value': value.serialize(),
-                    'type': _type,
-                }
-            except:
-                result = {
-                    'tag': _tag,
-                    'value': value,
-                    'type': _type,
-                }
-
-            doc.append(result)
+        doc = self.tag_engine.serialize()
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 

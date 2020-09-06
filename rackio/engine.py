@@ -455,3 +455,31 @@ class CVTEngine(Singleton):
         self._request_lock.release()
 
         return result
+
+    def serialize(self):
+
+        result = list()
+
+        tags = self.get_tags()
+
+        for _tag in tags:
+
+            value = self.read_tag(_tag)
+            _type = self.get_type(_tag)
+            
+            try:
+                result = {
+                    'tag': _tag,
+                    'value': value.serialize(),
+                    'type': _type,
+                }
+            except:
+                result = {
+                    'tag': _tag,
+                    'value': value,
+                    'type': _type,
+                }
+
+            result.append(result)
+
+        return result
