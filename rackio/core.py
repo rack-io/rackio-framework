@@ -296,6 +296,8 @@ class Rackio(Singleton):
             
             self.append_machine(machine, interval=interval)
 
+            return cls
+
         return decorator
 
     def append_table(self, table):
@@ -372,6 +374,8 @@ class Rackio(Singleton):
             resource = cls(**kwargs)
             
             self.add_route(route, resource)
+
+            return cls
 
         return decorator
 
