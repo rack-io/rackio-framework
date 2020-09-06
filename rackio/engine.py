@@ -468,18 +468,18 @@ class CVTEngine(Singleton):
             _type = self.get_type(_tag)
             
             try:
-                result = {
+                record = {
                     'tag': _tag,
                     'value': value.serialize(),
                     'type': _type,
                 }
             except:
-                result = {
+                record = {
                     'tag': _tag,
                     'value': value,
                     'type': _type,
                 }
 
-            result.append(result)
+            result.append(record)
 
         return result
