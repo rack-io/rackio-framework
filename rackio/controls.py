@@ -80,7 +80,7 @@ class MathAction:
 
     This class defines a mechanism to apply 
     mathematical expressions as actions on 
-    tags values
+    tag values
 
     # Example
     
@@ -139,7 +139,7 @@ class Condition:
     """Condition class.
 
     This class defines a mechanism to apply conditions
-    on tags values
+    on tag values
 
     # Example
     
@@ -184,32 +184,9 @@ class Condition:
         _oper = self._oper
 
         _cvt = CVTEngine()
-
-        _cvt.request({
-            "action": "get_value",
-            "parameters": {
-                "name": self.tag1,
-            }
-        })
-    
-        response = _cvt.response()
-        if not response["result"]:
-            raise KeyError
         
-        value1 = response["response"]
-
-        _cvt.request({
-            "action": "get_value",
-            "parameters": {
-                "name": self.tag2,
-            }
-        })
-    
-        response = _cvt.response()
-        if not response["result"]:
-            raise KeyError
-        
-        value2 = response["response"]
+        value1 = _cvt.read_tag(self.tag1)
+        value2 = _cvt.read_tag(self.tag2)
 
         result = False
 
@@ -241,6 +218,40 @@ class Condition:
             result = False
 
         return result
+
+
+class BoolCondition:
+
+    """BooleanCondition class.
+
+    This class defines a mechanism to apply conditions
+    on boolean tag values
+
+    # Example
+    
+    ```python
+    >>> from rackio.controls import BoolCondition
+    >>> cond1 = BoolCondition("HIGH_ALARM")
+    ```
+
+    # Parameters
+    tag (str):
+        tag name
+    """
+
+    def __init__(self, tag):
+
+        self.tag = tag
+        self._cvt = CVTEngine()
+
+    def evaluate(self):
+
+        result = self._cvt.read_tag(self.tag)
+
+        if result:
+            return True
+
+        return False
 
 
 class OrCondition:
