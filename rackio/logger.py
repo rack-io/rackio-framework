@@ -160,7 +160,7 @@ class LoggerEngine(Singleton):
 
     """
 
-    def __init__(self, period=0.5, delay=1.0, drop_tables=True):
+    def __init__(self, period=0.5, delay=1.0, drop_tables=True, memory_size=None):
 
         super(LoggerEngine, self).__init__()
 
@@ -171,7 +171,8 @@ class LoggerEngine(Singleton):
         self._logger.set_delay(delay)
         self._drop_tables = drop_tables
 
-        self._tables = [TagTrend, TagValue, Event,Blob]
+        self._tables = [TagTrend, TagValue, Event, Blob]
+        self._memory_size = memory_size
 
         self._request_lock = threading.Lock()
         self._response_lock = threading.Lock()
@@ -196,6 +197,37 @@ class LoggerEngine(Singleton):
 
         return self._drop_tables
 
+    def memory_defined(self):
+
+        if not self._memory_size:
+            return False
+
+        return True
+
+    def create_memory(self):
+
+        self._memory = dict()
+
+    def write_tag_memory(self, tag, value):
+
+        if not self.memory_defined():
+            return
+
+        try:
+            self._memory[tag].append(tag)
+
+            if len(self._memory[tag]) > self._memory_size:
+                self._memory.pop(0)
+        except:
+            self._memory[tag] = [value]
+
+    def read_tag_memory(self, tag):
+
+        try:
+            return self._memory[tag]
+        except:
+            return None
+
     def register_table(self, cls):
 
         self._tables.append(cls)
@@ -205,6 +237,9 @@ class LoggerEngine(Singleton):
         tables = self._tables
 
         self._logger.create_tables(tables)
+
+        if self.memory_defined():
+            self.create_memory()
 
     def drop_tables(self):
 
@@ -250,6 +285,8 @@ class LoggerEngine(Singleton):
         return result
 
     def write_tag(self, tag, value):
+
+        self.write_tag_memory(tag, value)
 
         _query = dict()
         _query["action"] = "write_tag"
@@ -447,7 +484,14 @@ class QueryLogger:
             result = dict()
             
             values *= -1
-            tag_values = self.get_values(tag)
+
+            if not self._logger.memory_defined():
+                tag_values = self.get_values(tag)
+            else:
+                if values < self._logger._memory_size:
+                    tag_values = self._logger.read_tag_memory(tag)
+                else:
+                    tag_values = self.get_values(tag)                
             
             period = self._logger.get_period()
             

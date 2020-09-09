@@ -262,6 +262,17 @@ class Rackio(Singleton):
 
         self._alarm_manager.append_alarm(alarm)
 
+    def get_alarm(self, name):
+        """Returns a Alarm defined by its name.
+        
+        # Parameters
+        name (str): an alarm name.
+        """
+
+        alarm = self._alarm_manager.get_alarm(name)
+
+        return alarm
+
     def append_machine(self, machine, interval=1):
         """Append a state machine to the state machine manager.
         
