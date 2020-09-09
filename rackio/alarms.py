@@ -86,6 +86,14 @@ class Alarm:
 
         return self._tag
 
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        self._description = value
+
     def get_state(self):
 
         return self._state
