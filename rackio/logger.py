@@ -197,6 +197,10 @@ class LoggerEngine(Singleton):
 
         return self._drop_tables
 
+    def set_memory(self, memory):
+
+        self._memory_size = memory
+        
     def memory_defined(self):
 
         if not self._memory_size:
