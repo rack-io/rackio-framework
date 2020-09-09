@@ -10,6 +10,15 @@ from datetime import datetime, timedelta
 from rackio import status_code
 import abc
 
+
+class MemoryTrendValue:
+
+    def __init__(self, value, timestamp):
+
+        self.value = value
+        self.timestamp = timestamp
+
+
 class Observer(metaclass=abc.ABCMeta):
     """
     Define an updating interface for objects that should be notified of

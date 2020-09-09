@@ -10,7 +10,7 @@ import threading
 from datetime import datetime
 
 from .dbmodels import TagTrend, TagValue, Event, Blob
-from .utils import serialize_dbo
+from .utils import serialize_dbo, MemoryTrendValue
 from ._singleton import Singleton
 
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
@@ -217,13 +217,16 @@ class LoggerEngine(Singleton):
         if not self.memory_defined():
             return
 
+        now = now = datetime.now()
+        tag_trend = MemoryTrendValue(value, now)
+
         try:
-            self._memory[tag].append(tag)
+            self._memory[tag].append(tag_trend)
 
             if len(self._memory[tag]) > self._memory_size:
                 self._memory.pop(0)
         except:
-            self._memory[tag] = [value]
+            self._memory[tag] = [tag_trend]
 
     def read_tag_memory(self, tag):
 
