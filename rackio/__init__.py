@@ -15,7 +15,7 @@ __version__ = '0.8.1'
 
 from .core import Rackio
 from .engine import CVTEngine as TagEngine
-from .state import RackioStateMachine, State, TagBinding
+from .state import RackioStateMachine, State, TagBinding, GroupBinding
 from .dbmodels import BaseModel as RackioModel
 from .dbmodels import CharField, TextField
 from .dbmodels import DateTimeField, IntegerField, FloatField

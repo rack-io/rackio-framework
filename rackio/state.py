@@ -71,7 +71,7 @@ class GroupBinding:
         self.direction = direction
         self.values = Group()
 
-        tags = self.tag_engine.get_group(self.group)
+        self.tags = self.tag_engine.get_group(self.group)
 
     def update(self):
 
@@ -207,6 +207,8 @@ class RackioStateMachine(StateMachine):
                     values = getattr(self, attr)
                     
                     _binding.values = values
+
+                    _binding.update()
             
             except Exception as e:
                 error = str(e)
@@ -220,7 +222,7 @@ class RackioStateMachine(StateMachine):
 
             if method_name in dir(self):
                 update_tags = getattr(self, '_update_tags')
-                update_groups = getattr(self, '_update_tags')
+                update_groups = getattr(self, '_update_groups')
                 method = getattr(self, method_name)
                 
                 # update tag read bindings

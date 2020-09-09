@@ -261,7 +261,7 @@ class CVTEngine(Singleton):
         for name, _type in tags:
             self.set_tag(name, _type)
 
-    def set_group(group, tags):
+    def set_group(self, group, tags):
 
         self._groups[group] = list()
 
@@ -273,7 +273,7 @@ class CVTEngine(Singleton):
 
     def get_group(self, group):
 
-        return self.groups[group]
+        return self._groups[group]
 
     def get_tags(self):
 
