@@ -489,8 +489,6 @@ class QueryLogger:
         if values:
 
             result = dict()
-            
-            values *= -1
 
             if not self._logger.memory_defined():
                 tag_values = self.get_values(tag)
@@ -501,6 +499,8 @@ class QueryLogger:
                     tag_values = self.get_values(tag)                
             
             period = self._logger.get_period()
+
+            values *= -1
             
             try:
                 tag_values = tag_values[values:]
