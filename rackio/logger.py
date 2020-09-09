@@ -224,7 +224,7 @@ class LoggerEngine(Singleton):
             self._memory[tag].append(tag_trend)
 
             if len(self._memory[tag]) > self._memory_size:
-                self._memory.pop(0)
+                self._memory[tag].pop(0)
         except:
             self._memory[tag] = [tag_trend]
 
