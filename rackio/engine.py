@@ -209,6 +209,7 @@ class CVTEngine(Singleton):
         super(CVTEngine, self).__init__()
 
         self._cvt = CVT()
+        self._groups = dict()
         self._request_lock = threading.Lock()
         self._response_lock = threading.Lock()
 
@@ -258,7 +259,21 @@ class CVTEngine(Singleton):
         """
 
         for name, _type in tags:
-            self._cvt.set_tag(name, _type)
+            self.set_tag(name, _type)
+
+    def set_group(group, tags):
+
+        self._groups[group] = list()
+
+        for name, _type in tags:
+
+            self._groups[group].append(name)
+
+            self.set_tag(name, _type)
+
+    def get_group(self, group):
+
+        return self.groups[group]
 
     def get_tags(self):
 

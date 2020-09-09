@@ -55,6 +55,39 @@ class TagBinding:
         if self.direction == READ:
 
             self.value = self.tag_engine.read_tag(self.tag)
+
+class Group:
+
+    pass
+
+
+class GroupBinding:
+    
+    tag_engine = CVTEngine()
+
+    def __init__(self, group, direction="read"):
+        
+        self.group = group
+        self.direction = direction
+        self.values = Group()
+
+        tags = self.tag_engine.get_group(self.group)
+
+    def update(self):
+
+        for tag in self.tags:
+
+            if self.direction == WRITE:
+
+                value = getattr(self.values, tag)
+
+                self.tag_engine.write_tag(tag, value)
+
+            if self.direction == READ:
+
+                value = self.tag_engine.read_tag(tag)
+
+                setattr(self.values, tag, value)
     
 
 class RackioStateMachine(StateMachine):
@@ -68,6 +101,7 @@ class RackioStateMachine(StateMachine):
         super(RackioStateMachine, self).__init__()
         self.name = name
         self._tag_bindings = list()
+        self._group_bindings = list()
 
         attrs = self.get_attributes()
 
@@ -79,7 +113,13 @@ class RackioStateMachine(StateMachine):
                     self._tag_bindings.append((key, value))
                     _value = self.tag_engine.read_tag(value.tag)
 
-                    setattr(self, key, 0.0)
+                    setattr(self, key, value)
+
+                if isinstance(value, GroupBinding):
+                    self._group_bindings.append((key, value))
+                    _value = value.values
+
+                    setattr(self, key, _value)
 
                 if key in kwargs:
                     default = kwargs[key]
@@ -151,6 +191,26 @@ class RackioStateMachine(StateMachine):
                 error = str(e)
                 logging.error("Machine - {}:{}".format(self.name, error))
 
+    def _update_groups(self, direction=READ):
+    
+        for attr, _binding in self._group_bindings:
+
+            try:
+                if direction == READ and _binding.direction == READ:
+                
+                    _binding.update()
+
+                    setattr(self, attr, _binding.values)
+                
+                elif direction == WRITE and _binding.direction == WRITE:
+                    
+                    values = getattr(self, attr)
+                    
+                    _binding.values = values
+            
+            except Exception as e:
+                error = str(e)
+                logging.error("Machine - {}:{}".format(self.name, error))
 
     def _loop(self):
 
@@ -159,11 +219,13 @@ class RackioStateMachine(StateMachine):
             method_name = "while_" + state_name
 
             if method_name in dir(self):
-                update = getattr(self, '_update_tags')
+                update_tags = getattr(self, '_update_tags')
+                update_groups = getattr(self, '_update_tags')
                 method = getattr(self, method_name)
                 
                 # update tag read bindings
-                update()
+                update_tags()
+                update_groups()
 
                 # loop machine
                 try:
@@ -174,7 +236,8 @@ class RackioStateMachine(StateMachine):
                     logging.error("Machine - {}:{}".format(self.name, detailed_exception()))
 
                 #update tag write bindings
-                update("write")
+                update_tags("write")
+                update_groups("write")
 
         except Exception as e:
             error = str(e)
