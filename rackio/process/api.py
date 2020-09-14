@@ -3,78 +3,45 @@
 
 This module implements API Rackio Process.
 """
+import logging
+import sys
+import time
+
+import concurrent.futures
 
 from multiprocessing import Process
+
+import falcon
+from falcon_multipart.middleware import MultipartMiddleware
+
+from ..web import StaticResource, resource_pairs
+
+from ..api import TagResource, TagCollectionResource
+from ..api import TagHistoryResource, TrendResource, TrendCollectionResource
+from ..api import ControlResource, ControlCollectionResource
+from ..api import RuleResource, RuleCollectionResource
+from ..api import AlarmResource, AlarmCollectionResource
+from ..api import EventCollectionResource
+from ..api import AppSummaryResource
+from ..api import BlobCollectionResource, BlobResource
 
 
 class APIProcess(Process):
     
-    def __init__(self, context=None):
+    def __init__(self, pipe, port=8000):
 
         super(APIProcess, self).__init__()
 
-        self._init_api()
-        self._init_web()
+        self._pipe = pipe
+        self._port = port
+        self._api = api
 
-    def _init_api(self):
-    
-        self._api = falcon.API(middleware=[MultipartMiddleware()])
+    def set_api(self, api):
 
-        _tag = TagResource()
-        _tags = TagCollectionResource()
-        _tag_history = TagHistoryResource()
-        _tag_trend = TrendResource()
-        _tag_trends = TrendCollectionResource()
-        _control = ControlResource()
-        _controls = ControlCollectionResource()
-        _rule = RuleResource()
-        _rules = RuleCollectionResource()
-        _alarm = AlarmResource()
-        _alarms = AlarmCollectionResource()
-        _events = EventCollectionResource()
-        _summary = AppSummaryResource()
-        _blobs = BlobCollectionResource()
-        _blob = BlobResource()
-
-        self._api.add_route('/api/tags/{tag_id}', _tag)
-        self._api.add_route('/api/tags', _tags)
-
-        self._api.add_route('/api/history/{tag_id}', _tag_history)
-        self._api.add_route('/api/trends/{tag_id}', _tag_trend)
-        self._api.add_route('/api/trends', _tag_trends)
-
-        self._api.add_route('/api/controls/{control_name}', _control)
-        self._api.add_route('/api/controls', _controls)
-
-        self._api.add_route('/api/rules/{rule_name}', _rule)
-        self._api.add_route('/api/rules', _rules)
-        
-        self._api.add_route('/api/alarms/{alarm_name}', _alarm)
-        self._api.add_route('/api/alarms', _alarms)
-
-        self._api.add_route('/api/events', _events)
-
-        self._api.add_route('/api/summary', _summary)
-
-        self._api.add_route('/api/blobs', _blobs)
-        self._api.add_route('/api/blobs/{blob_name}', _blob)
-
-    def _init_web(self):
-
-        web = self._api
-
-        _static = StaticResource()
-
-        pairs = resource_pairs()
-        
-        for path, route in pairs:
-
-            route += "/{filename}"
-
-            web.add_route(route, _static)
+        self._api = api
 
     def set_port(self, port):
-
+    
         self._port = port
 
     def set_log(self, level=logging.INFO, file=""):
@@ -89,34 +56,6 @@ class APIProcess(Process):
         
         if "web_{}".format(file):
             self._log_file = file
-
-    def add_route(self, route, resource):
-        """Append a resource and route the api.
-        
-        # Parameters
-        route (str): The url route for this resource.
-        resource (object): a url resouce template class instance.
-        """
-
-        self._api.add_route(route, resource)
-
-    def define_route(self, route, **kwargs):
-        """Append a resource and route the api
-        by a class decoration..
-        
-        # Parameters
-        route (str): The url route for this resource.
-        """
-
-        def decorator(cls):
-
-            resource = cls(**kwargs)
-            
-            self.add_route(route, resource)
-
-            return cls
-
-        return decorator
 
     def _start_logger(self):
     

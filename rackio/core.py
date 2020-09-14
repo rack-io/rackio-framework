@@ -5,16 +5,19 @@ This module implements the core app class and methods for Rackio.
 """
 
 import logging
+import multiprocessing
 import sys
 import time
 import concurrent.futures
 
-import falcon
-from falcon_multipart.middleware import MultipartMiddleware
+from ._singleton import Singleton
+
+from .utils import directory_paths
+
+from .process import CoreProcess, APIProcess
 
 from peewee import SqliteDatabase, MySQLDatabase, PostgresqlDatabase
 
-from ._singleton import Singleton
 from .logger import LoggerEngine
 
 from .managers import AlarmManager
@@ -25,21 +28,8 @@ from .workers import AlarmWorker, APIWorker
 from .workers import ControlWorker, FunctionWorker, LoggerWorker
 from .workers import StateMachineWorker, _ContinuosWorker
 
+from ..dbmodels import SQLITE, MYSQL, POSTGRESQL
 
-from .web import StaticResource, resource_pairs
-
-from .api import TagResource, TagCollectionResource
-from .api import TagHistoryResource, TrendResource, TrendCollectionResource
-from .api import ControlResource, ControlCollectionResource
-from .api import RuleResource, RuleCollectionResource
-from .api import AlarmResource, AlarmCollectionResource
-from .api import EventCollectionResource
-from .api import AppSummaryResource
-from .api import BlobCollectionResource, BlobResource
-
-from .utils import directory_paths
-
-from .dbmodels import SQLITE, MYSQL, POSTGRESQL
 
 
 class Rackio(Singleton):
@@ -65,6 +55,11 @@ class Rackio(Singleton):
         
         self._context = context
 
+        core_conn, api_conn = multiprocessing.Pipe()
+
+        self._core_process = CoreProcess(core_conn)
+        self._api_process = APIProcess(api_conn)
+
         self.max_workers = 10
         self._logging_level = logging.INFO
         self._log_file = ""
@@ -87,7 +82,7 @@ class Rackio(Singleton):
         self._init_web()
 
     def _init_api(self):
-
+    
         self._api = falcon.API(middleware=[MultipartMiddleware()])
 
         _tag = TagResource()
@@ -145,7 +140,7 @@ class Rackio(Singleton):
 
     def set_port(self, port):
 
-        self._port = port
+        self._api_process.set_port(port)
         
     def set_log(self, level=logging.INFO, file=""):
         """Sets the log file and level.
@@ -155,10 +150,7 @@ class Rackio(Singleton):
         file (str): filename to log.
         """
 
-        self._logging_level = level
-        
-        if file:
-            self._log_file = file
+        self._core_process.set_log(level=level, file=file)
 
     def set_db(self, dbtype=SQLITE, drop_table=True, **kwargs):
         """Sets the database file.
@@ -167,33 +159,7 @@ class Rackio(Singleton):
         dbfile (str): a path to database file.
         """
 
-        from .dbmodels import proxy
-
-        if dbtype == SQLITE:
-
-            dbfile = kwargs.get("dbfile", ":memory:")
-            
-            self._db = SqliteDatabase(dbfile, pragmas={
-                'journal_mode': 'wal',
-                'cache_size': -1 * 64000,  # 64MB
-                'foreign_keys': 1,
-                'ignore_check_constraints': 0,
-                'synchronous': 0}
-            )
-
-        elif dbtype == MYSQL:
-            
-            app = kwargs['app']
-            self._db = MySQLDatabase(app, **kwargs)
-
-        elif dbtype == POSTGRESQL:
-            
-            app = kwargs['app']
-            self._db = PostgresqlDatabase(app, **kwargs)
-        
-        proxy.initialize(self._db)
-        self._db_manager.set_db(self._db)
-        self._db_manager.set_dropped(drop_table)
+        self._core_process.set_db(dbtype=dbtype, drop_table=drop_table, **kwargs)
 
     def set_workers(self, nworkers):
         """Sets the maximum workers in the ThreadPoolExecutor.
@@ -202,7 +168,7 @@ class Rackio(Singleton):
         nworkers (int): Number of workers.
         """
 
-        self.max_workers = nworkers
+        self._core_process.set_workers(nworkers)
 
     def set_dbtags(self, tags, period=0.5, delay=1.0, memory=None):
         """Sets the database tags for logging.
@@ -211,14 +177,7 @@ class Rackio(Singleton):
         tags (list): A list of the tags.
         """
 
-        self._db_manager.set_period(period)
-        self._db_manager.set_delay(delay)
-
-        if memory:
-            self._db_manager.set_memory(memory)
-
-        for _tag in tags:
-            self._db_manager.add_tag(_tag)
+        self._core_process.set_dbtags(tags, period=period, delay=delay, memory=memory)
 
     def append_rule(self, rule):
         """Append a rule to the control manager.
@@ -493,82 +452,17 @@ class Rackio(Singleton):
         
         return decorator
 
-    def _start_logger(self):
+    def _start_core(self):
+        """
+        Starts the core process by passing all the managers
+        """
+        self._core_process.
 
-        log_format = "%(asctime)s:%(levelname)s:%(message)s"
-
-        level = self._logging_level
-        log_file = self._log_file
-
-        if not log_file:
-            logging.basicConfig(level=level, format=log_format)
-            return
-        
-        logging.basicConfig(filename=log_file, level=level, format=log_format)
-
-    def _start_workers(self):
-
-        _db_worker = LoggerWorker(self._db_manager)
-        _control_worker = ControlWorker(self._control_manager)
-        _function_worker = FunctionWorker(self._function_manager)
-        _machine_worker = StateMachineWorker(self._machine_manager)
-        _alarm_worker = AlarmWorker(self._alarm_manager)
-        _api_worker = APIWorker(self._api, self._port)
-
-        try:
-
-            workers = [
-                _db_worker, 
-                _control_worker, 
-                _function_worker, 
-                _machine_worker, 
-                _alarm_worker, 
-                _api_worker
-            ]
-
-            for worker in workers:
-
-                worker.daemon = True
-                worker.start()
-
-        except Exception as e:
-            error = str(e)
-            logging.error(error)
-
-        self.workers = workers
-
-    def stop_workers(self):
-
-        for worker in self.workers:
-            stop_event = worker.get_stop_event()
-            stop_event.set()
-
-    def _start_scheduler(self):
-        
-        _max = self.max_workers
-        scheduler = concurrent.futures.ThreadPoolExecutor(max_workers=_max)
-
-        try:
-
-            for _f, period in self._worker_functions:
-
-                try:
-                    scheduler.submit(_f)
-                except Exception as e:
-                    error = str(e)
-                    logging.error(error)
-
-            for _f in self._continous_functions:
-
-                try:
-                    scheduler.submit(_f)
-                except Exception as e:
-                    error = str(e)
-                    logging.error(error)
-
-        except Exception as e:
-            error = str(e)
-            logging.error(error)
+    def _start_api(self):
+        """
+        Starts the api process by passing the api.
+        """
+        pass
 
     def run(self, port=8000):
 
@@ -585,9 +479,8 @@ class Rackio(Singleton):
 
         self.set_port(port)
 
-        self._start_logger()
-        self._start_workers()
-        self._start_scheduler()
+        self._start_core()
+        self._start_api()
 
         try:         
             while True:
