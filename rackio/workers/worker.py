@@ -5,6 +5,7 @@ This module implements all thread classes for workers.
 """
 from threading import Thread
 from threading import Event as ThreadEvent
+from multiprocessing import Process
 
 from ..engine import CVTEngine
 
@@ -22,3 +23,9 @@ class BaseWorker(Thread):
 
         return self.stop_event
     
+
+class ProcessWorker(Process):
+
+    def __init__(self):
+
+        super(ProcessWorker, self).__init__()
