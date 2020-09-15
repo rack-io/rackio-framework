@@ -69,6 +69,7 @@ class Rackio(Singleton):
         self._logging_level = logging.INFO
         self._log_file = ""
         self._port = 8000
+        self._mode = "development"
 
         self._worker_functions = list()
         self._continous_functions = list()
@@ -146,6 +147,10 @@ class Rackio(Singleton):
     def set_port(self, port):
 
         self._port = port
+
+    def set_mode(self, mode):
+
+        self._mode = mode
         
     def set_log(self, level=logging.INFO, file=""):
         """Sets the log file and level.
@@ -513,7 +518,7 @@ class Rackio(Singleton):
         _function_worker = FunctionWorker(self._function_manager)
         _machine_worker = StateMachineWorker(self._machine_manager)
         _alarm_worker = AlarmWorker(self._alarm_manager)
-        _api_worker = APIWorker(self._api, self._port)
+        _api_worker = APIWorker(self._api, self._port, self._mode)
 
         try:
 
