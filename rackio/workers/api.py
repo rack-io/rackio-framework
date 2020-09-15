@@ -13,7 +13,7 @@ from .handlers import CustomWSGIRequestHandler
 
 class APIWorker(BaseWorker):
 
-    def __init__(self, app, port=8000, mode=mode):
+    def __init__(self, app, port=8000, mode="development"):
 
         super(APIWorker, self).__init__()
 
