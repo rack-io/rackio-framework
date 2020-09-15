@@ -73,6 +73,14 @@ class GroupBinding:
 
         self.tags = self.tag_engine.get_group(self.group)
 
+        self._init_group()
+
+    def _init_group(self):
+
+        for tag in self.tags:
+            tag_value = self.tag_engine.read_tag(tag)
+            setattr(self.values, tag, tag_value)
+
     def update(self):
 
         for tag in self.tags:
@@ -113,7 +121,7 @@ class RackioStateMachine(StateMachine):
                     self._tag_bindings.append((key, value))
                     _value = self.tag_engine.read_tag(value.tag)
 
-                    setattr(self, key, value)
+                    setattr(self, key, _value)
 
                 if isinstance(value, GroupBinding):
                     self._group_bindings.append((key, value))
