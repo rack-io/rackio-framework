@@ -145,9 +145,14 @@ class Alarm:
             self.write_tag_alarm(False)
 
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        description = self._description
+        classification = "system"
+
         event = Event(
             user=USER, 
-            message=message, 
+            message=message,
+            description=description,
+            classification=classification, 
             priority=priority, 
             date_time=now
         )
