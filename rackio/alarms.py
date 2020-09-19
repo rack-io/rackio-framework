@@ -266,6 +266,14 @@ class AlarmManager:
 
         return
 
+    def get_alarm_by_tag(self, tag):
+
+        for _alarm in self._alarms:
+            if tag == _alarm.get_tag():
+                return _alarm
+
+        return
+
     def get_alarms(self):
 
         result = list()
@@ -274,6 +282,7 @@ class AlarmManager:
             result.append(_alarm)
 
         return result
+
 
     def alarm_tags(self):
 
