@@ -51,8 +51,9 @@ class Alarm:
 
         result = dict()
         
-        result["name"] = self._name
-        result["state"] = self._state
+        result["name"] = self.get_name()
+        result["tag"] = self.get_tag()
+        result["state"] = self.get_state()
         result["enabled"] = self._enabled
         result["process"] = self._process
         result["triggered"] = self._triggered
