@@ -281,6 +281,17 @@ class Rackio(Singleton):
 
         return alarm
 
+    def get_alarm_by_tag(self, tag):
+        """Returns a Alarm defined by its tag.
+
+        # Parameters
+        tag (str): an alarm tag.
+        """
+
+        alarm = self._alarm_manager.get_alarm_by_tag(tag)
+
+        return alarm
+
     def append_machine(self, machine, interval=1):
         """Append a state machine to the state machine manager.
         
