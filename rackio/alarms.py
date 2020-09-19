@@ -334,5 +334,3 @@ class AlarmManager:
             if tag == _alarm.get_tag():
 
                 _alarm.update(value)
-    
->>>>>>> cfd891eb9e3c541da43fc6dabe1e21d41f2534fb
