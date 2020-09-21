@@ -7,6 +7,7 @@ from datetime import datetime
 
 from .engine import CVTEngine
 from .events import Event
+from .dbmodels import Alarm as AlarmModel
 from .logger import LoggerEngine
 
 NORMAL = "Normal"
@@ -31,6 +32,8 @@ class Alarm:
         self._name = name
         self._tag = tag
         self._description = description
+
+        self._value = None
 
         self._trigger_value = None
         self._trigger_type = None  # ["HI", "LO", "BOOL"]
@@ -58,6 +61,8 @@ class Alarm:
         result["process"] = self._process
         result["triggered"] = self._triggered
         result["acknowledged"] = self._acknowledged
+        result["value"] = self._value
+        result["tripped_value"] = self._trigger_value
 
         return result
 
@@ -149,7 +154,7 @@ class Alarm:
         description = self._description
         classification = "system"
 
-        event = Event(
+        alarm = AlarmModel.create(
             user=USER, 
             message=message,
             description=description,
@@ -157,8 +162,6 @@ class Alarm:
             priority=priority, 
             date_time=now
         )
-
-        self.logger_engine.write_event(event)
 
     def trigger(self):
 
@@ -200,10 +203,14 @@ class Alarm:
         self._triggered = False
         self._acknowledged = False
 
+        self.set_state(NORMAL)
+
         self._tripped_timestamp = None
         self._acknowledged_timestamp = None
 
     def update(self, value):
+
+        self._value = value
 
         if not self._enabled:
             return
