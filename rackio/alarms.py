@@ -56,6 +56,7 @@ class Alarm:
         
         result["name"] = self.get_name()
         result["tag"] = self.get_tag()
+        result["tag_alarm"] = self._tag_alarm
         result["state"] = self.get_state()
         result["enabled"] = self._enabled
         result["process"] = self._process
@@ -63,6 +64,7 @@ class Alarm:
         result["acknowledged"] = self._acknowledged
         result["value"] = self._value
         result["tripped_value"] = self._trigger_value
+        result["type"] = self._trigger_type
 
         return result
 
