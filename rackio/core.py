@@ -30,12 +30,14 @@ from .web import StaticResource, resource_pairs
 
 from .api import TagResource, TagCollectionResource
 from .api import TagHistoryResource, TrendResource, TrendCollectionResource
+from .api import LoggerResource
 from .api import ControlResource, ControlCollectionResource
 from .api import RuleResource, RuleCollectionResource
 from .api import AlarmResource, AlarmCollectionResource
 from .api import EventCollectionResource
 from .api import AppSummaryResource
 from .api import BlobCollectionResource, BlobResource
+
 
 from .utils import directory_paths
 
@@ -96,6 +98,7 @@ class Rackio(Singleton):
         _tag_history = TagHistoryResource()
         _tag_trend = TrendResource()
         _tag_trends = TrendCollectionResource()
+        _logger = LoggerResource()
         _control = ControlResource()
         _controls = ControlCollectionResource()
         _rule = RuleResource()
@@ -113,6 +116,7 @@ class Rackio(Singleton):
         self._api.add_route('/api/history/{tag_id}', _tag_history)
         self._api.add_route('/api/trends/{tag_id}', _tag_trend)
         self._api.add_route('/api/trends', _tag_trends)
+        self._api.add_route('/api/logger', _logger)
 
         self._api.add_route('/api/controls/{control_name}', _control)
         self._api.add_route('/api/controls', _controls)
@@ -224,6 +228,12 @@ class Rackio(Singleton):
 
         for _tag in tags:
             self._db_manager.add_tag(_tag)
+
+    def get_dbtags(self):
+        """Returns the database tags for logging.
+        """
+
+        return self._db_manager.get_tags()
 
     def append_rule(self, rule):
         """Append a rule to the control manager.

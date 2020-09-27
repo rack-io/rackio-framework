@@ -257,6 +257,7 @@ class LoggerEngine(Singleton):
     def add_tag(self, tag):
 
         self._logging_tags.append(tag)
+        self._logging_tags = list(set(self._logging_tags))
 
     def get_tags(self):
 

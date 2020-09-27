@@ -11,3 +11,4 @@ from .workers import *
 from .static import *
 from .summary import *
 from .blobs import *
+from .logger import *
