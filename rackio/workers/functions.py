@@ -37,8 +37,6 @@ class FunctionWorker(BaseWorker):
             else:
                 time.sleep(self._period)
 
-            stop = self.stop_event.wait()
-
-            if stop:
+            if self.stop_event.is_set():
                 break
     

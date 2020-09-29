@@ -55,9 +55,7 @@ class MicroLoggerWorker(BaseWorker):
             self.write_tags()
             self.sleep_elapsed()
 
-            stop = self.stop_event.wait()
-
-            if stop:
+            if self.stop_event.is_set():
                 break
 
 
@@ -152,9 +150,8 @@ class LoggerWorker(BaseWorker):
             
             while True:
 
-                stop = self.stop_event.wait()
-
-                if stop:
+                if self.stop_event.is_set():
+                    self.stop()
                     break
                 
                 time.sleep(0.5)
