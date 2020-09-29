@@ -17,7 +17,7 @@ class LoggerManager:
     """Logger Manager class for database logging settings.
     """
 
-    def __init__(self, period=0.5, delay=1.0, drop_tables=True, memory_size=None):
+    def __init__(self, period=0.5, delay=1.0, drop_tables=True):
 
         self._period = period
         self._delay = delay
@@ -27,8 +27,6 @@ class LoggerManager:
         self._logger = LoggerEngine()
 
         self._tables = [TagTrend, TagValue, Event, Alarm, Blob]
-
-        self._logger.set_memory(memory_size)
 
     def set_db(self, db):
 
