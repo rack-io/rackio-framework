@@ -38,3 +38,8 @@ class ControlWorker(BaseWorker):
                 self._manager.execute(_tag)
             else:
                 time.sleep(self._period)
+
+            stop = self.stop_event.wait()
+
+            if stop:
+                break

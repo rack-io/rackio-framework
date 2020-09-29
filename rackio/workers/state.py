@@ -4,6 +4,7 @@
 This module implements State Machine Worker.
 """
 import logging
+from threading import Event as ThreadEvent
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -36,4 +37,9 @@ class StateMachineWorker():
             self.jobs.append(job)
         
         self._scheduler.start()
+
+    def stop(self):
+
+        for job in self.jobs:
+            job.remove()
     

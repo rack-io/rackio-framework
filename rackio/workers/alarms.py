@@ -36,3 +36,8 @@ class AlarmWorker(BaseWorker):
                 _tag = item["tag"]
 
                 self._manager.execute(_tag)
+
+            stop = self.stop_event.wait()
+
+            if stop:
+                break

@@ -567,12 +567,9 @@ class Rackio(Singleton):
 
         for worker in self.workers:
             try:
-                worker.stop_workers()
+                worker.stop()
             except:
                 pass
-            
-            stop_event = worker.get_stop_event()
-            stop_event.set()
 
     def _start_scheduler(self):
         

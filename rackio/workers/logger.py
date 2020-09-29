@@ -19,6 +19,7 @@ class MicroLoggerWorker(BaseWorker):
         self.tags = tags
         self._period = period
         self.last = None
+        self.compensation = 0.0
 
         self._logger = LoggerEngine()
 
@@ -53,6 +54,11 @@ class MicroLoggerWorker(BaseWorker):
 
             self.write_tags()
             self.sleep_elapsed()
+
+            stop = self.stop_event.wait()
+
+            if stop:
+                break
 
 
 class LoggerWorker(BaseWorker):
@@ -123,11 +129,12 @@ class LoggerWorker(BaseWorker):
         for worker in self.micro_workers:
             worker.start()
 
-    def stop_workers(self):
+    def stop(self):
 
         for worker in self.micro_workers:
-            stop_event = worker.get_stop_event()
-            stop_event.set()
+            worker.stop()
+
+        self.stop_event.set()
 
     def run(self):
 
@@ -142,7 +149,14 @@ class LoggerWorker(BaseWorker):
 
         try:    
             self.start_workers()     
+            
             while True:
+
+                stop = self.stop_event.wait()
+
+                if stop:
+                    break
+                
                 time.sleep(0.5)
 
         except Exception as e:

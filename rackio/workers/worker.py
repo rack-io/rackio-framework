@@ -21,4 +21,8 @@ class BaseWorker(Thread):
     def get_stop_event(self):
 
         return self.stop_event
+
+    def stop(self):
+
+        self.stop_event.set()
     
