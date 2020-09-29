@@ -24,6 +24,7 @@ class TagTrend(BaseModel):
 
     name = CharField()
     start = DateTimeField()
+    period = FloatField()
 
 
 class TagValue(BaseModel):

@@ -7,7 +7,7 @@ import logging
 
 from datetime import datetime
 
-from ..logger import DataLogger
+from ..logger import LoggerEngine
 from ..dbmodels import TagTrend, TagValue, Event, Alarm, Blob
 from ..utils import serialize_dbo, MemoryTrendValue
 from .._singleton import Singleton
@@ -24,11 +24,11 @@ class LoggerManager:
         self._drop_tables = drop_tables
 
         self._logging_tags = list()
-        self._logger = DataLogger()
+        self._logger = LoggerEngine()
 
         self._tables = [TagTrend, TagValue, Event, Alarm, Blob]
 
-        self.set_memory(memory_size)
+        self._logger.set_memory(memory_size)
 
     def set_db(self, db):
 
@@ -45,7 +45,7 @@ class LoggerManager:
     def get_dropped(self):
 
         return self._drop_tables
-        
+
     def register_table(self, cls):
 
         self._tables.append(cls)
@@ -71,17 +71,18 @@ class LoggerManager:
 
         return self._logging_tags
 
-    def set_tag(self, tag):
+    def set_tag(self, tag, period):
 
-        self._logger.set_tag(tag)
+        self._logger.set_tag(tag, period)
 
     def set_tags(self):
 
         tags = self.get_tags()
+        period = self._period
         
         for tag in tags:
 
-            self.set_tag(tag)
+            self.set_tag(tag, period)
 
     def set_period(self, period):
 

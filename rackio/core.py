@@ -15,8 +15,9 @@ from falcon_multipart.middleware import MultipartMiddleware
 from peewee import SqliteDatabase, MySQLDatabase, PostgresqlDatabase
 
 from ._singleton import Singleton
-from .logger import LoggerEngine
+# from .logger import LoggerEngine
 
+from .managers import LoggerManager
 from .managers import AlarmManager
 from .managers import ControlManager, FunctionManager
 from .managers import StateMachineManager
@@ -82,7 +83,8 @@ class Rackio(Singleton):
         self._function_manager = FunctionManager()
         
         self.db = None
-        self._db_manager = LoggerEngine()
+        # self._db_manager = LoggerEngine()
+        self._db_manager = LoggerManager()
 
         self.workers = None
 

@@ -45,10 +45,10 @@ class DataLogger:
         
         return self._db
 
-    def set_tag(self, tag):
+    def set_tag(self, tag, period):
 
         now = datetime.now()
-        trend = TagTrend(name=tag, start=now)
+        trend = TagTrend(name=tag, start=now, period=period)
         trend.save()
 
         self.tags_dbo[tag] = trend
@@ -86,7 +86,7 @@ class DataLogger:
         query = TagTrend.select().order_by(TagTrend.start)
         trend = query.where(TagTrend.name == tag).get()
         
-        period = self._period
+        period = trend.period
         values = trend.values.select()
         
         result = dict()
@@ -133,8 +133,6 @@ class LoggerEngine(Singleton):
         self._logger = DataLogger()
         self._logging_tags = list()
 
-        self._memory_size = None
-
         self._request_lock = threading.Lock()
         self._response_lock = threading.Lock()
 
@@ -143,111 +141,26 @@ class LoggerEngine(Singleton):
         self._response_lock.acquire()
 
     def set_db(self, db):
-
+    
         self._logger.set_db(db)
 
     def get_db(self):
 
         return self._logger.get_db()
 
-    def set_memory(self, memory):
-
-        self._memory_size = memory
-        
-    def memory_defined(self):
-
-        if not self._memory_size:
-            return False
-
-        return True
-
-    def create_memory(self):
-
-        self._memory = dict()
-
-    def write_tag_memory(self, tag, value):
-
-        if not self.memory_defined():
-            return
-
-        now = now = datetime.now()
-        tag_trend = MemoryTrendValue(value, now)
-
-        try:
-            self._memory[tag].append(tag_trend)
-
-            if len(self._memory[tag]) > self._memory_size:
-                self._memory[tag].pop(0)
-        except:
-            self._memory[tag] = [tag_trend]
-
-    def read_tag_memory(self, tag):
-
-        try:
-            return self._memory[tag]
-        except:
-            return None
-
-    def register_table(self, cls):
-
-        self._tables.append(cls)
-
-    def create_tables(self):
-
-        tables = self._tables
+    def create_tables(self, tables):
 
         self._logger.create_tables(tables)
 
-        if self.memory_defined():
-            self.create_memory()
+    def drop_tables(self, tables):
 
-    def drop_tables(self):
-
-        tables = self._tables
-        
         self._logger.drop_tables(tables)
 
-    def add_tag(self, tag):
+    def set_tag(self, tag, period):
 
-        self._logging_tags.append(tag)
-        self._logging_tags = list(set(self._logging_tags))
-
-    def get_tags(self):
-
-        return self._logging_tags
-
-    def set_tag(self, tag):
-
-        self._logger.set_tag(tag)
-
-    def set_period(self, period):
-
-        self._logger.set_period(period)
-
-    def get_period(self):
-
-        return self._logger.get_period()
-
-    def set_delay(self, delay):
-
-        self._logger.set_delay(delay)
-
-    def get_delay(self):
-
-        return self._logger.get_delay()
-
-    def summary(self):
-
-        result = dict()
-
-        result["period"] = self.get_period()
-        result["tags"] = self.get_tags()
-
-        return result
+        self._logger.set_tag(tag, period)
 
     def write_tag(self, tag, value):
-
-        self.write_tag_memory(tag, value)
 
         _query = dict()
         _query["action"] = "write_tag"
@@ -403,6 +316,13 @@ class QueryLogger:
         
         return values
 
+    def get_period(self, tag):
+
+        query = TagTrend.select().order_by(TagTrend.start.desc())
+        trend = query.where(TagTrend.name == tag).get()
+        
+        return trend.period
+
     def query(self, tag, start, stop):
 
         _query = TagTrend.select().order_by(TagTrend.start)
@@ -411,7 +331,7 @@ class QueryLogger:
         start = datetime.strptime(start, DATETIME_FORMAT)
         stop = datetime.strptime(stop, DATETIME_FORMAT)
 
-        period = self._logger.get_period()
+        period = trend.period
         
         _query = trend.values.select()
         values = _query.where((TagValue.timestamp > start) & (TagValue.timestamp < stop))
@@ -444,15 +364,9 @@ class QueryLogger:
 
             result = dict()
 
-            if not self._logger.memory_defined():
-                tag_values = self.get_values(tag)
-            else:
-                if values < self._logger._memory_size:
-                    tag_values = self._logger.read_tag_memory(tag)
-                else:
-                    tag_values = self.get_values(tag)                
-            
-            period = self._logger.get_period()
+            tag_values = self.get_values(tag)
+
+            period = self.get_period(tag)
 
             values *= -1
             
@@ -491,7 +405,7 @@ class QueryLogger:
             
             tag_values = self.get_values(tag)
             
-            period = self._logger.get_period()
+            period = self.get_period(tag)
             t0 = tag_values[0].timestamp.strftime(DATETIME_FORMAT)
             
             tag_values = [value.value for value in tag_values]
