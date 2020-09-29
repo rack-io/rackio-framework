@@ -150,14 +150,6 @@ class LoggerEngine(Singleton):
 
         return self._logger.get_db()
 
-    def set_dropped(self, drop_tables):
-
-        self._drop_tables = drop_tables
-
-    def get_dropped(self):
-
-        return self._drop_tables
-
     def set_memory(self, memory):
 
         self._memory_size = memory

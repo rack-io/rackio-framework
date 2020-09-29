@@ -45,46 +45,7 @@ class LoggerManager:
     def get_dropped(self):
 
         return self._drop_tables
-
-    def set_memory(self, memory):
-
-        self._logger._memory_size = memory
-        self.create_memory()
         
-    def memory_defined(self):
-
-        if not self._logger._memory_size:
-            return False
-
-        return True
-
-    def create_memory(self):
-
-        self._logger.create_memory()
-
-    def write_tag_memory(self, tag, value):
-
-        if not self.memory_defined():
-            return
-
-        now = now = datetime.now()
-        tag_trend = MemoryTrendValue(value, now)
-
-        try:
-            self._memory[tag].append(tag_trend)
-
-            if len(self._memory[tag]) > self._memory_size:
-                self._memory[tag].pop(0)
-        except:
-            self._memory[tag] = [tag_trend]
-
-    def read_tag_memory(self, tag):
-
-        try:
-            return self._memory[tag]
-        except:
-            return None
-
     def register_table(self, cls):
 
         self._tables.append(cls)
@@ -94,9 +55,6 @@ class LoggerManager:
         tables = self._tables
 
         self._logger.create_tables(tables)
-
-        if self.memory_defined():
-            self.create_memory()
 
     def drop_tables(self):
 
