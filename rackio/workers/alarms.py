@@ -3,6 +3,7 @@
 
 This module implements Alarm Worker.
 """
+import logging
 import time
 
 from .worker import BaseWorker
@@ -39,3 +40,5 @@ class AlarmWorker(BaseWorker):
 
             if self.stop_event.is_set():
                 break
+
+        logging.info("Alarm worker shutdown successfully!")

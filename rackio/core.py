@@ -568,8 +568,8 @@ class Rackio(Singleton):
         for worker in self.workers:
             try:
                 worker.stop()
-            except:
-                pass
+            except Exception as e:
+                logging.info(str(e))
 
     def _start_scheduler(self):
         
@@ -624,5 +624,7 @@ class Rackio(Singleton):
         except (KeyboardInterrupt, SystemExit):
             logging.info("Manual Shutting down!!!")
             self.stop_workers()
+            time.sleep(0.5)
+
             sys.exit()
             

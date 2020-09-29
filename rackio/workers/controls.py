@@ -3,6 +3,7 @@
 
 This module implements Control Worker.
 """
+import logging
 import time
 
 from .worker import BaseWorker
@@ -41,3 +42,5 @@ class ControlWorker(BaseWorker):
 
             if self.stop_event.is_set():
                 break
+
+        logging.info("Control worker shutdown successfully!")

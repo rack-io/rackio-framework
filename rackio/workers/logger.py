@@ -156,14 +156,8 @@ class LoggerWorker(BaseWorker):
                 
                 time.sleep(0.5)
 
+            logging.info("Logger worker shutdown successfully!")
+
         except Exception as e:
-            pass
-
-        # time.sleep(self._period)
-
-        # self.set_last()
-
-        # while True:
-
-        #     self.write_tags()
-        #     self.sleep_elapsed() 
+            error = str(e)
+            logging.info(error)

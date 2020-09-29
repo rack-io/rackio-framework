@@ -42,4 +42,6 @@ class StateMachineWorker():
 
         for job in self.jobs:
             job.remove()
+
+            logging.info("State Machine worker shutdown successfully!")
     
