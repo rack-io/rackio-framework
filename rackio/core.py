@@ -566,6 +566,11 @@ class Rackio(Singleton):
     def stop_workers(self):
 
         for worker in self.workers:
+            try:
+                worker.stop_workers()
+            except:
+                pass
+            
             stop_event = worker.get_stop_event()
             stop_event.set()
 
@@ -621,5 +626,6 @@ class Rackio(Singleton):
 
         except (KeyboardInterrupt, SystemExit):
             logging.info("Manual Shutting down!!!")
+            self.stop_workers()
             sys.exit()
             
