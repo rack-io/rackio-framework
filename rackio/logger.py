@@ -36,24 +36,6 @@ class DataLogger:
 
         self._db = None
         self.tags_dbo = dict()
-        self._period = None
-        self._delay = None
-
-    def set_period(self, period):
-
-        self._period = period
-
-    def get_period(self):
-
-        return self._period
-
-    def set_delay(self, delay):
-
-        self._delay = delay
-        
-    def get_delay(self):
-
-        return self._delay
 
     def set_db(self, db):
 
@@ -142,37 +124,16 @@ class DataLogger:
 class LoggerEngine(Singleton):
     """Logger Engine class for Tag thread-safe database logging.
 
-    This class is intended hold in memory tag based values and 
-    observers for those required tags, it is implemented as a singleton
-    so each sub-thread within the Rackio application can access tags
-    in a thread-safe mechanism.
-
-    # Example
-    
-    ```python
-    >>> from rackio.engine import CVTEngine
-    >>> tag_egine = CVTEngine()
-    >>> tag_engine.write_tag("TAG1", 40.43)
-    >>> value = tag_engine.read_tag("TAG1")
-    >>> print(value)
-    40.43
-    ```
-
     """
 
-    def __init__(self, period=0.5, delay=1.0, drop_tables=True, memory_size=None):
+    def __init__(self):
 
         super(LoggerEngine, self).__init__()
 
         self._logger = DataLogger()
         self._logging_tags = list()
 
-        self._logger.set_period(period)
-        self._logger.set_delay(delay)
-        self._drop_tables = drop_tables
-
-        self._tables = [TagTrend, TagValue, Event, Alarm, Blob]
-        self._memory_size = memory_size
+        self._memory_size = None
 
         self._request_lock = threading.Lock()
         self._response_lock = threading.Lock()

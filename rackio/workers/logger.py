@@ -8,6 +8,7 @@ import logging
 
 from .worker import BaseWorker
 from ..logger import LoggerEngine
+from ..utils import chunks
 
 
 class MicroLoggerWorker(BaseWorker):
@@ -85,36 +86,7 @@ class LoggerWorker(BaseWorker):
 
         return True
 
-    def init_database(self):
-
-        if self._manager.get_dropped():
-            try:
-                self._manager.drop_tables()
-            except Exception as e:
-                error = str(e)
-                logging.error("Database:{}".format(error))
-
-        self._manager.create_tables()
-
-    def set_tags(self):
-
-        tags = self._manager.get_tags()
-        
-        for tag in tags:
-
-            self._manager.set_tag(tag)
-
-    def write_tags(self):
-
-        for _tag in self._manager.get_tags():
-            value = self.tag_engine.read_tag(_tag)
-            self._manager.write_tag(_tag, value)
-
     def start_workers(self):
-
-        def chunks(lst, n):
-            for i in range(0, len(lst), n):
-                yield lst[i:i + n]
 
         tags = self._manager.get_tags()
         tags = list(chunks(tags, 3))
@@ -136,12 +108,10 @@ class LoggerWorker(BaseWorker):
 
     def run(self):
 
-        self.init_database()
+        self._manager.init_database()
         
         if not self.verify_workload():
             return
-            
-        self.set_tags()
         
         time.sleep(self._delay)
 

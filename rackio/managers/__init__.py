@@ -4,6 +4,7 @@
 This module implements all Rackio Managers.
 """
 
+from .logger import LoggerManager
 from .alarms import AlarmManager
 from .controls import ControlManager
 from .functions import FunctionManager

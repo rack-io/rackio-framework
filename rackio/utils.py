@@ -134,3 +134,8 @@ def directory_paths(directory):
         result.append(path.split(directory)[-1])
 
     return result
+
+
+def chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
