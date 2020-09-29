@@ -186,6 +186,7 @@ class Rackio(Singleton):
             
             self._db = SqliteDatabase(dbfile, pragmas={
                 'journal_mode': 'wal',
+                'journal_size_limit': 1024,
                 'cache_size': -1024 * 64,  # 64MB
                 'foreign_keys': 1,
                 'ignore_check_constraints': 0,
