@@ -60,7 +60,7 @@ class Blob(BaseModel):
     blob = BlobField()
 
     @classmethod
-    def get_value(self, blob_name):
+    def get_value(cls, blob_name):
 
         blob = Blob.select().where(Blob.name==blob_name).get()
         blob = BytesIO(blob.blob)
