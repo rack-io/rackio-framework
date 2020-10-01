@@ -4,6 +4,7 @@
 This module implements classes for
 modelling the trending process.
 """
+from datetime import datetime
 from io import BytesIO
 
 from peewee import Proxy, Model, CharField, TextField, DateTimeField, IntegerField, FloatField, BlobField, ForeignKeyField
@@ -31,7 +32,7 @@ class TagValue(BaseModel):
 
     tag = ForeignKeyField(TagTrend, backref='values')
     value = FloatField()
-    timestamp = DateTimeField()
+    timestamp = DateTimeField(default=datetime.now)
 
 
 class Event(BaseModel):

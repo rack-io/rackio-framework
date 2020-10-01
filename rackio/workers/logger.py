@@ -41,8 +41,6 @@ class MicroLoggerWorker(BaseWorker):
 
     def write_tags(self):
 
-        db = self._logger.get_db()
-
         for _tag in self.tags:
             value = self.tag_engine.read_tag(_tag)
             self._logger.write_tag(_tag, value)

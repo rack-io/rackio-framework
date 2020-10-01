@@ -77,8 +77,8 @@ class DataLogger:
 
         trend = self.tags_dbo[tag]
 
-        now = datetime.now()
-        tag_value = TagValue.create(tag=trend, value=value, timestamp=now)
+        # now = datetime.now()
+        tag_value = TagValue.create(tag=trend, value=value)
         tag_value.save()
 
     def read_tag(self, tag):
