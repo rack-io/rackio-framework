@@ -39,6 +39,10 @@ class CVT:
         self._types.append(_type)
         self._types = list(set(self._types))
 
+    def tag_defined(self, name):
+
+        return name in self._tags.keys()
+
     def set_tag(self, name, _type, units=""):
         """Initialize a new Tag object in the _tags dictionary.
         
@@ -258,6 +262,17 @@ class CVTEngine(Singleton):
 
         return self._cvt.get_units(name)
 
+    def tag_defined(self, name):
+        """Checks if a tag name is already defined.
+        
+        # Parameters
+        name (str):
+            Tag name.
+        """
+
+        return self._cvt.tag_defined(name)
+
+
     def set_tag(self, name, _type, units=""):
         """Sets a new value for a defined tag, in thread-safe mechanism.
         
@@ -267,8 +282,9 @@ class CVTEngine(Singleton):
         _type (float, int, bool): 
             Tag value ("int", "float", "bool")
         """
-
-        self._cvt.set_tag(name, _type, units)
+        
+        if not self.tag_defined(name):
+            self._cvt.set_tag(name, _type, units)
 
     def set_tags(self, tags):
         """Sets new values for a defined list of tags, 
@@ -287,7 +303,6 @@ class CVTEngine(Singleton):
         self._groups[group] = list()
 
         for attrs in tags:
-
             try:
                 name, _type, _units = attrs
             except:
