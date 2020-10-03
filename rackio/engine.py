@@ -286,11 +286,17 @@ class CVTEngine(Singleton):
 
         self._groups[group] = list()
 
-        for name, _type in tags:
+        for attrs in tags:
+
+            try:
+                name, _type, _units = attrs
+            except:
+                name, _type = attrs
+                units = ""
 
             self._groups[group].append(name)
-
-            self.set_tag(name, _type)
+            
+            self.set_tag(name, _type, units)
 
     def get_group(self, group):
 
