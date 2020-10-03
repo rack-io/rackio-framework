@@ -39,7 +39,7 @@ class CVT:
         self._types.append(_type)
         self._types = list(set(self._types))
 
-    def set_tag(self, name, _type):
+    def set_tag(self, name, _type, units=""):
         """Initialize a new Tag object in the _tags dictionary.
         
         # Parameters
@@ -67,7 +67,7 @@ class CVT:
             _type = _type.__name__
             self.set_type(_type)
 
-        tag = Tag(name, value, _type)
+        tag = Tag(name, value, _type, units)
 
         self._tags[name] = tag
 
@@ -150,6 +150,17 @@ class CVT:
         """
 
         return self._tags[name].get_type()
+
+    def get_units(self, name):
+
+        """Returns the units defined by name.
+        
+        # Parameters
+        name (str):
+            Tag name.
+        """
+
+        return self._tags[name].get_units()
 
     def get_types(self):
         """Returns all tag types.
@@ -237,7 +248,17 @@ class CVTEngine(Singleton):
 
         return self._cvt.get_type(name)
 
-    def set_tag(self, name, _type):
+    def get_units(self, name):
+        """Gets the units defined for a tag.
+        
+        # Parameters
+        name (str):
+            Tag name.
+        """
+
+        return self._cvt.get_units(name)
+
+    def set_tag(self, name, _type, units=""):
         """Sets a new value for a defined tag, in thread-safe mechanism.
         
         # Parameters
@@ -247,7 +268,7 @@ class CVTEngine(Singleton):
             Tag value ("int", "float", "bool")
         """
 
-        self._cvt.set_tag(name, _type)
+        self._cvt.set_tag(name, _type, units)
 
     def set_tags(self, tags):
         """Sets new values for a defined list of tags, 
@@ -341,6 +362,26 @@ class CVTEngine(Singleton):
         if result["result"]:
             return result["response"]
 
+    def read_units(self, name):
+        """Returns the units defined for a tag name, in thread-safe mechanism.
+        
+        # Parameters
+        name (str):
+            Tag name.
+        """
+
+        _query = dict()
+        _query["action"] = "get_units"
+
+        _query["parameters"] = dict()
+        _query["parameters"]["name"] = name
+
+        self.request(_query)
+        result = self.response()
+
+        if result["result"]:
+            return result["response"]
+
     def request(self, _query):
 
         self._request_lock.acquire()
@@ -419,6 +460,25 @@ class CVTEngine(Singleton):
                     "response": None
                 }
 
+        elif action == "get_units":
+
+            try:
+
+                parameters = _query["parameters"]
+
+                name = parameters["name"]
+                value = self._cvt.get_units(name)
+
+                self._response = {
+                    "result": True,
+                    "response": value
+                }
+            except Exception as e:
+                self._response = {
+                    "result": False,
+                    "response": None
+                }
+
         elif action == "set_value":
 
             try:
@@ -481,18 +541,21 @@ class CVTEngine(Singleton):
 
             value = self.read_tag(_tag)
             _type = self.get_type(_tag)
+            _units = self.get_units(_tag)
             
             try:
                 record = {
                     'tag': _tag,
                     'value': value.serialize(),
                     'type': _type,
+                    'units': _units
                 }
             except:
                 record = {
                     'tag': _tag,
                     'value': value,
                     'type': _type,
+                    'units': _units
                 }
 
             result.append(record)

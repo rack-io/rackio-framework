@@ -16,10 +16,11 @@ STRING = "str"
 
 class Tag:
 
-    def __init__(self, name, value, _type):
+    def __init__(self, name, value, _type, units):
 
         self.name = name
         self.value = value
+        self.units = units
         self._type = _type
 
         self._observers = set()
@@ -36,6 +37,10 @@ class Tag:
     def get_type(self):
         
         return self._type
+
+    def get_units(self):
+
+        return self.units
     
     def attach(self, observer):
 
