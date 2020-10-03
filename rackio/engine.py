@@ -531,6 +531,29 @@ class CVTEngine(Singleton):
 
         return result
 
+    def serialize_tag(self, tag):
+
+        value = self.read_tag(tag)
+        _type = self.get_type(tag)
+        _units = self.get_units(tag)
+
+        try:
+            result = {
+                'tag': tag,
+                'value': value.serialize(),
+                'type': _type,
+                'units': _units
+            }
+        except:
+            result = {
+                'tag': tag,
+                'value': value,
+                'type': _type,
+                'units': _units
+            }
+
+        return result
+
     def serialize(self):
 
         result = list()
@@ -539,24 +562,7 @@ class CVTEngine(Singleton):
 
         for _tag in tags:
 
-            value = self.read_tag(_tag)
-            _type = self.get_type(_tag)
-            _units = self.get_units(_tag)
-            
-            try:
-                record = {
-                    'tag': _tag,
-                    'value': value.serialize(),
-                    'type': _type,
-                    'units': _units
-                }
-            except:
-                record = {
-                    'tag': _tag,
-                    'value': value,
-                    'type': _type,
-                    'units': _units
-                }
+            record = self.serialize_tag(_tag)
 
             result.append(record)
 

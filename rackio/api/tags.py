@@ -22,24 +22,7 @@ class TagResource(RackioResource):
 
     def on_get(self, req, resp, tag_id):
 
-        _cvt = self.tag_engine
-
-        value = _cvt.read_tag(tag_id)
-        _type = _cvt.get_type(tag_id)
-
-        try:
-            doc = {
-                'tag': tag_id,
-                'value': value.serialize(),
-                'type': _type,
-            }
-        except:
-            doc = {
-                'tag': tag_id,
-                'value': value,
-                'type': _type
-
-            }
+        doc = self.tag_engine.serialize_tag(tag_id)
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 
@@ -80,7 +63,6 @@ class TagResource(RackioResource):
             }
         
         resp.body = json.dumps(doc, ensure_ascii=False)
-
 
 
 class TagHistoryResource(RackioResource):
