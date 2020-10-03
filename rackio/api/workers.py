@@ -22,14 +22,9 @@ class ContinousWorkerResource(RackioResource):
 
         if alarm:
             doc = alarm.serialize()
-            
-            # Create a JSON representation of the resource
+
             resp.body = json.dumps(doc, ensure_ascii=False)
 
-            # The following line can be omitted because 200 is the default
-            # status returned by the framework, but it is included here to
-            # illustrate how this may be overridden as needed.
-            # resp.status = falcon.HTTP_200
             resp.status = status_code.HTTP_200
         else:
             resp.status = status_code.HTTP_NOT_FOUND
@@ -50,13 +45,8 @@ class ContinousWorkerResource(RackioResource):
 
             doc = alarm.serialize()
 
-            # Create a JSON representation of the resource
             resp.body = json.dumps(doc, ensure_ascii=False)
-
-            # The following line can be omitted because 200 is the default
-            # status returned by the framework, but it is included here to
-            # illustrate how this may be overridden as needed.
-            # resp.status = falcon.HTTP_200
+            
             resp.status = status_code.HTTP_200
         else:
             resp.status = status_code.HTTP_NOT_FOUND
