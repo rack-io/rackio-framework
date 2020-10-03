@@ -32,6 +32,14 @@ class APIManager:
         self.init_api()
         self.init_web()
 
+    def set_mode(self, mode):
+
+        self.mode = mode
+
+    def set_port(self, port):
+
+        self.port = port
+
     def init_api(self):
 
         _tag = TagResource()
