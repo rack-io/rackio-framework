@@ -21,23 +21,11 @@ from .managers import LoggerManager
 from .managers import AlarmManager
 from .managers import ControlManager, FunctionManager
 from .managers import StateMachineManager
+from .managers import APIManager
 
 from .workers import AlarmWorker, APIWorker
 from .workers import ControlWorker, FunctionWorker, LoggerWorker
 from .workers import StateMachineWorker, _ContinuosWorker
-
-
-from .web import StaticResource, resource_pairs
-
-from .api import TagResource, TagCollectionResource
-from .api import TagHistoryResource, TrendResource, TrendCollectionResource
-from .api import LoggerResource
-from .api import ControlResource, ControlCollectionResource
-from .api import RuleResource, RuleCollectionResource
-from .api import AlarmResource, AlarmCollectionResource
-from .api import EventCollectionResource
-from .api import AppSummaryResource
-from .api import BlobCollectionResource, BlobResource
 
 
 from .utils import directory_paths
@@ -81,74 +69,13 @@ class Rackio(Singleton):
         self._alarm_manager = AlarmManager()
         self._machine_manager = StateMachineManager()
         self._function_manager = FunctionManager()
+        self._api_manager = APIManager()
+        self._db_manager = LoggerManager()
         
         self.db = None
         # self._db_manager = LoggerEngine()
-        self._db_manager = LoggerManager()
 
         self.workers = None
-
-        self._init_api()
-        self._init_web()
-
-    def _init_api(self):
-
-        self._api = falcon.API(middleware=[MultipartMiddleware()])
-
-        _tag = TagResource()
-        _tags = TagCollectionResource()
-        _tag_history = TagHistoryResource()
-        _tag_trend = TrendResource()
-        _tag_trends = TrendCollectionResource()
-        _logger = LoggerResource()
-        _control = ControlResource()
-        _controls = ControlCollectionResource()
-        _rule = RuleResource()
-        _rules = RuleCollectionResource()
-        _alarm = AlarmResource()
-        _alarms = AlarmCollectionResource()
-        _events = EventCollectionResource()
-        _summary = AppSummaryResource()
-        _blobs = BlobCollectionResource()
-        _blob = BlobResource()
-
-        self._api.add_route('/api/tags/{tag_id}', _tag)
-        self._api.add_route('/api/tags', _tags)
-
-        self._api.add_route('/api/history/{tag_id}', _tag_history)
-        self._api.add_route('/api/trends/{tag_id}', _tag_trend)
-        self._api.add_route('/api/trends', _tag_trends)
-        self._api.add_route('/api/logger', _logger)
-
-        self._api.add_route('/api/controls/{control_name}', _control)
-        self._api.add_route('/api/controls', _controls)
-
-        self._api.add_route('/api/rules/{rule_name}', _rule)
-        self._api.add_route('/api/rules', _rules)
-        
-        self._api.add_route('/api/alarms/{alarm_name}', _alarm)
-        self._api.add_route('/api/alarms', _alarms)
-
-        self._api.add_route('/api/events', _events)
-
-        self._api.add_route('/api/summary', _summary)
-
-        self._api.add_route('/api/blobs', _blobs)
-        self._api.add_route('/api/blobs/{blob_name}', _blob)
-
-    def _init_web(self):
-
-        web = self._api
-
-        _static = StaticResource()
-
-        pairs = resource_pairs()
-        
-        for path, route in pairs:
-
-            route += "/{filename}"
-
-            web.add_route(route, _static)
 
     def set_port(self, port):
 
@@ -216,7 +143,7 @@ class Rackio(Singleton):
 
         self.max_workers = nworkers
 
-    def set_dbtags(self, tags, period=0.5, delay=1.0, memory=None):
+    def set_dbtags(self, tags, period=0.5, delay=1.0):
         """Sets the database tags for logging.
         
         # Parameters
@@ -225,9 +152,6 @@ class Rackio(Singleton):
 
         self._db_manager.set_period(period)
         self._db_manager.set_delay(delay)
-
-        if memory:
-            self._db_manager.set_memory(memory)
 
         for _tag in tags:
             self._db_manager.add_tag(_tag)
@@ -402,7 +326,7 @@ class Rackio(Singleton):
         resource (object): a url resouce template class instance.
         """
 
-        self._api.add_route(route, resource)
+        self._api_manager.add_route(route, resource)
 
     def define_route(self, route, **kwargs):
         """Append a resource and route the api
@@ -542,7 +466,7 @@ class Rackio(Singleton):
         _function_worker = FunctionWorker(self._function_manager)
         _machine_worker = StateMachineWorker(self._machine_manager)
         _alarm_worker = AlarmWorker(self._alarm_manager)
-        _api_worker = APIWorker(self._api, self._port, self._mode)
+        _api_worker = APIWorker(self._api_manager, self._port, self._mode)
 
         try:
 

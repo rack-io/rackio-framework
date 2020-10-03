@@ -13,19 +13,21 @@ from .handlers import CustomWSGIRequestHandler
 
 class APIWorker(BaseWorker):
 
-    def __init__(self, app, port=8000, mode="development"):
+    def __init__(self, manager, port=8000, mode="development"):
 
         super(APIWorker, self).__init__()
 
-        self._api_app = app
+        self._manager = manager
         self._port = port
         self._mode = mode
 
     def run(self):
 
+        app = self._manager.app
+
         if self._mode == "development":
-            with make_server('', self._port, self._api_app, handler_class=CustomWSGIRequestHandler) as httpd:
+            with make_server('', self._port, app, handler_class=CustomWSGIRequestHandler) as httpd:
                 logging.info('Serving on port {}...'.format(self._port))
                 httpd.serve_forever()
         else:
-            serve(self._api_app, host='0.0.0.0', port=self._port)
+            serve(app, host='0.0.0.0', port=self._port)
