@@ -3,7 +3,10 @@
 
 This module implements Config class for Rackio configurations handling.
 """
+import configparser
+import json
 import logging
+import yaml
 
 from .dbmodels import SQLITE, MYSQL, POSTGRESQL
 
@@ -36,6 +39,36 @@ class RackioConfig:
     def __init__(self):
 
         pass
+
+    def from_yaml(self, config_file):
+
+        with open(config_file) as f:
+            c = yaml.load(f)
+            
+        for key in c.iterkeys():
+            if key.isupper():
+                self[key] = c[key]
+
+    def from_json(self, config_file):
+
+        with open(config_file) as f:
+            data = f.read()
+
+        c = json.loads(data)
+            
+        for key in c.iterkeys():
+            if key.isupper():
+                self[key] = c[key]
+
+    def from_ini(self, config_file):
+
+        config = configparser.ConfigParser()
+        config.read(config_file)
+
+        for section in config.sections():
+            for key, value in config.items(section):
+                if key.isupper():
+                    self[key] = value
 
     def update(self, **kwargs):
 
