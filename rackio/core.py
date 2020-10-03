@@ -9,13 +9,11 @@ import sys
 import time
 import concurrent.futures
 
-import falcon
-from falcon_multipart.middleware import MultipartMiddleware
-
 from peewee import SqliteDatabase, MySQLDatabase, PostgresqlDatabase
 
 from ._singleton import Singleton
-# from .logger import LoggerEngine
+
+from .config import RackioConfig
 
 from .managers import LoggerManager
 from .managers import AlarmManager
@@ -26,7 +24,6 @@ from .managers import APIManager
 from .workers import AlarmWorker, APIWorker
 from .workers import ControlWorker, FunctionWorker, LoggerWorker
 from .workers import StateMachineWorker, _ContinuosWorker
-
 
 from .utils import directory_paths
 
@@ -61,6 +58,8 @@ class Rackio(Singleton):
         self._log_file = ""
         self._port = 8000
         self._mode = "development"
+
+        self.config = RackioConfig()
 
         self._worker_functions = list()
         self._continous_functions = list()
