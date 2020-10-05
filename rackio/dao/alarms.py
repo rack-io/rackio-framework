@@ -5,6 +5,7 @@ This module implements Alarms Data Objects Access.
 """
 from .core import RackioDAO
 
+
 class AlarmDAO(RackioDAO):
 
     def get_all(self):
@@ -17,6 +18,8 @@ class AlarmDAO(RackioDAO):
         for alarm in manager.get_alarms():
 
             result.append(alarm.serialize())
+
+        return result
 
     def get(self, name):
 
