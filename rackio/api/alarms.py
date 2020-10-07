@@ -9,7 +9,7 @@ import json
 from rackio import status_code
 
 from .core import RackioResource
-from ..dao import AlarmDAO
+from ..dao import AlarmsDAO
 
 
 class BaseResource(RackioResource):
