@@ -7,22 +7,28 @@ This module implements all class Resources for the Tag Engine.
 import json
 
 from .core import RackioResource
+from ..dao import TagsDAO
 
 
-class TagCollectionResource(RackioResource):
+class BaseResource(RackioResource):
+
+    dao = TagsDAO()
+    
+
+class TagCollectionResource(BaseResource):
 
     def on_get(self, req, resp):
 
-        doc = self.tag_engine.serialize()
+        doc = self.dao.get_all()
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 
 
-class TagResource(RackioResource):
+class TagResource(BaseResource):
 
     def on_get(self, req, resp, tag_id):
 
-        doc = self.tag_engine.serialize_tag(tag_id)
+        doc = self.dao.get(tag_id)
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 
@@ -48,7 +54,7 @@ class TagResource(RackioResource):
                 else:
                     value = bool(value)
 
-        result = _cvt.write_tag(tag_id, value)
+        result = self.dao.write(tag_id, value)
 
         if result["result"]:
 
@@ -65,66 +71,37 @@ class TagResource(RackioResource):
         resp.body = json.dumps(doc, ensure_ascii=False)
 
 
-class TagHistoryResource(RackioResource):
+class TagHistoryResource(BaseResource):
 
     def on_get(self, req, resp, tag_id):
 
-        _logger = self.logger_engine
-
-        history = _logger.read_tag(tag_id)
-
-        waveform = dict() 
-        waveform["dt"] = history["dt"]
-        waveform["t0"] = history["t0"]
-        waveform["values"] = history["values"]
-
-        doc = {
-            'tag': tag_id,
-            'waveform': waveform
-        }
+        doc = self.dao.get_history(tag_id)
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 
     
-class TrendResource(RackioResource):
+class TrendResource(BaseResource):
 
     def on_post(self, req, resp, tag_id):
 
         tstart = req.media.get('tstart')
         tstop = req.media.get('tstop')
 
-        _query_logger = self.query_logger
-        result = _query_logger.query(tag_id, tstart, tstop)
-
-        doc = {
-            'tag': tag_id,
-            'waveform': result
-        }
+        doc = self.dao.get_trend(tag_id, tstart, tstop)
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 
 
-class TrendCollectionResource(RackioResource):
+class TrendCollectionResource(BaseResource):
 
     def on_post(self, req, resp):
 
         tags = req.media.get('tags')
-        
-        result = list()
 
         tstart = req.media.get('tstart')
         tstop = req.media.get('tstop')
     
-        for tag in tags:
-
-            waveform = self.query_logger.query(tag, tstart, tstop)
-
-            doc = {
-                'tag': tag,
-                'waveform': waveform
-            }
-
-            result.append(doc)
+        result = self.dao.get_trends(tags, tstart, tstop)
 
         resp.body = json.dumps(result, ensure_ascii=False)
         
