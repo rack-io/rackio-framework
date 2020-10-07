@@ -9,72 +9,57 @@ import json
 from rackio import status_code
 
 from .core import RackioResource
+from ..dao import ControlsDAO, RulesDAO
 
 
-class ControlCollectionResource(RackioResource):
+class ControlBaseResource(RackioResource):
+    
+    dao = ControlsDAO()
+
+
+class ControlCollectionResource(ControlBaseResource):
 
     def on_get(self, req, resp):
 
-        app = self.get_app()
-        manager = app.get_manager("control")
-
-        doc = list()
-
-        for control in manager.get_controls():
-
-            doc.append(control.serialize())
+        doc = self.dao.get_all()
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 
 
-class ControlResource(RackioResource):
+class ControlResource(ControlBaseResource):
 
     def on_get(self, req, resp, control_name):
 
-        app = self.get_app()
-        manager = app.get_manager("control")
+        doc = self.dao.get(control_name)
 
-        control = manager.get_control(control_name)
-
-        if control:
-            doc = control.serialize()
-
+        if doc:
             resp.body = json.dumps(doc, ensure_ascii=False)
-
         else:
             resp.status = status_code.HTTP_NOT_FOUND
 
 
-class RuleCollectionResource(RackioResource):
+class RuleBaseResource(RackioResource):
+    
+    dao = RulesDAO()
+
+
+class RuleCollectionResource(RuleBaseResource):
 
     def on_get(self, req, resp):
 
-        app = self.get_app()
-        manager = app.get_manager("control")
-
-        doc = list()
-
-        for rule in manager.get_rules():
-
-            doc.append(rule.serialize())
+        doc = self.dao.get_all()
             
         resp.body = json.dumps(doc, ensure_ascii=False)
 
 
-class RuleResource(RackioResource):
+class RuleResource(RuleBaseResource):
 
     def on_get(self, req, resp, rule_name):
         
-        app = self.get_app()
-        manager = app.get_manager("control")
+        doc = self.dao.get(rule_name)
 
-        rule = manager.get_rule(rule_name)
-
-        if rule:
-            doc = rule.serialize()
-
+        if doc:
             resp.body = json.dumps(doc, ensure_ascii=False)
-            
         else:
             resp.status = status_code.HTTP_NOT_FOUND
             

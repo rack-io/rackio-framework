@@ -32,7 +32,7 @@ class ControlsDAO(RackioDAO):
             return control.serialize()
 
 
-class RuleDAO(RackioDAO):
+class RulesDAO(RackioDAO):
     
     def get_all(self):
     
