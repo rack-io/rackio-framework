@@ -9,35 +9,30 @@ import json
 from rackio import status_code
 
 from .core import RackioResource
+from ..dao import AlarmDAO
 
 
-class AlarmCollectionResource(RackioResource):
+class BaseResource(RackioResource):
+    
+    dao = AlarmsDAO()
+
+
+class AlarmCollectionResource(BaseResource):
 
     def on_get(self, req, resp):
 
-        app = self.get_app()
-        manager = app.get_manager("alarm")
-
-        doc = list()
-
-        for alarm in manager.get_alarms():
-
-            doc.append(alarm.serialize())
+        doc = self.dao.get_all()
         
         resp.body = json.dumps(doc, ensure_ascii=False)
  
 
-class AlarmResource(RackioResource):
+class AlarmResource(BaseResource):
 
     def on_get(self, req, resp, alarm_name):
 
-        app = self.get_app()
-        manager = app.get_manager("alarm")
+        doc = self.dao.get(alarm_name)
 
-        alarm = manager.get_alarm(alarm_name)
-
-        if alarm:
-            doc = alarm.serialize()
+        if doc:
             
             resp.body = json.dumps(doc, ensure_ascii=False)
 
@@ -48,31 +43,7 @@ class AlarmResource(RackioResource):
         
         action = req.media.get('action')
 
-        app = self.get_app()
-        manager = app.get_manager("alarm")
-
-        alarm = manager.get_alarm(alarm_name)
-
-        if not alarm:
-            resp.status = status_code.HTTP_NOT_FOUND
-        
-        if action == "Acknowledge":
-
-            alarm.acknowledge()
-        
-        elif action == "Enable":
-
-            alarm.enable()
-
-        elif action == "Disable":
-
-            alarm.disable()
-
-        elif action == "Reset":
-
-            alarm.reset()
-
-        doc = alarm.serialize()
+        doc = self.dao.update(alarm_name, action)
 
         resp.body = json.dumps(doc, ensure_ascii=False)
             

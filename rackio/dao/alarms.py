@@ -6,7 +6,7 @@ This module implements Alarms Data Objects Access.
 from .core import RackioDAO
 
 
-class AlarmDAO(RackioDAO):
+class AlarmsDAO(RackioDAO):
 
     def get_all(self):
 

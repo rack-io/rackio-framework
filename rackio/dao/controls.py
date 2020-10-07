@@ -6,7 +6,7 @@ This module implements Controls Data Objects Access.
 from .core import RackioDAO
 
 
-class ControlDAO(RackioDAO):
+class ControlsDAO(RackioDAO):
 
     def get_all(self):
     
