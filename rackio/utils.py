@@ -4,6 +4,7 @@
 This module implements a base utility classes and utility functions.
 """
 
+import logging
 import os
 
 from datetime import datetime, timedelta
@@ -139,3 +140,9 @@ def directory_paths(directory):
 def chunks(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
+
+
+def log_detailed(e, message):
+    
+    logging.error(message)
+    logging.error(e, exc_info=True)

@@ -15,6 +15,7 @@ from .models import FloatType, IntegerType, BooleanType, StringType
 
 from .engine import CVTEngine
 from .logger import QueryLogger, LoggerEngine
+from .utils import log_detailed
 
 FLOAT = "float"
 INTEGER = "int"
@@ -146,7 +147,9 @@ class RackioStateMachine(StateMachine):
                         setattr(self, key, False)
                     elif _type == STRING:
                         setattr(self, key, "")
-            except:
+            except Exception as e:
+                message = "Machine - {}: Error on machine start-up".format(self.name)
+                log_detailed(e, message)
                 continue
 
         self.attrs = attrs
@@ -196,8 +199,8 @@ class RackioStateMachine(StateMachine):
                     self.tag_engine.write_tag(tag, value)
             
             except Exception as e:
-                error = str(e)
-                logging.error("Machine - {}:{}".format(self.name, error))
+                message = "Machine - {}: Error on machine tag-bindings".format(self.name)
+                log_detailed(e, message)
 
     def _update_groups(self, direction=READ):
     
@@ -219,8 +222,8 @@ class RackioStateMachine(StateMachine):
                     _binding.update()
             
             except Exception as e:
-                error = str(e)
-                logging.error("Machine - {}:{}".format(self.name, error))
+                message = "Machine - {}: Error on machine group-bindings".format(self.name)
+                log_detailed(e, message)
 
     def _loop(self):
 
@@ -241,9 +244,8 @@ class RackioStateMachine(StateMachine):
                 try:
                     method()
                 except Exception as e:
-                    error = str(e)
-                    logging.error("Machine - {}:{}".format(self.name, error))
-                    logging.error("Machine - {}:{}".format(self.name, detailed_exception()))
+                    message = "Machine - {}: Error on machine loop".format(self.name)
+                    log_detailed(e, message)
 
                 #update tag write bindings
                 update_tags("write")

@@ -25,7 +25,7 @@ from .workers import AlarmWorker, APIWorker
 from .workers import ControlWorker, FunctionWorker, LoggerWorker
 from .workers import StateMachineWorker, _ContinuosWorker
 
-from .utils import directory_paths
+from .utils import directory_paths, log_detailed
 
 from .dbmodels import SQLITE, MYSQL, POSTGRESQL
 
@@ -370,7 +370,8 @@ class Rackio(Singleton):
                     f()
                 except Exception as e:
                     error = str(e)
-                    print("{}:{}".format(f.__name__, error))
+                    message = "{}:{}".format(f.__name__, error)
+                    log_detailed(e, message)
 
             # _worker_function = (f, period)
             _worker_function = (wrapper, period)
@@ -438,7 +439,8 @@ class Rackio(Singleton):
                     f()
                 except Exception as e:
                     error = str(e)
-                    print("{}:{}".format(f.__name__, error))
+                    message = "{}:{}".format(f.__name__, error)
+                    log_detailed(e, message)
 
             self._function_manager.append_function(tag, wrapper)
             return f
@@ -484,8 +486,8 @@ class Rackio(Singleton):
                 worker.start()
 
         except Exception as e:
-            error = str(e)
-            logging.error(error)
+            message = "Error on wokers start-up"
+            log_detailed(e, message)
 
         self.workers = workers
 
@@ -495,34 +497,29 @@ class Rackio(Singleton):
             try:
                 worker.stop()
             except Exception as e:
-                logging.info(str(e))
+                message = "Error on wokers stop"
+                log_detailed(e, message)
 
     def _start_scheduler(self):
         
         _max = self.max_workers
         scheduler = concurrent.futures.ThreadPoolExecutor(max_workers=_max)
 
-        try:
+        for _f, period in self._worker_functions:
 
-            for _f, period in self._worker_functions:
+            try:
+                scheduler.submit(_f)
+            except Exception as e:
+                message = "Error on functions worker start-up"
+                log_detailed(e, message)
 
-                try:
-                    scheduler.submit(_f)
-                except Exception as e:
-                    error = str(e)
-                    logging.error(error)
+        for _f in self._continous_functions:
 
-            for _f in self._continous_functions:
-
-                try:
-                    scheduler.submit(_f)
-                except Exception as e:
-                    error = str(e)
-                    logging.error(error)
-
-        except Exception as e:
-            error = str(e)
-            logging.error(error)
+            try:
+                scheduler.submit(_f)
+            except Exception as e:
+                message = "Error on continous functions worker start-up"
+                log_detailed(e, message)
 
     def run(self, port=8000):
 

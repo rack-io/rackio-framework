@@ -129,5 +129,5 @@ class LoggerWorker(BaseWorker):
             logging.info("Logger worker shutdown successfully!")
 
         except Exception as e:
-            error = str(e)
-            logging.info(error)
+            message = "logger: Error on logger system"
+                log_detailed(e, message)
