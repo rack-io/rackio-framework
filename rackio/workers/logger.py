@@ -130,4 +130,4 @@ class LoggerWorker(BaseWorker):
 
         except Exception as e:
             message = "logger: Error on logger system"
-                log_detailed(e, message)
+            log_detailed(e, message)
