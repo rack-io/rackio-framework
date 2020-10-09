@@ -4,6 +4,7 @@
 This module implements all API initializations.
 """
 from .tags import *
+from .groups import *
 from .controls import *
 from .alarms import *
 from .events import *

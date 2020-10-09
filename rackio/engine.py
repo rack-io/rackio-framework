@@ -317,6 +317,10 @@ class CVTEngine(Singleton):
 
         return self._groups[group]
 
+    def get_groups(self):
+
+        return list(self._groups.keys())
+
     def get_tags(self):
 
         return self._cvt.get_tags()
@@ -580,6 +584,20 @@ class CVTEngine(Singleton):
         result = list()
 
         tags = self.get_tags()
+
+        for _tag in tags:
+
+            record = self.serialize_tag(_tag)
+
+            result.append(record)
+
+        return result
+
+    def serialize_group(self, name):
+
+        result = list()
+
+        tags = self.get_group(name)
 
         for _tag in tags:
 

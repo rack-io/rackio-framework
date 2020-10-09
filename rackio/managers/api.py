@@ -8,6 +8,7 @@ import falcon
 from falcon_multipart.middleware import MultipartMiddleware
 
 from ..api import TagResource, TagCollectionResource
+from ..api import GroupResource, GroupCollectionResource
 from ..api import TagHistoryResource, TrendResource, TrendCollectionResource
 from ..api import LoggerResource
 from ..api import ControlResource, ControlCollectionResource
@@ -44,6 +45,8 @@ class APIManager:
 
         _tag = TagResource()
         _tags = TagCollectionResource()
+        _group = GroupResource()
+        _groups = GroupCollectionResource()
         _tag_history = TagHistoryResource()
         _tag_trend = TrendResource()
         _tag_trends = TrendCollectionResource()
@@ -61,6 +64,9 @@ class APIManager:
 
         self.app.add_route('/api/tags/{tag_id}', _tag)
         self.app.add_route('/api/tags', _tags)
+
+        self.app.add_route('/api/groups/{group_id}', _group)
+        self.app.add_route('/api/groups', _groups)
 
         self.app.add_route('/api/history/{tag_id}', _tag_history)
         self.app.add_route('/api/trends/{tag_id}', _tag_trend)

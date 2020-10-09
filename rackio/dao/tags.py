@@ -5,6 +5,7 @@ This module implements Tags Data Objects Access.
 """
 from .core import RackioDAO
 
+
 class TagsDAO(RackioDAO):
 
     def get_all(self):
