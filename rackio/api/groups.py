@@ -23,6 +23,18 @@ class GroupCollectionResource(BaseResource):
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 
+    def on_post(self, req, resp):
+
+        groups = req.media.get('groups')
+
+        doc = list()
+
+        for group in groups:
+
+            doc += self.dao.get(group)
+
+        resp.body = json.dumps(doc, ensure_ascii=False)
+
 
 class GroupResource(BaseResource):
 
