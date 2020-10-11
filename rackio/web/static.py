@@ -5,6 +5,8 @@ import mimetypes
 
 import falcon
 
+from jinja2 import Template
+
 external_mimetypes = {
     ".ttf": "font/ttf",
     ".woff": "font/woff",
@@ -85,3 +87,29 @@ class StaticResource:
         except:
             with open(path, 'r', encoding='utf8', errors='ignore') as f:
                 resp.body = f.read()
+
+
+class RouteResource:
+
+    def __init__(self, f):
+
+        self._output_f = f
+
+    def on_get(self, req, resp, **kwargs):
+
+        content = self._output_f(**kwargs)
+
+        resp.body = content
+
+
+def render_template(template, **kwargs):
+
+    dirs = ["templates"] + template.split("\\")
+    path = os.path.join(*tuple(dirs))
+    
+    with open(path, 'r', encoding='utf8', errors='ignore') as f:
+        content = f.read()
+    
+    t = Template(content)
+
+    return t.render(**kwargs)

@@ -3,13 +3,14 @@
 
 This module implements a base utility classes and utility functions.
 """
-
+import abc
+import inspect
 import logging
 import os
+import types
 
 from datetime import datetime, timedelta
 from rackio import status_code
-import abc
 
 
 class MemoryTrendValue:
@@ -146,3 +147,11 @@ def log_detailed(e, message):
     
     logging.error(message)
     logging.error(e, exc_info=True)
+
+def is_function(f):
+
+    return isinstance(f, types.FunctionType)
+
+def is_class(cls):
+
+    return inspect.isclass(cls)

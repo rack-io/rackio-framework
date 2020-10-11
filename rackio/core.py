@@ -25,7 +25,9 @@ from .workers import AlarmWorker, APIWorker
 from .workers import ControlWorker, FunctionWorker, LoggerWorker
 from .workers import StateMachineWorker, _ContinuosWorker
 
-from .utils import directory_paths, log_detailed
+from .web import RouteResource
+
+from .utils import directory_paths, log_detailed, is_function, is_class
 
 from .dbmodels import SQLITE, MYSQL, POSTGRESQL
 
@@ -325,7 +327,11 @@ class Rackio(Singleton):
         resource (object): a url resouce template class instance.
         """
 
-        self._api_manager.add_route(route, resource)
+        if is_function(resource):
+            _resource = RouteResource(resource)
+            self._api_manager.add_route(route, _resource)
+        else:
+            self._api_manager.add_route(route, resource)
 
     def define_route(self, route, **kwargs):
         """Append a resource and route the api
@@ -337,7 +343,10 @@ class Rackio(Singleton):
 
         def decorator(cls):
 
-            resource = cls(**kwargs)
+            if is_class(cls):
+                resource = cls(**kwargs)
+            else:
+                resource = cls
             
             self.add_route(route, resource)
 
