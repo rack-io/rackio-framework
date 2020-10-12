@@ -21,19 +21,24 @@ class AlarmsDAO(RackioDAO):
 
         return result
 
-    def get(self, name):
+    def get(self, name, serialize=True):
 
         app = self.get_app()
         manager = app.get_manager("alarm")
 
         alarm = manager.get_alarm(name)
 
-        if alarm:
+        if not alarm:
+            return
+        
+        if serialize:
             return alarm.serialize()
+
+        return alarm
 
     def update(self, name, action):
 
-        alarm = self.get(name)
+        alarm = self.get(name, serialize=False)
 
         if not alarm:
             return
