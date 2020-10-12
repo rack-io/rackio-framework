@@ -7,6 +7,8 @@ import falcon
 
 from jinja2 import Template
 
+from ..status_code import HTTP_200
+
 external_mimetypes = {
     ".ttf": "font/ttf",
     ".woff": "font/woff",
@@ -100,11 +102,13 @@ class RouteResource:
         content = self._output_f(**kwargs)
 
         resp.body = content
+        resp.status = HTTP_200
+        resp.content_type = 'text/html'
 
 
 def render_template(template, **kwargs):
 
-    dirs = ["templates"] + template.split("\\")
+    dirs = ["templates"] + template.split("/")
     path = os.path.join(*tuple(dirs))
     
     with open(path, 'r', encoding='utf8', errors='ignore') as f:
