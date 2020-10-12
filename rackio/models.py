@@ -249,7 +249,6 @@ class Model(object):
     def get_attr(self, name):
 
         result = getattr(self, name)
-        print(result)
         return result
 
     @classmethod

@@ -148,8 +148,8 @@ class RackioStateMachine(StateMachine):
                     elif _type == STRING:
                         setattr(self, key, "")
             except Exception as e:
-                message = "Machine - {}: Error on machine start-up".format(self.name)
-                log_detailed(e, message)
+                ## message = "Machine - {}: Error on machine start-up".format(self.name)
+                ## log_detailed(e, message)
                 continue
 
         self.attrs = attrs
