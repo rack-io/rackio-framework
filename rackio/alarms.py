@@ -146,7 +146,7 @@ class Alarm:
             self._triggered = False
             self._acknowledged = False
 
-            message = "Alarm {} back to normal unacknowledged"
+            message = "Alarm {} back to normal unacknowledged".format(self.get_name())
             message = message.format(self.get_name())
             priority = 2
 
@@ -156,7 +156,7 @@ class Alarm:
         description = self._description
         classification = "system"
 
-        alarm = AlarmModel.create(
+        AlarmModel.create(
             user=USER, 
             message=message,
             description=description,
