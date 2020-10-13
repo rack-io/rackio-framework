@@ -40,7 +40,7 @@ class TagsDAO(RackioDAO):
 
     def get_trend(self, tag_id, tstart, tstop):
 
-        result = self.query_logger.query(tag_id, tstart, tstop)
+        result = self.query_logger.query_trend(tag_id, tstart, tstop)
 
         return {
             'tag': tag_id,
@@ -53,7 +53,33 @@ class TagsDAO(RackioDAO):
 
         for tag in tags:
     
-            waveform = self.query_logger.query(tag, tstart, tstop)
+            waveform = self.query_logger.query_trend(tag, tstart, tstop)
+
+            record = {
+                'tag': tag,
+                'waveform': waveform
+            }
+
+            result.append(record)
+
+        return result
+
+    def get_waveform(self, tag_id, tstart, tstop):
+
+        result = self.query_logger.query_waveform(tag_id, tstart, tstop)
+
+        return {
+            'tag': tag_id,
+            'waveform': result
+        }
+
+    def get_waveforms(self, tags, tstart, tstop):
+
+        result = list()
+
+        for tag in tags:
+    
+            waveform = self.query_logger.query_waveform(tag, tstart, tstop)
 
             record = {
                 'tag': tag,

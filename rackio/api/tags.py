@@ -104,4 +104,30 @@ class TrendCollectionResource(BaseResource):
         result = self.dao.get_trends(tags, tstart, tstop)
 
         resp.body = json.dumps(result, ensure_ascii=False)
+
+
+class WaveformResource(BaseResource):
+
+    def on_post(self, req, resp, tag_id):
+
+        tstart = req.media.get('tstart')
+        tstop = req.media.get('tstop')
+
+        doc = self.dao.get_waveform(tag_id, tstart, tstop)
+
+        resp.body = json.dumps(doc, ensure_ascii=False)
+
+
+class WaveformCollectionResource(BaseResource):
+
+    def on_post(self, req, resp):
+
+        tags = req.media.get('tags')
+
+        tstart = req.media.get('tstart')
+        tstop = req.media.get('tstop')
+    
+        result = self.dao.get_waveforms(tags, tstart, tstop)
+
+        resp.body = json.dumps(result, ensure_ascii=False)
         

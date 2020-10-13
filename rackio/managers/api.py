@@ -10,6 +10,7 @@ from falcon_multipart.middleware import MultipartMiddleware
 from ..api import TagResource, TagCollectionResource
 from ..api import GroupResource, GroupCollectionResource
 from ..api import TagHistoryResource, TrendResource, TrendCollectionResource
+from ..api import WaveformResource, WaveformCollectionResource
 from ..api import LoggerResource
 from ..api import ControlResource, ControlCollectionResource
 from ..api import RuleResource, RuleCollectionResource
@@ -50,6 +51,8 @@ class APIManager:
         _tag_history = TagHistoryResource()
         _tag_trend = TrendResource()
         _tag_trends = TrendCollectionResource()
+        _tag_waveform = WaveformResource()
+        _tag_waveforms = WaveformCollectionResource()
         _logger = LoggerResource()
         _control = ControlResource()
         _controls = ControlCollectionResource()
@@ -71,6 +74,8 @@ class APIManager:
         self.app.add_route('/api/history/{tag_id}', _tag_history)
         self.app.add_route('/api/trends/{tag_id}', _tag_trend)
         self.app.add_route('/api/trends', _tag_trends)
+        self.app.add_route('/api/waveforms/{tag_id}', _tag_waveform)
+        self.app.add_route('/api/waveforms', _tag_waveforms)
         self.app.add_route('/api/logger', _logger)
 
         self.app.add_route('/api/controls/{control_name}', _control)
@@ -106,3 +111,4 @@ class APIManager:
     def add_route(self, route, resource):
 
         self.app.add_route(route, resource)
+         
