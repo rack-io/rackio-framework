@@ -112,6 +112,9 @@ class QueryLogger:
             start = tag_values[0].timestamp
             stop = tag_values[-1].timestamp
 
+            start = start.strftime(DATETIME_FORMAT)
+            stop = stop.strftime(DATETIME_FORMAT)
+
             if waveform:
                 return self.query_waveform(tag, start, stop)
             
