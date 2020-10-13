@@ -19,7 +19,7 @@ def function():
 
     Car.create(name="Lamborghini Huracan")
 
-app.set_db(dbfile="tags.db")
+# app.set_db(dbfile="tags.db")
 
 
 if __name__ == "__main__":

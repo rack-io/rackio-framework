@@ -25,4 +25,16 @@ class BaseWorker(Thread):
     def stop(self):
 
         self.stop_event.set()
+
+    def __getstate__(self):
+
+        state = self.__dict__.copy()
+        print(state)
+        del state['stop_event']
+        return state
+
+    def __setstate__(self, state):
+        
+        self.__dict__.update(state)
+        self.stop_event = ThreadEvent()
     

@@ -606,3 +606,20 @@ class CVTEngine(Singleton):
             result.append(record)
 
         return result
+
+    def __getstate__(self):
+
+        self._response_lock.release()
+        state = self.__dict__.copy()
+        print(state)
+        del state['_request_lock']
+        del state['_response_lock']
+        return state
+
+    def __setstate__(self, state):
+        
+        self.__dict__.update(state)
+        self._request_lock = threading.Lock()
+        self._response_lock = threading.Lock()
+
+        self._response_lock.acquire()
