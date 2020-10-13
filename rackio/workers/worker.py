@@ -29,7 +29,6 @@ class BaseWorker(Thread):
     def __getstate__(self):
 
         state = self.__dict__.copy()
-        print(state)
         del state['stop_event']
         return state
 

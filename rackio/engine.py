@@ -611,7 +611,6 @@ class CVTEngine(Singleton):
 
         self._response_lock.release()
         state = self.__dict__.copy()
-        print(state)
         del state['_request_lock']
         del state['_response_lock']
         return state
