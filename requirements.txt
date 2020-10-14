@@ -4,5 +4,6 @@ pyBigParser==2.1
 peewee==3.9.6
 python-statemachine==0.7.1
 APScheduler==3.6.3
-waitress=1.4.4
+waitress==1.4.4
 Jinja2==2.10.3
+PyYAML==5.3.1
