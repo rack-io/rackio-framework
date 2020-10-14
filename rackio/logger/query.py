@@ -5,7 +5,7 @@ This module implements a QueryLogger layer class,
 to retrieve history, trends and waveforms from database.
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .engine import LoggerEngine
 from ..dbmodels import TagTrend, TagValue
@@ -83,7 +83,7 @@ class QueryLogger:
         if seconds:
 
             stop = datetime.now()
-            start = stop - seconds
+            start = stop - timedelta(seconds=seconds)
 
             start = start.strftime(DATETIME_FORMAT)
             stop = stop.strftime(DATETIME_FORMAT)
@@ -96,21 +96,10 @@ class QueryLogger:
 
         if values:
 
-            result = dict()
-
-            tag_values = self.get_values(tag)
-
             period = self.get_period(tag)
 
-            values *= -1
-            
-            try:
-                tag_values = tag_values[values:]
-            except Exception as e:
-                tag_values = tag_values[:]
-
-            start = tag_values[0].timestamp
-            stop = tag_values[-1].timestamp
+            stop = datetime.now()
+            start = stop - values * timedelta(seconds=period)
 
             start = start.strftime(DATETIME_FORMAT)
             stop = stop.strftime(DATETIME_FORMAT)
