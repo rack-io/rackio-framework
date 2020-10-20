@@ -6,3 +6,4 @@ python-statemachine==0.7.1
 APScheduler==3.6.3
 waitress=1.4.4
 Jinja2==2.10.3
+PyYAML
