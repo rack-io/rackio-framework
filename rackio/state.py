@@ -39,7 +39,8 @@ def detailed_exception():
 
 class TagBinding:
 
-    """Class used within Rackio State Machine.
+    """
+    Class used within Rackio State Machine.
 
     This class is used to bind tag values with 
     an instance of a Rackio State Machine object,
@@ -97,7 +98,8 @@ class Group:
 
 class GroupBinding:
 
-    """Class used within Rackio State Machine.
+    """
+    Class used within Rackio State Machine.
 
     This class is used to bind a tag group values 
     with an instance of a Rackio State Machine object,
@@ -166,6 +168,61 @@ class GroupBinding:
     
 
 class RackioStateMachine(StateMachine):
+
+    """
+    Class used to define custom state machines.
+
+    This class is used to define custom machines,
+    by defining parameters, states, transitions and 
+    by defining methods state behaviour can de defined.
+
+    **Parameters:**
+        
+    * **name** (str): state machine name.
+
+    Usage:
+
+    ```python
+    from rackio import RackioStateMachine, State
+
+    
+    class TwoStep(RackioStateMachine):
+
+        # states
+
+        state1  = State('State1', initial=True)
+        state2  = State('State2')
+
+        # transitions
+    
+        forward = state1.to(state2)
+        back = state2.to(state1)
+
+        # parameters
+
+        count = 0
+
+        def on_back(self):
+
+            self.count = 0
+
+        def while_state1(self):
+
+            self.count += 1
+
+            logging.warning("{}: {}".format(self.name, self.count))
+            if self.count == 5:
+                self.forward()
+
+        def while_state2(self):
+
+            self.count += 1
+
+            logging.warning("{}: {}".format(self.name, self.count))
+            if self.count >= 10:
+                self.back()
+    ```
+    """
 
     tag_engine = CVTEngine()
     logger_engine = LoggerEngine()
