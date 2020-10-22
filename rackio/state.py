@@ -39,6 +39,39 @@ def detailed_exception():
 
 class TagBinding:
 
+    """Class used within Rackio State Machine.
+
+    This class is used to bind tag values with 
+    an instance of a Rackio State Machine object,
+    in the machine loop, before executing current
+    state, tag bindings of an object are updated
+    with last values from the Tag Engine, 
+    after execution, the Tag Engine is updated,
+    the direction of the binding must be provided, 
+    otherwise `read` direction is used.
+
+    Usage:
+
+    ```python
+    class TwoStep(RackioStateMachine):
+
+        # states
+
+        state1  = State('State1', initial=True)
+        state2  = State('State2')
+
+        # transitions
+    
+        forward = state1.to(state2)
+        back = state2.to(state1)
+
+        # bindings
+
+        t1 = TagBinding("T1")
+        t2 = TagBinding("T2", direction="write")
+    ```
+    """
+
     tag_engine = CVTEngine()
 
     def __init__(self, tag, direction="read"):
@@ -63,6 +96,39 @@ class Group:
 
 
 class GroupBinding:
+
+    """Class used within Rackio State Machine.
+
+    This class is used to bind a tag group values 
+    with an instance of a Rackio State Machine object,
+    in the machine loop, before executing current
+    state, group bindings of an object are updated
+    with last values of all tags in that group from 
+    the Tag Engine, after execution, the Tag Engine 
+    is updated, the direction of the binding must be 
+    provided, otherwise `read` direction is used.
+
+    Usage:
+
+    ```python
+    class TwoStep(RackioStateMachine):
+
+        # states
+
+        state1  = State('State1', initial=True)
+        state2  = State('State2')
+
+        # transitions
+    
+        forward = state1.to(state2)
+        back = state2.to(state1)
+
+        # bindings
+
+        g1 = GroupBinding("G1")
+        g2 = GroupBinding("G2", direction="write")
+    ```
+    """
     
     tag_engine = CVTEngine()
 
