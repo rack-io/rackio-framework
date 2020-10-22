@@ -40,7 +40,7 @@ class Rackio(Singleton):
     it available in each module of an end application or
     code project
 
-    # Example
+    Usage:
 
     ```python
     >>> from rackio import Rackio
@@ -87,11 +87,21 @@ class Rackio(Singleton):
         self._mode = mode
         
     def set_log(self, level=logging.INFO, file=""):
-        """Sets the log file and level.
+        """
+        Sets the log file and level.
         
-        # Parameters
-        level (str): logging.LEVEL.
-        file (str): filename to log.
+        **Parameters:**
+        
+        * **level** (str): `logging.LEVEL`.
+        * **file** (str): log filename.
+
+        **Returns:** `None`
+
+        Usage:
+
+        ```
+        >>> app.set_log(file="app.log")
+        ```
         """
 
         self._logging_level = level
