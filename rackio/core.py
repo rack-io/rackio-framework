@@ -99,7 +99,7 @@ class Rackio(Singleton):
 
         Usage:
 
-        ```
+        ```python
         >>> app.set_log(file="app.log")
         ```
         """
@@ -110,10 +110,22 @@ class Rackio(Singleton):
             self._log_file = file
 
     def set_db(self, dbtype=SQLITE, drop_table=True, **kwargs):
-        """Sets the database file.
+        """
+        Sets the database, it supports SQLite and Postgres,
+        in case of SQLite, the filename must be provided.
         
-        # Parameters
-        dbfile (str): a path to database file.
+        **Parameters:**
+
+        * **dbfile** (str): a path to database file.
+        * **kwargs**: Same attributes to a postgres connection.
+
+        **Returns:** `None`
+
+        Usage:
+
+        ```python
+        >>> app.set_db(dbfile="app.db")
+        ```
         """
 
         from .dbmodels import proxy
@@ -146,19 +158,34 @@ class Rackio(Singleton):
         self._db_manager.set_dropped(drop_table)
 
     def set_workers(self, nworkers):
-        """Sets the maximum workers in the ThreadPoolExecutor.
+        """
+        Sets the maximum workers in the ThreadPoolExecutor.
         
-        # Parameters
-        nworkers (int): Number of workers.
+        **Parameters:**
+
+        * **nworkers** (int): Number of workers.
+
+        **Returns:** `None`
         """
 
         self.max_workers = nworkers
 
     def set_dbtags(self, tags, period=0.5, delay=1.0):
-        """Sets the database tags for logging.
+        """
+        Sets the database tags for logging.
         
-        # Parameters
-        tags (list): A list of the tags.
+        **Parameters:**
+
+        * **tags** (list): A list of the tags.
+
+        **Returns:** `None`
+
+        Usage:
+
+        ```python
+        >>> tags = ["P1", "P2", "T1"]
+        >>> app.set_dbtags(tags, period=1.0)
+        ```
         """
 
         self._db_manager.set_period(period)
@@ -168,61 +195,74 @@ class Rackio(Singleton):
             self._db_manager.add_tag(_tag)
 
     def get_dbtags(self):
-        """Returns the database tags for logging.
+        """
+        Returns the database tags for logging.
         """
 
         return self._db_manager.get_tags()
 
     def append_rule(self, rule):
-        """Append a rule to the control manager.
+        """
+        Append a rule to the control manager.
         
-        # Parameters
-        rule (Rule): a rule object.
+        **Parameters:**
+
+        * **rule** (`Rule`): a rule object.
         """
 
         self._control_manager.append_rule(rule)
 
     def get_rule(self, name):
-        """Returns a Rule defined by its name.
+        """
+        Returns a Rule defined by its name.
         
-        # Parameters
-        name (str): a rackio rule.
+        **Parameters:**
+        
+        * **name** (str): a rackio rule.
         """
 
         return self._control_manager.get_rule(name)
 
     def append_control(self, control):
-        """Append a control to the control manager.
+        """
+        Append a control to the control manager.
         
-        # Parameters
-        control (Control): a control object.
+        **Parameters:**
+
+        * **control** (`Control`): a control object.
         """
 
         self._control_manager.append_control(control)
     
     def get_control(self, name):
-        """Returns a Control defined by its name.
+        """
+        Returns a Control defined by its name.
         
-        # Parameters
-        name (str): a rackio control.
+        **Parameters:**
+
+        * **name** (str): a rackio control.
         """
 
         return self._control_manager.get_control(name)
 
     def append_alarm(self, alarm):
-        """Append an alarm to the alarm manager.
+        """
+        Append an alarm to the alarm manager.
         
-        # Parameters
-        alarm (Alarm): an alarm object.
+        **Parameters:**
+
+        * **alarm** (`Alarm`): an alarm object.
         """
 
         self._alarm_manager.append_alarm(alarm)
 
     def get_alarm(self, name):
-        """Returns a Alarm defined by its name.
+        """
+        Returns a Alarm defined by its name.
         
-        # Parameters
-        name (str): an alarm name.
+        **Parameters:**
+
+        * **name** (str): an alarm name.
         """
 
         alarm = self._alarm_manager.get_alarm(name)
@@ -230,10 +270,12 @@ class Rackio(Singleton):
         return alarm
 
     def get_alarm_by_tag(self, tag):
-        """Returns a Alarm defined by its tag.
+        """
+        Returns a Alarm defined by its tag.
 
-        # Parameters
-        tag (str): an alarm tag.
+        **Parameters:**
+
+        * **tag** (str): an alarm tag.
         """
 
         alarm = self._alarm_manager.get_alarm_by_tag(tag)
@@ -241,31 +283,36 @@ class Rackio(Singleton):
         return alarm
 
     def append_machine(self, machine, interval=1):
-        """Append a state machine to the state machine manager.
+        """
+        Append a state machine to the state machine manager.
         
-        # Parameters
-        machine (RackioStateMachine): a state machine object.
-        interval (int): Interval execution time in seconds.
+        **Parameters:**
+
+        * **machine** (`RackioStateMachine`): a state machine object.
+        * **interval** (int): Interval execution time in seconds.
         """
 
         self._machine_manager.append_machine(machine, interval=interval)
 
     def get_machine(self, name):
-        """Returns a Rackio State Machine defined by its name.
+        """
+        Returns a Rackio State Machine defined by its name.
         
-        # Parameters
-        name (str): a rackio state machine name.
+        **Parameters:**
+        
+        * **name** (str): a rackio state machine name.
         """
 
         return self._machine_manager.get_machine(name)
 
     def define_machine(self, name="", interval=1, **kwargs):
-
-        """Append a state machine to the state machine manager
+        """
+        Append a state machine to the state machine manager
         by a class decoration.
         
-        # Parameters
-        interval (int): Interval execution time in seconds.
+        **Parameters:**
+        
+        * **interval** (int): Interval execution time in seconds.
         """
 
         def decorator(cls):
@@ -279,16 +326,19 @@ class Rackio(Singleton):
         return decorator
 
     def append_table(self, table):
-        """Append a database model class definition.
+        """
+        Append a database model class definition.
         
-        # Parameters
-        table (BaseModel): A Base Model Inheritance.
+        **Parameters:**
+
+        * **table** (BaseModel): A Base Model Inheritance.
         """
 
         self._db_manager.register_table(table)
 
     def define_table(self, cls):
-        """Append a database model class definition
+        """
+        Append a database model class definition
         by a class decoration.
         """
 
@@ -297,10 +347,12 @@ class Rackio(Singleton):
         return cls
 
     def get_manager(self, name):
-        """Returns a specified application manager.
+        """
+        Returns a specified application manager.
         
-        # Parameters
-        name (str): a manager name.
+        **Parameters:**
+        
+        * **name** (str): a manager name.
         """
 
         if name == "control":
@@ -316,7 +368,8 @@ class Rackio(Singleton):
 
     def summary(self):
 
-        """Returns a Rackio Application Summary (dict).
+        """
+        Returns a Rackio Application Summary (dict).
         """
 
         result = dict()
@@ -330,11 +383,13 @@ class Rackio(Singleton):
         return result
 
     def add_route(self, route, resource):
-        """Append a resource and route the api.
+        """
+        Append a resource and route the api.
         
-        # Parameters
-        route (str): The url route for this resource.
-        resource (object): a url resouce template class instance.
+        **Parameters:**
+
+        * **route** (str): The url route for this resource.
+        * **resource** (object): a url resouce template class instance.
         """
 
         if is_function(resource):
@@ -344,11 +399,13 @@ class Rackio(Singleton):
             self._api_manager.add_route(route, resource)
 
     def define_route(self, route, **kwargs):
-        """Append a resource and route the api
+        """
+        Append a resource and route the api
         by a class decoration..
         
-        # Parameters
-        route (str): The url route for this resource.
+        **Parameters:**
+        
+        * **route** (str): The url route for this resource.
         """
 
         def decorator(cls):
@@ -365,21 +422,24 @@ class Rackio(Singleton):
         return decorator
 
     def rackit(self, period):
-        """Decorator method to register functions plugins.
+        """
+        Decorator method to register functions plugins.
         
         This method will register into the Rackio application
         a new function to be executed by the Thread Pool Executor
 
-        # Example
+        **Parameters:**
+        * **period** (float): Value of the default loop execution time.
+        
+        **Returns:** `None`
+
+        Usage:
     
         ```python
         @app.rackit
         def hello():
             print("Hello!!!")
-        ```
-
-        # Parameters
-        period (float): Value of the default loop execution time.
+        ```        
         """
 
         def decorator(f):
@@ -400,12 +460,19 @@ class Rackio(Singleton):
         return decorator
 
     def rackit_on(self, function=None, **kwargs):
-        """Decorator to register functions plugins with continous execution.
+        """
+        Decorator to register functions plugins with continous execution.
         
         This method will register into the Rackio application
         a new function to be executed by the Thread Pool Executor
 
-        # Example
+        **Parameters:**
+        * **period** (float): Value of the default loop execution time, 
+        if period is not defined `0.5` seconds is used by default.
+        
+        **Returns:** `None`
+
+        Usage:
     
         ```python
         @app.rackit_on(period=0.5)
@@ -416,10 +483,6 @@ class Rackio(Singleton):
         def hello_world():
             print("Hello World!!!")
         ```
-
-        # Parameters
-        period (float): Value of the default loop execution time, 
-        if period is not defined 0.5 seconds is used by default.
         """
     
         if function:
@@ -432,23 +495,26 @@ class Rackio(Singleton):
             return wrapper
 
     def observe(self, tag):
-        """Decorator method to register functions as tag observers.
+        """
+        Decorator method to register functions as tag observers.
         
         This method will register into the Rackio application
         a new function as a custom observer to be executed by 
         the Thread Pool Executor. If the tag associated changes 
         its value, the function registered will be executed.
 
-        # Example
+        **Parameters:**
+        * **tag** (str): Tag name.
+
+        **Returns:** `None`
+
+        Usage:
     
         ```python
         @app.observer
         def hello("T1"):
             print("Hello, Tag T1 has changed!!!")
         ```
-
-        # Parameters
-        tag (str): Tag name.
         """
 
         def decorator(f):
@@ -541,12 +607,14 @@ class Rackio(Singleton):
                 log_detailed(e, message)
 
     def run(self, port=8000):
-
-        """Runs the main execution for the application to start serving.
+        """
+        Runs the main execution for the application to start serving.
         
         This will put all the components of the application at run
 
-        # Example
+        **Returns:** `None`
+
+        Usage:
     
         ```python
         >>> app.run()
