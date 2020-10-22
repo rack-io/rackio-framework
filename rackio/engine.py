@@ -20,7 +20,7 @@ class CVT:
     observers for those required tags, this class is intended to be
     used by Rackio itself and not for other purposes
 
-    # Example
+    Usage:
     
     ```python
     >>> from rackio.engine import CVT
@@ -206,7 +206,7 @@ class CVTEngine(Singleton):
     so each sub-thread within the Rackio application can access tags
     in a thread-safe mechanism.
 
-    # Example
+    Usage:
     
     ```python
     >>> from rackio.engine import CVTEngine
@@ -233,72 +233,92 @@ class CVTEngine(Singleton):
         self._response_lock.acquire()
 
     def set_type(self, _type):
-        """Sets a new type as string format.
+        """
+        Sets a new type as string format.
         
-        # Parameters
-        _type (str):
-            Type.
+        **Parameters:**
+        * **_type** (str): Type.
         """
         if _type not in self._cvt.get_types():
             self._cvt.set_type(_type)
 
     def get_type(self, name):
-        """Gets a tag type as string format.
+        """
+        Gets a tag type as string format.
         
-        # Parameters
-        name (str):
-            Tag name.
+        **Parameters:**
+
+        * **name** (str): Tag name.
         """
 
         return self._cvt.get_type(name)
 
     def get_units(self, name):
-        """Gets the units defined for a tag.
+        """
+        Gets the units defined for a tag.
         
-        # Parameters
-        name (str):
-            Tag name.
+        **Parameters:**
+        
+        * **name** (str): Tag name.
         """
 
         return self._cvt.get_units(name)
 
     def tag_defined(self, name):
-        """Checks if a tag name is already defined.
+        """
+        Checks if a tag name is already defined.
         
-        # Parameters
-        name (str):
-            Tag name.
+        **Parameters:**
+
+        * **name** (str): Tag name.
         """
 
         return self._cvt.tag_defined(name)
 
 
     def set_tag(self, name, _type, units=""):
-        """Sets a new value for a defined tag, in thread-safe mechanism.
+        """
+        Sets a new value for a defined tag, in thread-safe mechanism.
         
-        # Parameters
-        name (str):
-            Tag name.
-        _type (float, int, bool): 
-            Tag value ("int", "float", "bool")
+        **Parameters:**
+
+        * **name** (str): Tag name.
+        * **_type** (float, int, bool): Tag value ("int", "float", "bool")
+        * **units** (str): Engineering units.
+
+        Usage:
+    
+        ```python
+        >>> tag_engine.set_tag("speed", "float", "km/h")
+        ```
         """
         
         if not self.tag_defined(name):
             self._cvt.set_tag(name, _type, units)
 
     def set_tags(self, tags):
-        """Sets new values for a defined list of tags, 
+        """
+        Sets new values for a defined list of tags, 
         in thread-safe mechanism.
         
-        # Parameters
-        tags (list):
-            List of tag name and type.
+        **Parameters:**
+        
+        * **tags** (list): List of tag name, type and units.
         """
 
-        for name, _type in tags:
-            self.set_tag(name, _type)
+        for name, _type, units in tags:
+            self.set_tag(name, _type, units)
 
     def set_group(self, group, tags):
+        """
+        Sets new tags group, which can be retrieved
+        by group name.
+        
+        **Parameters:**
+        
+        * **group** (str): Group name.
+        * **tags** (list): List of defined tag names.
+        """
 
         self._groups[group] = list()
 
@@ -314,25 +334,39 @@ class CVTEngine(Singleton):
             self.set_tag(name, _type, _units)
 
     def get_group(self, group):
+        """
+        Returns the tag list of the a defined group.
+        
+        **Parameters:**
+        
+        * **group** (str): Group name.
+
+        """
 
         return self._groups[group]
 
     def get_groups(self):
+        """
+        Returns a list of the group names defined.
+        """
 
         return list(self._groups.keys())
 
     def get_tags(self):
+        """
+        Returns a list of the tag names defined.
+        """
 
         return self._cvt.get_tags()
 
     def write_tag(self, name, value):
-        """Writes a new value for a defined tag, in thread-safe mechanism.
+        """
+        Writes a new value for a defined tag, in thread-safe mechanism.
         
-        # Parameters
-        name (str):
-            Tag name.
-        value (float, int, bool): 
-            Tag value ("int", "float", "bool")
+        **Parameters:**
+
+        * **name** (str): Tag name.
+        * **value** (float, int, bool):  Tag value ("int", "float", "bool")
         """
 
         _query = dict()
@@ -348,11 +382,12 @@ class CVTEngine(Singleton):
         return result
 
     def read_tag(self, name):
-        """Returns a tag value defined by name, in thread-safe mechanism.
+        """
+        Returns a tag value defined by name, in thread-safe mechanism.
         
-        # Parameters
-        name (str):
-            Tag name.
+        **Parameters:**
+
+        * **name** (str): Tag name.
         """
 
         _query = dict()
@@ -368,11 +403,12 @@ class CVTEngine(Singleton):
             return result["response"]
 
     def read_type(self, name):
-        """Returns a tag type defined by name, in thread-safe mechanism.
+        """
+        Returns a tag type defined by name, in thread-safe mechanism.
         
-        # Parameters
-        name (str):
-            Tag name.
+        **Parameters:**
+
+        * **name** (str): Tag name.
         """
 
         _query = dict()
@@ -388,11 +424,12 @@ class CVTEngine(Singleton):
             return result["response"]
 
     def read_units(self, name):
-        """Returns the units defined for a tag name, in thread-safe mechanism.
+        """
+        Returns the units defined for a tag name, in thread-safe mechanism.
         
-        # Parameters
-        name (str):
-            Tag name.
+        **Parameters:**
+        
+        * **name** (str): Tag name.
         """
 
         _query = dict()

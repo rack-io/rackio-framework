@@ -21,24 +21,23 @@ NEQ = "!="
 
 class ValueAction:
 
-    """ValueAction class.
+    """
+    ValueAction class.
 
     This class defines a mechanism to apply defined values
     as actions on tags values
 
-    # Example
+    **Parameters:**
+
+    * **tag_name** (str): tag name in which action will occur
+    * **value** (int, float, bool): Value to be assigned once the action is executed
+    
+    Usage:
     
     ```python
     >>> from rackio.controls import ValueAction
     >>> act1 = ValueAction("T3", 40)
     ```
-
-    # Parameters
-    tag_name (str):
-        tag name in which action will occur
-    value (int, float, bool):
-        Value to be assigned once the action is executed
-    
     """
 
     def __init__(self, tag_name, value):
@@ -76,25 +75,24 @@ class ValueAction:
 
 class MathAction:
 
-    """MathAction class.
+    """
+    MathAction class.
 
     This class defines a mechanism to apply 
     mathematical expressions as actions on 
     tag values
 
-    # Example
+    **Parameters:**
+    
+    * **tag_name** (str): tag name in which action will occur
+    * **expression** (str): Mathematical expression to be parsed once the action is executed
+    
+    Usage:
     
     ```python
     >>> from rackio.controls import MathAction
     >>> act1 = MathAction("T3", "T1 + 2 * T2")
     ```
-
-    # Parameters
-    tag_name (str):
-        tag name in which action will occur
-    expression (str):
-        Mathematical expression to be parsed once the action is executed
-    
     """
 
     def __init__(self, tag_name, expression):
@@ -136,26 +134,24 @@ class MathAction:
 
 class Condition:
 
-    """Condition class.
+    """
+    Condition class.
 
     This class defines a mechanism to apply conditions
     on tag values
 
-    # Example
+    **Parameters:**
+
+    * **tag1** (str): First tag name to be compared
+    * **_oper** (str): Comparison operators ("=", "!=", "<", ">", "<=", ">=")
+    * **tag2** (str): Second tag name to be compared
+    
+    Usage:
     
     ```python
     >>> from rackio.controls import Condition
     >>> cond1 = Condition("T1",">=", "T2")
     ```
-
-    # Parameters
-    tag1 (str):
-        First tag name to be compared
-    _oper (str):
-        Comparison operators ("=", "!=", "<", ">", "<=", ">=")
-    tag2 (str):
-        Second tag name to be compared
-    
     """
 
     def __init__(self, tag1, _oper, tag2):
@@ -222,21 +218,22 @@ class Condition:
 
 class BoolCondition:
 
-    """BooleanCondition class.
+    """
+    BooleanCondition class.
 
     This class defines a mechanism to apply conditions
     on boolean tag values
 
-    # Example
+    **Parameters:**
+    
+    * **tag** (str): tag name
+    
+    Usage:
     
     ```python
     >>> from rackio.controls import BoolCondition
     >>> cond1 = BoolCondition("HIGH_ALARM")
     ```
-
-    # Parameters
-    tag (str):
-        tag name
     """
 
     def __init__(self, tag):
@@ -256,12 +253,17 @@ class BoolCondition:
 
 class OrCondition:
 
-    """Condition class.
+    """
+    Condition class.
 
     This class defines a mechanism to apply conditions
     on tags values
 
-    # Example
+    **Parameters:**
+    
+    * **conditions** (list): List of other condition objects
+
+    Usage:
     
     ```python
     >>> from rackio.controls import Condition, OrCondition
@@ -269,11 +271,6 @@ class OrCondition:
     >>> cond2 = Condition("T4","<=", "T5")
     >>> cond3 = OrCondition([cond1, cond2])
     ```
-
-    # Parameters
-    conditions (list):
-        List of other condition objects
-
     """
 
     def __init__(self, conditions):
@@ -311,12 +308,17 @@ class OrCondition:
 
 class AndCondition:
 
-    """Condition class.
+    """
+    Condition class.
 
     This class defines a mechanism to apply conditions
     on tags values
 
-    # Example
+    **Parameters:**
+
+    * **conditions** (list): List of other condition objects
+
+    Usage:
     
     ```python
     >>> from rackio.controls import Condition, AndCondition
@@ -324,11 +326,6 @@ class AndCondition:
     >>> cond2 = Condition("T4","<=", "T5")
     >>> cond3 = AndCondition([cond1, cond2])
     ```
-
-    # Parameters
-    conditions (list):
-        List of other condition objects
-
     """
 
     def __init__(self, conditions):
@@ -366,14 +363,21 @@ class AndCondition:
 
 class Control:
 
-    """Control class.
+    """
+    Control class.
 
     This class defines a mechanism to apply controls
     on tags values, a control is defined by a condition and
     an action, once the condition is met, the action is 
     triggered
 
-    # Example
+    **Parameters:**
+    
+    * **name** (str): Condition name
+    * **condition** (Condition): Condition to inspect in this control
+    * **action** (Action): Action to be triggered once the condition is met
+    
+    Usage:
     
     ```python
     >>> from rackio.controls import Action, Condition, Control
@@ -381,15 +385,6 @@ class Control:
     >>> cond1 = Condition("T1",">=", "T2")
     >>> control1 = Control("C1", cond1, act1)
     ```
-
-    # Parameters
-    name (str):
-        Condition name
-    condition (Condition):
-        Condition to inspect in this control
-    action (Action):
-        Action to be triggered once the condition is met
-    
     """
 
     def __init__(self, name, condition, action):
@@ -425,14 +420,21 @@ class Control:
 
 class Rule:
 
-    """Rule class.
+    """
+    Rule class.
 
     This class defines a mechanism to apply rules
     on tags values, a rule is defined by a condition and
     a list of actions, once the condition is met, the actions are 
     triggered in sequential order
 
-    # Example
+    **Parameters:**
+    
+    * **name** (str): Condition name
+    * **condition** (Condition): Condition to inspect in this control
+    * **action** (Action): Action to be triggered once the condition is met
+    
+    Usage:
     
     ```python
     >>> from rackio.controls import Action, Condition, Rule
@@ -441,15 +443,6 @@ class Rule:
     >>> cond1 = Condition("T1",">=", "T2")
     >>> rule1 = Rule("C1", cond1, [act1, act2])
     ```
-
-    # Parameters
-    name (str):
-        Condition name
-    condition (Condition):
-        Condition to inspect in this control
-    action (Action):
-        Action to be triggered once the condition is met
-    
     """
 
     def __init__(self, name, condition, actions=None):
