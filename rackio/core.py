@@ -146,11 +146,13 @@ class Rackio(Singleton):
         elif dbtype == MYSQL:
             
             app = kwargs['app']
+            del kwargs['app']
             self._db = MySQLDatabase(app, **kwargs)
 
         elif dbtype == POSTGRESQL:
             
             app = kwargs['app']
+            del kwargs['app']
             self._db = PostgresqlDatabase(app, **kwargs)
         
         proxy.initialize(self._db)
