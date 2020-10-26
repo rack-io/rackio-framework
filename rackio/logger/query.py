@@ -44,7 +44,7 @@ class QueryLogger:
 
         period = trend.period
         
-        _query = trend.values.select()
+        _query = trend.values.select().order_by(TagValue.timestamp.asc())
         values = _query.where((TagValue.timestamp > start) & (TagValue.timestamp < stop))
         
         result = dict()
@@ -67,7 +67,7 @@ class QueryLogger:
         start = datetime.strptime(start, DATETIME_FORMAT)
         stop = datetime.strptime(stop, DATETIME_FORMAT)
         
-        _query = trend.values.select()
+        _query = trend.values.select().order_by(TagValue.timestamp.asc())
         values = _query.where((TagValue.timestamp > start) & (TagValue.timestamp < stop))
         
         result = dict()
