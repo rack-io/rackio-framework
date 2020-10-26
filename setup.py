@@ -25,7 +25,9 @@ setuptools.setup(
         'python-statemachine',
 		'APScheduler',
         'waitress',
-        'Jinja2'
+        'Jinja2',
+        'PyYAML',
+        'psycopg2'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
