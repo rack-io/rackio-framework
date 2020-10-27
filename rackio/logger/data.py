@@ -7,7 +7,7 @@ will create a time-serie for each tag in a short memory sqlite data base.
 
 from datetime import datetime
 
-from ..dbmodels import TagTrend, TagValue, Event, Alarm, Blob
+from ..dbmodels import TagTrend, TagValue, Event
 from ..utils import serialize_dbo
 
 
