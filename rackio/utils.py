@@ -10,6 +10,11 @@ import os
 import types
 
 from datetime import datetime, timedelta
+
+from uuid import uuid1
+from hashlib import md5
+
+
 from rackio import status_code
 
 
@@ -155,3 +160,17 @@ def is_function(f):
 def is_class(cls):
 
     return inspect.isclass(cls)
+
+def generate_key():
+
+    return str(uuid1())
+
+def hash_password(password):
+
+    _hash = md5(password.encode())
+
+    return _hash.hexdigest()
+
+def verify_password(_hash, password):
+
+    return _hash == hash_password(password)
