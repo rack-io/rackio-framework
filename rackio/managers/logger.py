@@ -9,7 +9,7 @@ from datetime import datetime
 
 from ..logger import LoggerEngine
 from ..dbmodels import TagTrend, TagValue, Event, Alarm, Blob
-from ..utils import serialize_dbo, MemoryTrendValue
+from ..utils import serialize_dbo
 from .._singleton import Singleton
 
 
