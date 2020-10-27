@@ -4,10 +4,10 @@
 This module implements classes for
 modelling the trending process.
 """
-from datetime import datetime
+from datetime import datetime, date
 from io import BytesIO
 
-from peewee import Proxy, Model, CharField, TextField, DateTimeField, IntegerField, FloatField, BlobField, ForeignKeyField
+from peewee import Proxy, Model, CharField, TextField, DateField, DateTimeField, IntegerField, FloatField, BlobField, ForeignKeyField
 
 proxy = Proxy()
 
@@ -69,3 +69,23 @@ class Blob(BaseModel):
         blob.seek(0)
 
         return blob.getvalue()
+
+
+class UserRole(BaseModel):
+
+    role = CharField()
+
+
+class User(BaseModel):
+
+    username = TextField()
+    password = TextField()
+    role = ForeignKeyField(UserRole)
+
+
+class Authentication(BaseModel):
+
+    user = ForeignKeyField(User)
+    key = TextField()
+
+    expire = DateField(default=date.today)
