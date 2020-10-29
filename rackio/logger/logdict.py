@@ -28,7 +28,7 @@ class LogTable(dict):
 
     def __setitem__(self, key, value):
 
-        if not validate(key, value):
+        if not self.validate(key, value):
             return
 
 
