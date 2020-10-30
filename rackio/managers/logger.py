@@ -7,7 +7,7 @@ import logging
 
 from datetime import datetime
 
-from ..logger import LoggerEngine
+from ..logger import LogTable, LoggerEngine
 from ..dbmodels import TagTrend, TagValue, Event, Alarm, Blob
 from ..dbmodels import UserRole, User, Authentication
 from ..utils import serialize_dbo
@@ -24,7 +24,8 @@ class LoggerManager:
         self._delay = delay
         self._drop_tables = drop_tables
 
-        self._logging_tags = list()
+        # self._logging_tags = list()
+        self._logging_tags = LogTable()
         self._logger = LoggerEngine()
 
         self._tables = [TagTrend, TagValue, Event, Alarm, Blob]
@@ -62,14 +63,15 @@ class LoggerManager:
         
         self._logger.drop_tables(tables)
 
-    def add_tag(self, tag):
+    def add_tag(self, tag, period):
 
-        self._logging_tags.append(tag)
-        self._logging_tags = list(set(self._logging_tags))
+        # self._logging_tags.append(tag)
+        # self._logging_tags = list(set(self._logging_tags))
+        self._logging_tags.add_tag(tag, period)
 
     def get_tags(self):
 
-        return self._logging_tags
+        return self._logging_tags.get_all_tags()
 
     def set_tag(self, tag, period):
 
@@ -77,13 +79,21 @@ class LoggerManager:
 
     def set_tags(self):
 
-        tags = self.get_tags()
-        period = self._period
+        for period in self._logging_tags.get_groups():
+            
+            tags = self._logging_tags.get_tags(period)
         
-        for tag in tags:
+            #tags = self.get_tags()
+            # period = self._period
+        
+            for tag in tags:
 
-            self.set_tag(tag, period)
+                self.set_tag(tag, period)
 
+    def get_table(self):
+
+        return self._logging_tags
+        
     def set_period(self, period):
 
         self._period = period

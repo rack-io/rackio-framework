@@ -10,6 +10,7 @@ import threading
 from datetime import datetime
 
 from .data import DataLogger
+from .logdict import LogTable
 from .._singleton import Singleton
 
 

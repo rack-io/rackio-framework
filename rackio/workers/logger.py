@@ -8,7 +8,7 @@ import logging
 
 from .worker import BaseWorker
 from ..logger import LoggerEngine
-from ..utils import chunks
+from ..utils import chunks, log_detailed
 
 
 class MicroLoggerWorker(BaseWorker):
@@ -88,13 +88,20 @@ class LoggerWorker(BaseWorker):
 
     def start_workers(self):
 
-        tags = self._manager.get_tags()
-        tags = list(chunks(tags, 3))
+        # tags = self._manager.get_tags()
+        # tags = list(chunks(tags, 3))
+        log_table = self._manager.get_table()
 
-        for group in tags:
-            worker = MicroLoggerWorker(group, self._period)
-            worker.daemon = True
-            self.micro_workers.append(worker)
+        for period in log_table.get_groups():
+
+            tags = log_table.get_tags(period)
+            tags = list(chunks(tags, 3))
+            
+            for group in tags:
+                # worker = MicroLoggerWorker(group, self._period)
+                worker = MicroLoggerWorker(group, period)
+                worker.daemon = True
+                self.micro_workers.append(worker)
 
         for worker in self.micro_workers:
             worker.start()

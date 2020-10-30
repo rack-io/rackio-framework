@@ -13,6 +13,8 @@ class LogTable(dict):
         pass
 
     def validate(self, period, tag):
+
+        print(period, tag)
         
         if type(period) != int:
             return False
@@ -48,10 +50,24 @@ class LogTable(dict):
 
         return self[group]
 
+    def get_all_tags(self):
+
+        result = list()
+
+        for group in self.get_groups():
+
+            result += self.get_tags(group)
+
+        return result
+
     def get_period(self, tag):
 
         for key, value in self.items():
 
             if tag in value:
                 return key
+
+    def serialize(self):
+
+        return self
     
