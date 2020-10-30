@@ -12,26 +12,46 @@ class LogTable(dict):
 
         pass
 
-    def validate(self, key, value):
+    def validate(self, period, tag):
         
-        if type(key) != int:
+        if type(period) != int:
             return False
         
-        if type(value) != str:
+        if type(tag) != str:
             return False
 
         return True
 
-    def assign_log(self, period, tag):
+    def add_tag(self, tag, period):
 
-        pass
-
-    def __setitem__(self, key, value):
-
-        if not self.validate(key, value):
+        if not self.validate(period, tag):
             return
 
+        for key, value in self.items():
 
-    def __getitem__(self, key):
+            if tag in value:
+                self[key].remove(tag)
 
-        pass
+        if period in self.keys():
+
+            self[period].append(tag)
+
+        else:
+
+            self[period] = [tag]
+
+    def get_groups(self):
+
+        return list(self.keys())
+
+    def get_tags(self, group):
+
+        return self[group]
+
+    def get_period(self, tag):
+
+        for key, value in self.items():
+
+            if tag in value:
+                return key
+    
