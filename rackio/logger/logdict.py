@@ -13,8 +13,6 @@ class LogTable(dict):
         pass
 
     def validate(self, period, tag):
-
-        print(period, tag)
         
         if type(period) != int:
             return False

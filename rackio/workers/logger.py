@@ -88,8 +88,6 @@ class LoggerWorker(BaseWorker):
 
     def start_workers(self):
 
-        # tags = self._manager.get_tags()
-        # tags = list(chunks(tags, 3))
         log_table = self._manager.get_table()
 
         for period in log_table.get_groups():
@@ -98,7 +96,7 @@ class LoggerWorker(BaseWorker):
             tags = list(chunks(tags, 3))
             
             for group in tags:
-                # worker = MicroLoggerWorker(group, self._period)
+                
                 worker = MicroLoggerWorker(group, period)
                 worker.daemon = True
                 self.micro_workers.append(worker)

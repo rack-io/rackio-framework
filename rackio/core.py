@@ -194,7 +194,7 @@ class Rackio(Singleton):
         self._db_manager.set_delay(delay)
 
         for _tag in tags:
-            self._db_manager.add_tag(_tag)
+            self._db_manager.add_tag(_tag, period)
 
     def get_dbtags(self):
         """

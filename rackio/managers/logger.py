@@ -65,8 +65,6 @@ class LoggerManager:
 
     def add_tag(self, tag, period):
 
-        # self._logging_tags.append(tag)
-        # self._logging_tags = list(set(self._logging_tags))
         self._logging_tags.add_tag(tag, period)
 
     def get_tags(self):
@@ -82,9 +80,6 @@ class LoggerManager:
         for period in self._logging_tags.get_groups():
             
             tags = self._logging_tags.get_tags(period)
-        
-            #tags = self.get_tags()
-            # period = self._period
         
             for tag in tags:
 
