@@ -72,7 +72,10 @@ def resource_pairs():
 
 class StaticResource:
 
-    
+    auth = {
+        'auth_disabled': True
+    }
+
     def on_get(self, req, resp, filename):
 
         uri = req.relative_uri
@@ -92,6 +95,10 @@ class StaticResource:
 
 
 class RouteResource:
+
+    auth = {
+        'auth_disabled': True
+    }
 
     def __init__(self, f):
 

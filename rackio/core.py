@@ -73,7 +73,6 @@ class Rackio(Singleton):
         self._function_manager = FunctionManager()
         self._api_manager = APIManager()
         self._db_manager = LoggerManager()
-        self.auth = AuthManager()
         
         self.db = None
 
@@ -352,7 +351,7 @@ class Rackio(Singleton):
         * **password** (string): User's role (**Operator** by default).
         """
 
-        self.auth.create_user(username, password, role)
+        self._db_manager.create_user(username, password, role)
 
     def define_role(self, role):
         """
@@ -363,7 +362,7 @@ class Rackio(Singleton):
         * **role** (string): User Role.
         """
 
-        self.auth.create_role(role)
+        self._db_manager.create_role(role)
 
     def define_table(self, cls):
         """

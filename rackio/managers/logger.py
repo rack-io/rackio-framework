@@ -13,6 +13,8 @@ from ..dbmodels import UserRole, User, Authentication
 from ..utils import serialize_dbo
 from .._singleton import Singleton
 
+from .auth import AuthManager
+
 
 class LoggerManager:
     """Logger Manager class for database logging settings.
@@ -24,9 +26,9 @@ class LoggerManager:
         self._delay = delay
         self._drop_tables = drop_tables
 
-        # self._logging_tags = list()
         self._logging_tags = LogTable()
         self._logger = LoggerEngine()
+        self._auth = AuthManager()
 
         self._tables = [TagTrend, TagValue, Event, Alarm, Blob]
         self._tables += [UserRole, User, Authentication]
@@ -64,7 +66,7 @@ class LoggerManager:
         self._logger.drop_tables(tables)
 
     def add_tag(self, tag, period):
-
+        
         self._logging_tags.add_tag(tag, period)
 
     def get_tags(self):
@@ -105,6 +107,14 @@ class LoggerManager:
 
         return self._delay
 
+    def create_user(self, username, password, role):
+
+        self._auth.create_user(username, password, role)
+
+    def create_role(self, role):
+
+        self._auth.create_role(role)
+
     def init_database(self):
     
         if self.get_dropped():
@@ -117,6 +127,8 @@ class LoggerManager:
         self.create_tables()
 
         self.set_tags()
+
+        self._auth.init()
 
     def summary(self):
 

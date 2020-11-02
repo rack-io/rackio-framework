@@ -21,12 +21,14 @@ class LoginResource(BaseResource):
 
     def on_post(self, req, resp):
 
-        username = req.media.get('value')
-        password = req.media.get('value')
+        username = req.media.get('username')
+        password = req.media.get('password')
 
         self.dao.login(username, password)
 
-        doc = "Login Successfully"
+        doc = {
+            "apiKey": self.dao._get_key(username)
+        }
         
         resp.body = json.dumps(doc, ensure_ascii=False)
  
