@@ -121,7 +121,6 @@ if __name__ == "__main__":
 
     app.set_db(dbfile="tags.db")
     app.set_log(file="app.log")
-    # app.set_dbtags(["RAND1", "RAND2", "T1", "T2", "T3"])
     app.set_dbtags(["RAND1", "RAND2"], 0.2)
     app.set_dbtags(["T1", "T2", "T3"], 0.5)
     app.run()

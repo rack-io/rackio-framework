@@ -14,7 +14,7 @@ class LogTable(dict):
 
     def validate(self, period, tag):
         
-        if type(period) != int:
+        if not type(period) in [int, float]:
             return False
         
         if type(tag) != str:
