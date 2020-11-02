@@ -26,6 +26,12 @@ class AuthDAO(RackioDAO):
 
         return user
 
+    def create_role(self, role):
+
+        role = UserRole.create(role=role)
+
+        return role
+
     def read_by_role(self, role):
 
         role = UserRole.select().where(UserRole.role==role).get()

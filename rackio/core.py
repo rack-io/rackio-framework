@@ -15,6 +15,8 @@ from ._singleton import Singleton
 
 from .config import RackioConfig
 
+from .dao import AuthDAO
+
 from .managers import LoggerManager
 from .managers import AlarmManager
 from .managers import ControlManager, FunctionManager
@@ -77,6 +79,8 @@ class Rackio(Singleton):
         # self._db_manager = LoggerEngine()
 
         self.workers = None
+
+        self.auth = AuthDAO()
 
     def set_port(self, port):
 
@@ -337,6 +341,30 @@ class Rackio(Singleton):
         """
 
         self._db_manager.register_table(table)
+
+    def define_user(self, username, password, role="Operator"):
+        """
+        Append a new user to allowed users in application.
+        
+        **Parameters:**
+
+        * **username** (string): User's username.
+        * **password** (string): User's password.
+        * **password** (string): User's role (**Operator** by default).
+        """
+
+        self.auth.create(role, username=username, password=password)
+
+    def define_role(self, role):
+        """
+        Append a new user role to application.
+        
+        **Parameters:**
+
+        * **role** (string): User Role.
+        """
+
+        self.auth.create_role(role)
 
     def define_table(self, cls):
         """
