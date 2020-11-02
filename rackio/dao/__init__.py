@@ -10,3 +10,5 @@ from .logger import LoggerDAO
 from .controls import ControlsDAO, RulesDAO
 from .alarms import AlarmsDAO
 from .events import EventsDAO
+
+from .auth import AuthDAO

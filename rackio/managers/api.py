@@ -5,6 +5,7 @@ Thi module implements API Manager.
 """
 
 import falcon
+from falcon_auth import FalconAuthMiddleware, TokenAuthBackend
 from falcon_multipart.middleware import MultipartMiddleware
 
 from ..api import TagResource, TagCollectionResource
@@ -19,14 +20,38 @@ from ..api import EventCollectionResource
 from ..api import AppSummaryResource
 from ..api import BlobCollectionResource, BlobResource
 
+from ..api import LoginResource, LogoutResource
+
 from ..web import StaticResource, resource_pairs
+
+from ..dao import AuthDAO
+
+def user_loader(token):
+
+    dao = AuthDAO()
+
+    user = dao.read_by_key(token)
+
+    if not user:
+        return None
+
+    username = user.username
+
+    return {'username': username}
 
 
 class APIManager:
 
     def __init__(self):
 
-        self.app = falcon.API(middleware=[MultipartMiddleware()])
+        auth_backend = TokenAuthBackend(user_loader, auth_header_prefix='Token')
+        
+        auth_middleware = FalconAuthMiddleware(auth_backend,
+            exempt_routes=['/api/login'], exempt_methods=['HEAD'])
+
+        multipart_middleware = MultipartMiddleware()
+
+        self.app = falcon.API(middleware=[multipart_middleware, auth_middleware])
 
         self.port = 8000
         self.mode = "development"
@@ -65,6 +90,9 @@ class APIManager:
         _blobs = BlobCollectionResource()
         _blob = BlobResource()
 
+        login = LoginResource()
+        Logout = LogoutResource()
+
         self.app.add_route('/api/tags/{tag_id}', _tag)
         self.app.add_route('/api/tags', _tags)
 
@@ -93,6 +121,9 @@ class APIManager:
 
         self.app.add_route('/api/blobs', _blobs)
         self.app.add_route('/api/blobs/{blob_name}', _blob)
+
+        self.app.add_route('/api/login', login)
+        self.app.add_route('/api/logout', Logout)
 
     def init_web(self):
 
