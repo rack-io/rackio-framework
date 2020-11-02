@@ -20,6 +20,7 @@ setuptools.setup(
     install_requires=[
         'falcon',
         'falcon-multipart',
+        'falcon-auth',
         'pyBigParser',
         'peewee',
         'python-statemachine',

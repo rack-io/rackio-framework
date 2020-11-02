@@ -15,13 +15,12 @@ from ._singleton import Singleton
 
 from .config import RackioConfig
 
-from .dao import AuthDAO
-
 from .managers import LoggerManager
 from .managers import AlarmManager
 from .managers import ControlManager, FunctionManager
 from .managers import StateMachineManager
 from .managers import APIManager
+from .managers import AuthManager
 
 from .workers import AlarmWorker, APIWorker
 from .workers import ControlWorker, FunctionWorker, LoggerWorker
@@ -74,12 +73,13 @@ class Rackio(Singleton):
         self._function_manager = FunctionManager()
         self._api_manager = APIManager()
         self._db_manager = LoggerManager()
+        self.auth = AuthManager()
         
         self.db = None
 
         self.workers = None
 
-        self.auth = AuthDAO()
+        
 
     def set_port(self, port):
 
@@ -352,7 +352,7 @@ class Rackio(Singleton):
         * **password** (string): User's role (**Operator** by default).
         """
 
-        self.auth.create(role, username=username, password=password)
+        self.auth.create_user(username, password, role)
 
     def define_role(self, role):
         """

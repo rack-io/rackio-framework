@@ -10,3 +10,5 @@ from .controls import ControlManager
 from .functions import FunctionManager
 from .state import StateMachineManager
 from .api import APIManager
+
+from .auth import AuthManager
