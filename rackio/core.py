@@ -76,7 +76,6 @@ class Rackio(Singleton):
         self._db_manager = LoggerManager()
         
         self.db = None
-        # self._db_manager = LoggerEngine()
 
         self.workers = None
 
