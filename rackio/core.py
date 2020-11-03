@@ -461,6 +461,20 @@ class Rackio(Singleton):
 
         return decorator
 
+    def enable_auth(self):
+        """
+        Enables authentication mode in API.
+        """
+
+        self._api_manager.enable_auth()
+
+    def disable_auth(self):
+        """
+        Disables authentication mode in API.
+        """
+
+        self._api_manager.disable_auth()
+
     def rackit(self, period):
         """
         Decorator method to register functions plugins.

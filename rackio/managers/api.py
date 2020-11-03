@@ -5,6 +5,7 @@ Thi module implements API Manager.
 """
 
 import falcon
+from falcon import api_helpers as helpers
 from falcon_auth import FalconAuthMiddleware, TokenAuthBackend
 from falcon_multipart.middleware import MultipartMiddleware
 
@@ -40,21 +41,57 @@ def user_loader(token):
     return {'username': username}
 
 
+class API(falcon.API):
+
+    def __init__(self, *args, **kwargs):
+
+        super().__init__(*args, **kwargs)
+
+        self.multipart_middleware = MultipartMiddleware()
+
+        self.auth_backend = TokenAuthBackend(user_loader, auth_header_prefix='Token')
+        
+        self.auth_middleware = FalconAuthMiddleware(self.auth_backend,
+            exempt_routes=['/api/login'], exempt_methods=['HEAD'])
+
+        self.auth = False
+
+    def set_auth(self, enabled=False):
+
+        self.auth = enabled
+
+    def set_middleware(self, independent_middleware=True):
+
+        # set middleware
+        middleware = [self.multipart_middleware]
+
+        if self.auth:
+            middleware.append(self.auth_middleware)
+
+        self._middleware = helpers.prepare_middleware(
+            middleware, independent_middleware=independent_middleware)
+        self._independent_middleware = independent_middleware        
+
+
 class APIManager:
 
     def __init__(self):
 
-        auth_backend = TokenAuthBackend(user_loader, auth_header_prefix='Token')
+        # auth_backend = TokenAuthBackend(user_loader, auth_header_prefix='Token')
         
-        auth_middleware = FalconAuthMiddleware(auth_backend,
-            exempt_routes=['/api/login'], exempt_methods=['HEAD'])
+        # auth_middleware = FalconAuthMiddleware(auth_backend,
+        #    exempt_routes=['/api/login'], exempt_methods=['HEAD'])
 
-        multipart_middleware = MultipartMiddleware()
+        # multipart_middleware = MultipartMiddleware()
 
-        self.app = falcon.API(middleware=[multipart_middleware, auth_middleware])
+        # self.app = falcon.API(middleware=[multipart_middleware, auth_middleware])
+
+        self.app = API()
 
         self.port = 8000
         self.mode = "development"
+
+        self.auth_enabled = False
 
         self.init_api()
         self.init_web()
@@ -62,6 +99,14 @@ class APIManager:
     def set_mode(self, mode):
 
         self.mode = mode
+
+    def enable_auth(self):
+
+        self.app.set_auth(True)
+
+    def disable_auth(self):
+
+        self.app.set_auth(False)
 
     def set_port(self, port):
 

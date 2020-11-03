@@ -24,6 +24,7 @@ class APIWorker(BaseWorker):
     def run(self):
 
         app = self._manager.app
+        app.set_middleware()
 
         if self._mode == "development":
             with make_server('', self._port, app, handler_class=CustomWSGIRequestHandler) as httpd:
