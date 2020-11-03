@@ -17,11 +17,17 @@ class AuthManager:
         self.roles = list()
         self.users = list()
 
+        self.root = ("root", "RackioRocks!", "System")
+
     def set_roles(self):
 
         for role in self.ROLES:
 
             self.auth.create_role(role)
+
+    def set_root(self, root, password, role):
+
+        self.root = (root, password, role)
 
     def create_user(self, username, password, role):
 
@@ -39,9 +45,15 @@ class AuthManager:
 
         self.auth.create_role(role)
 
+    def init_root(self):
+
+        root, password, role = self.root
+        self._create_user(root, password, role)
+
     def init(self):
 
         self.set_roles()
+        self.init_root()
 
         for role in self.roles:
 

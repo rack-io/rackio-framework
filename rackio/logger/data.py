@@ -72,7 +72,6 @@ class DataLogger:
 
         trend = self.tags_dbo[tag]
 
-        # now = datetime.now()
         tag_value = TagValue.create(tag=trend, value=value)
         tag_value.save()
 
@@ -114,3 +113,4 @@ class DataLogger:
         events = [serialize_dbo(event) for event in events]
 
         return events
+    
