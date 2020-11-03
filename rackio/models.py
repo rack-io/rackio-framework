@@ -178,7 +178,6 @@ class Model(object):
                     setattr(self, key, "")
 
         self.attrs = attrs
-        # setattr(self, "save", attrs["save"])
 
     def __getattribute__(self, attr):
         

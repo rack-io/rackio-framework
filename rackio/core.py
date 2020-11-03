@@ -505,8 +505,7 @@ class Rackio(Singleton):
                     error = str(e)
                     message = "{}:{}".format(f.__name__, error)
                     log_detailed(e, message)
-
-            # _worker_function = (f, period)
+                    
             _worker_function = (wrapper, period)
             self._worker_functions.append(_worker_function)
             return f

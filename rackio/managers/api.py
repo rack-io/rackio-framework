@@ -61,8 +61,7 @@ class API(falcon.API):
         self.auth = enabled
 
     def set_middleware(self, independent_middleware=True):
-
-        # set middleware
+        
         middleware = [self.multipart_middleware]
 
         if self.auth:
@@ -77,21 +76,10 @@ class APIManager:
 
     def __init__(self):
 
-        # auth_backend = TokenAuthBackend(user_loader, auth_header_prefix='Token')
-        
-        # auth_middleware = FalconAuthMiddleware(auth_backend,
-        #    exempt_routes=['/api/login'], exempt_methods=['HEAD'])
-
-        # multipart_middleware = MultipartMiddleware()
-
-        # self.app = falcon.API(middleware=[multipart_middleware, auth_middleware])
-
         self.app = API()
 
         self.port = 8000
         self.mode = "development"
-
-        self.auth_enabled = False
 
         self.init_api()
         self.init_web()
