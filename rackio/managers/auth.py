@@ -6,18 +6,26 @@ This module implements Authentication Manager.
 
 from ..dao import AuthDAO
 
+SYSTEM_ROLE = "System"
+OPERATOR_ROLE = "Operator"
+SUPERVISOR_ROLE = "Supervisor"
+
+ROOT_USER = "root"
+ROOT_PASSWORD = "RackioRocks!"
+ROOT_ROLE = SYSTEM_ROLE
+
 
 class AuthManager:
 
     def __init__(self):
 
         self.auth = AuthDAO()
-        self.ROLES = ["System", "Operator", "Supervisor"]
+        self.ROLES = [SYSTEM_ROLE, OPERATOR_ROLE, SUPERVISOR_ROLE]
 
         self.roles = list()
         self.users = list()
 
-        self.root = ("root", "RackioRocks!", "System")
+        self.root = (ROOT_USER, ROOT_PASSWORD, ROOT_ROLE)
 
     def set_roles(self):
 

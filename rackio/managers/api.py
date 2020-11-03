@@ -89,9 +89,8 @@ class APIManager:
         _summary = AppSummaryResource()
         _blobs = BlobCollectionResource()
         _blob = BlobResource()
-
-        login = LoginResource()
-        Logout = LogoutResource()
+        _login = LoginResource()
+        _logout = LogoutResource()
 
         self.app.add_route('/api/tags/{tag_id}', _tag)
         self.app.add_route('/api/tags', _tags)
@@ -122,8 +121,8 @@ class APIManager:
         self.app.add_route('/api/blobs', _blobs)
         self.app.add_route('/api/blobs/{blob_name}', _blob)
 
-        self.app.add_route('/api/login', login)
-        self.app.add_route('/api/logout', Logout)
+        self.app.add_route('/api/login', _login)
+        self.app.add_route('/api/logout', _logout)
 
     def init_web(self):
 
