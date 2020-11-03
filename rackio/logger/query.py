@@ -11,6 +11,7 @@ from .engine import LoggerEngine
 from ..dbmodels import TagTrend, TagValue
 
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+OUTPUT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 
 
 class QueryLogger:
@@ -79,7 +80,7 @@ class QueryLogger:
         
         result = dict()
 
-        values = [{"x": value.timestamp.strftime(DATETIME_FORMAT), "y": value.value} for value in values]
+        values = [{"x": value.timestamp.strftime(OUTPUT_DATETIME_FORMAT), "y": value.value} for value in values]
 
         result["values"] = values
 
