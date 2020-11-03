@@ -34,6 +34,13 @@ class QueryLogger:
         
         return trend.period
 
+    def get_start(self, tag):
+
+        query = TagTrend.select().order_by(TagTrend.start.desc())
+        trend = query.where(TagTrend.name == tag).get()
+        
+        return trend.start
+
     def query_waveform(self, tag, start, stop):
 
         _query = TagTrend.select().order_by(TagTrend.start)
@@ -128,22 +135,10 @@ class QueryLogger:
 
         if values:
 
-            result = dict()
-            
-            tag_values = self.get_values(tag)
-            
             period = self.get_period(tag)
-            t0 = tag_values[0].timestamp.strftime(DATETIME_FORMAT)
-            
-            tag_values = [value.value for value in tag_values]
-            
-            try:
-                tag_values = tag_values[:values]
-            except Exception as e:
-                tag_values = tag_values[:]
-                
-            start = tag_values[0].timestamp
-            stop = tag_values[-1].timestamp
+
+            start = self.get_start(tag)
+            stop = start + values * timedelta(seconds=period)
 
             start = start.strftime(DATETIME_FORMAT)
             stop = stop.strftime(DATETIME_FORMAT)

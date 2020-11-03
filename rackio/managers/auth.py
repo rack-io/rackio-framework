@@ -33,9 +33,9 @@ class AuthManager:
 
             self.auth.create_role(role)
 
-    def set_root(self, root, password, role):
+    def set_root(self, root, password):
 
-        self.root = (root, password, role)
+        self.root = (root, password, ROOT_ROLE)
 
     def create_user(self, username, password, role):
 

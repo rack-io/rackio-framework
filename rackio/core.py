@@ -340,6 +340,18 @@ class Rackio(Singleton):
 
         self._db_manager.register_table(table)
 
+    def define_root(self, username, password):
+        """
+        Overrides the default Rackio root credentials.
+        
+        **Parameters:**
+
+        * **username** (string): Root's username.
+        * **password** (string): Root's password.
+        """
+
+        self._db_manager.set_root(username, password)
+
     def define_user(self, username, password, role="Operator"):
         """
         Append a new user to allowed users in application.
@@ -348,7 +360,7 @@ class Rackio(Singleton):
 
         * **username** (string): User's username.
         * **password** (string): User's password.
-        * **password** (string): User's role (**Operator** by default).
+        * **role** (string): User's role (**Operator** by default).
         """
 
         self._db_manager.create_user(username, password, role)

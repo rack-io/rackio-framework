@@ -107,6 +107,10 @@ class LoggerManager:
 
         return self._delay
 
+    def set_root(self, username, password):
+        
+        self._auth.set_root(username, password)
+
     def create_user(self, username, password, role):
 
         self._auth.create_user(username, password, role)
