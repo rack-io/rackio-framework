@@ -39,7 +39,7 @@ class LoginResource(BaseResource):
 
 class LogoutResource(BaseResource):
 
-    def on_get(self, req, resp, alarm_name):
+    def on_get(self, req, resp):
 
         user = req.context['user']
         username = user['username']
