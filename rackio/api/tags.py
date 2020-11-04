@@ -8,7 +8,7 @@ import json
 
 from .core import RackioResource
 from .hook import rackio_hook
-from .auth_hook import Authorize
+from .auth_hook import Authorize, authorize, authorize2
 
 from ..dao import TagsDAO
 from ..managers.auth import SYSTEM_ROLE, VISITOR_ROLE
@@ -38,7 +38,7 @@ class TagResource(BaseResource):
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 
-    @rackio_hook.before(Authorize([SYSTEM_ROLE]))
+    @authorize([SYSTEM_ROLE])
     def on_post(self, req, resp, tag_id):
         
         value = req.media.get('value')

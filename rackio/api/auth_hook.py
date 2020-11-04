@@ -7,6 +7,8 @@ import falcon
 
 from ..dao import AuthDAO
 
+from .hook import rackio_hook
+
 
 class Authorize(object):
 
@@ -25,3 +27,9 @@ class Authorize(object):
         if not role in self._roles:
             msg = "User is not authorize to access this area"
             raise falcon.HTTPForbidden("Unauthorize", msg)
+
+def authorize(roles):
+
+    auth = Authorize(roles)
+
+    return rackio_hook.before(auth)

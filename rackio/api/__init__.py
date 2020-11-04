@@ -17,4 +17,4 @@ from .logger import *
 from .auth import *
 
 from .hook import rackio_hook
-from .auth_hook import Authorize
+from .auth_hook import authorize
