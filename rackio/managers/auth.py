@@ -22,7 +22,8 @@ class AuthManager:
     def __init__(self):
 
         self.auth = AuthDAO()
-        self.ROLES = [SYSTEM_ROLE, OPERATOR_ROLE, SUPERVISOR_ROLE]
+        self.ROLES = [SYSTEM_ROLE, ADMIN_ROLE, SUPERVISOR_ROLE]
+        self.ROLES += [OPERATOR_ROLE, VISITOR_ROLE]
 
         self.roles = list()
         self.users = list()
