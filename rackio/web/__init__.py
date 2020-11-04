@@ -1,3 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from .static import StaticResource, resource_pairs, RouteResource, render_template, raw_template
+from .resources import StaticResource, RouteResource
+from .render import render_template, raw_template
+from .utils import resource_pairs
