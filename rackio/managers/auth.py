@@ -7,8 +7,10 @@ This module implements Authentication Manager.
 from ..dao import AuthDAO
 
 SYSTEM_ROLE = "System"
-OPERATOR_ROLE = "Operator"
+ADMIN_ROLE = "Admin"
 SUPERVISOR_ROLE = "Supervisor"
+OPERATOR_ROLE = "Operator"
+VISITOR_ROLE = "Visitor"
 
 ROOT_USER = "root"
 ROOT_PASSWORD = "RackioRocks!"

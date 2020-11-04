@@ -12,3 +12,7 @@ from .state import StateMachineManager
 from .api import APIManager
 
 from .auth import AuthManager
+
+from .auth import ADMIN_ROLE, SUPERVISOR_ROLE, OPERATOR_ROLE, VISITOR_ROLE
+
+ROLES = [ADMIN_ROLE, SUPERVISOR_ROLE, OPERATOR_ROLE, VISITOR_ROLE]
