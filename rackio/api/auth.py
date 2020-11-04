@@ -6,6 +6,8 @@ This module implements all class Resources for Authentication.
 
 import json
 
+import falcon
+
 from rackio import status_code
 
 from .core import RackioResource
@@ -24,7 +26,9 @@ class LoginResource(BaseResource):
         username = req.media.get('username')
         password = req.media.get('password')
 
-        self.dao.login(username, password)
+        if not self.dao.login(username, password):
+            msg = "User has not provided valid credentials"
+            raise falcon.HTTPForbidden("Invalid Credentials", msg)
 
         doc = {
             "apiKey": self.dao._get_key(username)
