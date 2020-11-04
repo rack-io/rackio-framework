@@ -26,7 +26,7 @@ class Authorize(object):
 
         if not role in self._roles:
             msg = "User is not authorize to access this area"
-            raise falcon.HTTPForbidden("Unauthorize", msg)
+            raise falcon.HTTPForbidden("Unauthorized", msg)
 
 def authorize(roles):
 

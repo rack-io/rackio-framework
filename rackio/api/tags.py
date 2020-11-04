@@ -21,7 +21,7 @@ class BaseResource(RackioResource):
 
 class TagCollectionResource(BaseResource):
 
-    @rackio_hook.before(Authorize([SYSTEM_ROLE, VISITOR_ROLE]))
+    @authorize([SYSTEM_ROLE, VISITOR_ROLE])
     def on_get(self, req, resp):
 
         doc = self.dao.get_all()
@@ -31,7 +31,7 @@ class TagCollectionResource(BaseResource):
 
 class TagResource(BaseResource):
 
-    @rackio_hook.before(Authorize([SYSTEM_ROLE, VISITOR_ROLE]))
+    @authorize([SYSTEM_ROLE, VISITOR_ROLE])
     def on_get(self, req, resp, tag_id):
 
         doc = self.dao.get(tag_id)
