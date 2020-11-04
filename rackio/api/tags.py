@@ -8,7 +8,7 @@ import json
 
 from .core import RackioResource
 from .hook import rackio_hook
-from .auth_hook import Authorize, authorize, authorize2
+from .auth_hook import Authorize, authorize
 
 from ..dao import TagsDAO
 from ..managers.auth import SYSTEM_ROLE, VISITOR_ROLE
