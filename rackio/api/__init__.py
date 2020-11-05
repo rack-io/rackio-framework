@@ -5,6 +5,7 @@ This module implements all API initializations.
 """
 from .tags import *
 from .trends import *
+from .waveforms import *
 from .history import *
 from .groups import *
 from .controls import *
