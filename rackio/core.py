@@ -475,6 +475,13 @@ class Rackio(Singleton):
 
         self._api_manager.disable_auth()
 
+    def auth_enabled(self):
+        """
+        Return True is Authorization is enable, False otherwise.
+        """
+
+        self._api_manager.auth_enabled()
+
     def rackit(self, period):
         """
         Decorator method to register functions plugins.

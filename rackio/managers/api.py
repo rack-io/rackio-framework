@@ -60,6 +60,10 @@ class API(falcon.API):
 
         self.auth = enabled
 
+    def auth_enabled(self):
+
+        return self.auth
+
     def set_middleware(self, independent_middleware=True):
         
         middleware = [self.multipart_middleware]
@@ -95,6 +99,10 @@ class APIManager:
     def disable_auth(self):
 
         self.app.set_auth(False)
+
+    def auth_enabled(self):
+
+        return self.app.auth_enabled()
 
     def set_port(self, port):
 

@@ -6,6 +6,7 @@ This module implements a hook class caller for decorating RackioResources.
 import falcon
 
 from ..dao import AuthDAO
+from ..core import Rackio
 
 from .hook import rackio_hook
 
@@ -17,9 +18,23 @@ class Authorize(object):
 
         self._auth = AuthDAO()
 
+    def get_app(self):
+
+        return Rackio()
+
     def __call__(self, req, resp, resource, params):
+
+        app = self.get_app()
+
+        if not app.auth_enabled():
+            return
         
-        user = req.context['user']
+        try:
+            user = req.context['user']
+        except:
+            msg = "User is not authenticated"
+            raise falcon.HTTPForbidden("Unauthorized", msg)
+
         username = user['username']
 
         role = self._auth.get_role(username)
