@@ -6,7 +6,6 @@ This module implements a hook class caller for decorating RackioResources.
 import falcon
 
 from ..dao import AuthDAO
-from ..core import Rackio
 
 from .hook import rackio_hook
 
@@ -19,6 +18,8 @@ class Authorize(object):
         self._auth = AuthDAO()
 
     def get_app(self):
+
+        from ..core import Rackio
 
         return Rackio()
 
