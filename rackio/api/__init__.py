@@ -4,6 +4,8 @@
 This module implements all API initializations.
 """
 from .tags import *
+from .trends import *
+from .history import *
 from .groups import *
 from .controls import *
 from .alarms import *
@@ -15,6 +17,4 @@ from .blobs import *
 from .logger import *
 
 from .auth import *
-
-from .hook import rackio_hook
 from .auth_hook import authorize
