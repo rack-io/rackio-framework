@@ -9,12 +9,15 @@ from io import BytesIO
 from rackio import status_code
 
 from .core import RackioResource
+from .auth_hook import authorize
 
 from ..dbmodels import Blob
- 
+from ..managers.auth import SYSTEM_ROLE, ADMIN_ROLE, VISITOR_ROLE
+
 
 class BlobResource(RackioResource):
-
+    
+    @authorize([SYSTEM_ROLE, ADMIN_ROLE])
     def on_get(self, req, resp, blob_name):
 
         resp.status = status_code.HTTP_200
@@ -26,6 +29,7 @@ class BlobResource(RackioResource):
 
 class BlobCollectionResource(RackioResource):
 
+    @authorize([SYSTEM_ROLE, ADMIN_ROLE])
     def on_post(self, req, resp):
         
         blob_name = req.get_param('name')

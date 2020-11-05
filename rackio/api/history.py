@@ -26,3 +26,4 @@ class TagHistoryResource(BaseResource):
         doc = self.dao.get_history(tag_id)
 
         resp.body = json.dumps(doc, ensure_ascii=False)
+    
