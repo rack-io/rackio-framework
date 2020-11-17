@@ -43,7 +43,7 @@ class CVT:
 
         return name in self._tags.keys()
 
-    def set_tag(self, name, _type, units=""):
+    def set_tag(self, name, _type, units="", desc=""):
         """Initialize a new Tag object in the _tags dictionary.
         
         # Parameters
@@ -71,7 +71,7 @@ class CVT:
             _type = _type.__name__
             self.set_type(_type)
 
-        tag = Tag(name, value, _type, units)
+        tag = Tag(name, value, _type, units, desc)
 
         self._tags[name] = tag
 
@@ -165,6 +165,17 @@ class CVT:
         """
 
         return self._tags[name].get_units()
+
+    def get_description(self, name):
+
+        """Returns the description defined by name.
+        
+        # Parameters
+        name (str):
+            Tag name.
+        """
+
+        return self._tags[name].get_description()
 
     def get_types(self):
         """Returns all tag types.
@@ -264,6 +275,17 @@ class CVTEngine(Singleton):
 
         return self._cvt.get_units(name)
 
+    def get_description(self, name):
+        """
+        Gets the descriptions defined for a tag.
+        
+        **Parameters:**
+        
+        * **name** (str): Tag name.
+        """
+
+        return self._cvt.get_description(name)
+
     def tag_defined(self, name):
         """
         Checks if a tag name is already defined.
@@ -276,7 +298,7 @@ class CVTEngine(Singleton):
         return self._cvt.tag_defined(name)
 
 
-    def set_tag(self, name, _type, units=""):
+    def set_tag(self, name, _type, units="", desc=""):
         """
         Sets a new value for a defined tag, in thread-safe mechanism.
         
@@ -294,7 +316,7 @@ class CVTEngine(Singleton):
         """
         
         if not self.tag_defined(name):
-            self._cvt.set_tag(name, _type, units)
+            self._cvt.set_tag(name, _type, units, desc)
 
     def set_tags(self, tags):
         """
@@ -303,11 +325,11 @@ class CVTEngine(Singleton):
         
         **Parameters:**
         
-        * **tags** (list): List of tag name, type and units.
+        * **tags** (list): List of tag name, type units and description.
         """
 
-        for name, _type, units in tags:
-            self.set_tag(name, _type, units)
+        for name, _type, units, desc in tags:
+            self.set_tag(name, _type, units, desc)
 
     def set_group(self, group, tags):
         """
