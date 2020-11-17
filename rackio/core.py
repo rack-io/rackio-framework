@@ -309,6 +309,13 @@ class Rackio(Singleton):
 
         return self._machine_manager.get_machine(name)
 
+    def get_machines(self):
+        """
+        Returns All Rackio State Machine defined.
+        """
+
+        return self._machine_manager.get_machines()
+
     def define_machine(self, name="", interval=1, **kwargs):
         """
         Append a state machine to the state machine manager
