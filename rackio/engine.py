@@ -424,6 +424,52 @@ class CVTEngine(Singleton):
         if result["result"]:
             return result["response"]
 
+    def attach(self, name, observer):
+        """
+        Attaches an observer object to a Tag, observer gets notified when the Tag value changes.
+        
+        **Parameters:**
+
+        * **name** (str): Tag name.
+        * **observer** (str): TagObserver instance.
+        """
+
+        _query = dict()
+        _query["action"] = "attach"
+
+        _query["parameters"] = dict()
+        _query["parameters"]["name"] = name
+        _query["parameters"]["observer"] = observer
+
+        self.request(_query)
+        result = self.response()
+
+        if result["result"]:
+            return result["response"]
+
+    def detach(self, name, observer):
+        """
+        Detaches an observer object from a Tag, observer no longer gets notified when the Tag value changes.
+        
+        **Parameters:**
+
+        * **name** (str): Tag name.
+        * **observer** (str): TagObserver instance.
+        """
+        
+        _query = dict()
+        _query["action"] = "detach"
+
+        _query["parameters"] = dict()
+        _query["parameters"]["name"] = name
+        _query["parameters"]["observer"] = observer
+
+        self.request(_query)
+        result = self.response()
+
+        if result["result"]:
+            return result["response"]
+
     def read_type(self, name):
         """
         Returns a tag type defined by name, in thread-safe mechanism.
