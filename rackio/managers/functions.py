@@ -49,8 +49,7 @@ class FunctionManager:
             observer = TagObserver(self._tag_queue)
             
             engine.attach(_tag, observer)
-
-
+        
     def execute(self, tag):
 
         try:
