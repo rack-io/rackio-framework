@@ -42,20 +42,14 @@ class FunctionManager:
 
     def attach_all(self):
 
-        _cvt = CVTEngine()
+        engine = CVTEngine()
 
         for _tag in self._tags:
 
             observer = TagObserver(self._tag_queue)
-            query = dict()
-            query["action"] = "attach"
-            query["parameters"] = {
-                "name": _tag,
-                "observer": observer,
-            }
+            
+            engine.attach(_tag, observer)
 
-            _cvt.request(query)
-            _cvt.response()
 
     def execute(self, tag):
 
