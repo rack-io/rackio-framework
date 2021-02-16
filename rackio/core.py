@@ -286,7 +286,7 @@ class Rackio(Singleton):
 
         return alarm
 
-    def append_machine(self, machine, interval=1):
+    def append_machine(self, machine, interval=1, mode="sync"):
         """
         Append a state machine to the state machine manager.
         
@@ -296,7 +296,7 @@ class Rackio(Singleton):
         * **interval** (int): Interval execution time in seconds.
         """
 
-        self._machine_manager.append_machine(machine, interval=interval)
+        self._machine_manager.append_machine(machine, interval=interval, mode=mode)
 
     def get_machine(self, name):
         """
@@ -316,7 +316,7 @@ class Rackio(Singleton):
 
         return self._machine_manager.get_machines()
 
-    def define_machine(self, name="", interval=1, **kwargs):
+    def define_machine(self, name="", interval=1, mode="sync", **kwargs):
         """
         Append a state machine to the state machine manager
         by a class decoration.
@@ -330,7 +330,7 @@ class Rackio(Singleton):
 
             machine = cls(name, **kwargs)
             
-            self.append_machine(machine, interval=interval)
+            self.append_machine(machine, interval=interval, mode=mode)
 
             return cls
 

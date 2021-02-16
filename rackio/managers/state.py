@@ -11,9 +11,9 @@ class StateMachineManager:
 
         self._machines = list()
 
-    def append_machine(self, machine, interval=1):
+    def append_machine(self, machine, interval=1, mode="sync"):
         
-        self._machines.append((machine, interval,))
+        self._machines.append((machine, interval, mode,))
 
     def get_machines(self):
 
@@ -23,7 +23,7 @@ class StateMachineManager:
 
     def get_machine(self, name):
 
-        for _machine, interval in self._machines:
+        for _machine, interval, mode in self._machines:
 
             if name == _machine.name:
 
@@ -31,7 +31,7 @@ class StateMachineManager:
 
     def start_machine(self, name):
 
-        for _machine, interval in self._machines:
+        for _machine, interval, mode in self._machines:
 
             if name == _machine.name:
 

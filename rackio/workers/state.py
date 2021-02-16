@@ -58,14 +58,18 @@ class MachineScheduler():
 
 class AsyncStateMachineWorker(BaseWorker):
 
-    def __init__(self, machines):
+    def __init__(self):
 
         super(AsyncStateMachineWorker, self).__init__()
 
-        self._machines = machines
+        self._machines = list()
         self._schedulers = list()
 
         self.jobs = list()
+
+    def add_machine(self, machine, interval):
+
+        self._machines.append((machine, interval,))
 
     def loop_closure(self, machine, interval, scheduler):
 
@@ -114,7 +118,8 @@ class StateMachineWorker(BaseWorker):
         super(StateMachineWorker, self).__init__()
         
         self._manager = manager
-        self._scheduler = MachineScheduler()
+        self._sync_scheduler = MachineScheduler()
+        self._async_scheduler = AsyncStateMachineWorker()
 
         self.jobs = list()
 
@@ -122,19 +127,25 @@ class StateMachineWorker(BaseWorker):
 
         def loop():
             machine.loop()
-            self._scheduler.call_later(interval, loop)
+            self._sync_scheduler.call_later(interval, loop)
 
         return loop
 
     def run(self):
 
-        for machine, interval in self._manager.get_machines():
-            func = self.loop_closure(machine, interval)
-            self._scheduler.call_soon(func)
-
-        self._scheduler.run()
+        for machine, interval, mode in self._manager.get_machines():
+            
+            if mode == "async":
+                self._async_scheduler.add_machine(machine, interval)
+            else:
+                func = self.loop_closure(machine, interval)
+                self._sync_scheduler.call_soon(func)
+        
+        self._async_scheduler.run()
+        self._sync_scheduler.run()
 
     def stop(self):
 
-        self._scheduler.stop()
+        self._async_scheduler.stop()
+        self._sync_scheduler.stop()
     
