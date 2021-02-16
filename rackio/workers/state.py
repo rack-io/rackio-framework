@@ -8,13 +8,13 @@ import logging
 import time
 
 from collections import deque
-
-from apscheduler.schedulers.background import BackgroundScheduler
+from threading import Thread
 
 from .worker import BaseWorker
+from ..utils import log_detailed
 
 
-class MachineSched():
+class MachineScheduler():
 
     def __init__(self):
 
@@ -56,6 +56,56 @@ class MachineSched():
                 func()
 
 
+class AsyncStateMachineWorker(BaseWorker):
+
+    def __init__(self, machines):
+
+        super(AsyncStateMachineWorker, self).__init__()
+
+        self._machines = machines
+        self._schedulers = list()
+
+        self.jobs = list()
+
+    def loop_closure(self, machine, interval, scheduler):
+
+        def loop():
+            machine.loop()
+            scheduler.call_later(interval, loop)
+
+        return loop
+    
+    def target(self, machine, interval):
+
+        scheduler = MachineScheduler()
+
+        func = self.loop_closure(machine, interval, scheduler)
+        scheduler.call_soon(func)
+        
+        scheduler.run()
+
+    def run(self):
+
+        for machine, interval in self._machines:
+
+            sched = Thread(target=self.target, args=(machine, interval,))
+
+            self._schedulers.append(sched)
+
+        for sched in self._schedulers:
+
+            sched.daemon = True
+            sched.start()
+
+    def stop(self):
+
+        for sched in self._schedulers:
+            try:
+                sched.stop()
+            except Exception as e:
+                message = "Error on async scheduler stop"
+                log_detailed(e, message)
+    
 
 class StateMachineWorker(BaseWorker):
 
@@ -64,7 +114,7 @@ class StateMachineWorker(BaseWorker):
         super(StateMachineWorker, self).__init__()
         
         self._manager = manager
-        self._scheduler = MachineSched()
+        self._scheduler = MachineScheduler()
 
         self.jobs = list()
 
