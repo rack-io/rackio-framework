@@ -3,45 +3,88 @@
 
 This module implements State Machine Worker.
 """
+import heapq
 import logging
-from threading import Event as ThreadEvent
+import time
+
+from collections import deque
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
+from .worker import BaseWorker
 
-class StateMachineWorker():
 
-    def __init__(self, manager):
+class MachineSched():
+
+    def __init__(self):
+
+        self._ready = deque()
+        self._sleeping = list()
+        self._sequence = 0
+        self._stop = False
+
+    def call_soon(self, func):
         
-        self._manager = manager
-        self._scheduler = BackgroundScheduler()
-        logging.getLogger('apscheduler.executors.default').setLevel(logging.WARNING)
+        self._ready.append(func)
 
-        self.jobs = list()
-
-    def loop_closure(self, machine):
-
-        def loop():
-
-            machine.loop()
-
-        return loop
-
-    def start(self):
-
-        for machine, interval in self._manager.get_machines():
-            
-            loop = self.loop_closure(machine)
-            job = self._scheduler.add_job(loop, 'interval', seconds=interval)
-
-            self.jobs.append(job)
+    def call_later(self, delay, func):
         
-        self._scheduler.start()
+        self._sequence += 1
+        deadline = time.time() + delay
+        heapq.heappush(self._sleeping, (deadline, self._sequence, func))
 
     def stop(self):
 
-        for job in self.jobs:
-            job.remove()
+        self._stop = True
+    
+    def run(self):
+        while self._ready or self._sleeping:
 
-            logging.info("State Machine worker shutdown successfully!")
+            if self._stop:
+                break
+
+            if not self._ready:
+                deadline, _, func = heapq.heappop(self._sleeping)
+                delta = deadline - time.time()
+                if delta > 0:
+                    time.sleep(delta)
+                self._ready.append(func)
+
+            while self._ready:
+                
+                func = self._ready.popleft()
+                func()
+
+
+
+class StateMachineWorker(BaseWorker):
+
+    def __init__(self, manager):
+
+        super(StateMachineWorker, self).__init__()
+        
+        self._manager = manager
+        self._scheduler = MachineSched()
+
+        self.jobs = list()
+
+    def loop_closure(self, machine, interval):
+
+        def loop():
+            machine.loop()
+            self._scheduler.call_later(interval, loop)
+
+        return loop
+
+    def run(self):
+
+        for machine, interval in self._manager.get_machines():
+            func = self.loop_closure(machine, interval)
+            self._scheduler.call_soon(func)
+
+        self._scheduler.run()
+
+    def stop(self):
+
+        self._scheduler.stop()
     
