@@ -9,7 +9,8 @@ import logging
 
 from inspect import ismethod
 
-from statemachine import StateMachine, State
+from statemachine import StateMachine
+from statemachine import State as _State
 
 from .models import FloatType, IntegerType, BooleanType, StringType
 
@@ -165,6 +166,26 @@ class GroupBinding:
                 value = self.tag_engine.read_tag(tag)
 
                 setattr(self.values, tag, value)
+
+
+class State(_State):
+
+    def __init__(self, name, trigger=None, *args, **kwargs):
+
+        super(State, self).__init__(name, *args, **kwargs)
+
+        self._trigger = trigger
+        self.tag_engine = CVTEngine()
+
+    def attach_all(self):
+
+        if not self._trigger:
+            return
+
+        tags = self._trigger.tags()
+
+        for tag in tags:
+            self.tag_engine.attach(tag, self._trigger)
     
 
 class RackioStateMachine(StateMachine):

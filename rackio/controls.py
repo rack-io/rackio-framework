@@ -160,6 +160,13 @@ class Condition:
         self._oper = _oper
         self.tag2 = tag2
 
+        self._output = None
+
+    @property
+    def output(self):
+
+        return self._output
+
     def tags(self):
 
         return (self.tag1, self.tag2)
@@ -174,6 +181,10 @@ class Condition:
         result["relation"] = self._oper
 
         return result
+
+    def update(self):
+
+        self._output = self.evaluate()
 
     def evaluate(self):
 
@@ -241,6 +252,21 @@ class BoolCondition:
         self.tag = tag
         self._cvt = CVTEngine()
 
+        self._output = None
+
+    @property
+    def output(self):
+
+        return self._output
+
+    def tags(self):
+
+        return (self.tag,)
+
+    def update(self):
+
+        self._output = self.evaluate()
+
     def evaluate(self):
 
         result = self._cvt.read_tag(self.tag)
@@ -276,6 +302,16 @@ class OrCondition:
     def __init__(self, conditions):
 
         self._conditions = conditions
+        self._output = None
+
+    @property
+    def output(self):
+
+        return self._output
+
+    def update(self):
+
+        self._output = self.evaluate()
 
     def tags(self):
 
@@ -331,6 +367,16 @@ class AndCondition:
     def __init__(self, conditions):
 
         self._conditions = conditions
+        self._output = None
+
+    @property
+    def output(self):
+
+        return self._output
+
+    def update(self):
+
+        self._output = self.evaluate()
 
     def tags(self):
 
