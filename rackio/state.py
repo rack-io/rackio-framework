@@ -170,12 +170,21 @@ class GroupBinding:
 
 class State(_State):
 
-    def __init__(self, name, trigger=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
 
-        super(State, self).__init__(name, *args, **kwargs)
+        super(State, self).__init__(*args, **kwargs)
 
-        self._trigger = trigger
+        self._trigger = None
         self.tag_engine = CVTEngine()
+        
+        self._transition = None
+
+    def to(self, another, trigger=None):
+
+        self._transition = super(State, self).to(another)
+        self._trigger = trigger
+
+        return self._transition
 
     def attach_all(self):
 
@@ -307,9 +316,20 @@ class RackioStateMachine(StateMachine):
         
         props = cls.__dict__
 
+        forbidden_attributes = (
+            "states", 
+            "transitions", 
+            "states_map", 
+            "_loop", 
+            "get_attributes", 
+            "_tag_bindings", 
+            "_get_active_transitions", 
+            "_activate_triggers"
+        )
+
         for key, value in props.items():
 
-            if key in ["states", "transitions", "states_map", "_loop", "get_attributes", "_tag_bindings"]:
+            if key in forbidden_attributes:
                 continue
             if hasattr(value, '__call__'):
                 continue
@@ -367,6 +387,40 @@ class RackioStateMachine(StateMachine):
                 message = "Machine - {}: Error on machine group-bindings".format(self.name)
                 log_detailed(e, message)
 
+    def _get_active_transitions(self):
+
+        result = list()
+
+        current_state = self.current_state
+
+        transitions = self.transitions
+
+        for transition in transitions:
+
+            if transition.source == current_state:
+
+                result.append(transition)
+
+        return result
+
+    def _activate_triggers(self):
+
+        transitions = self._get_active_transitions()
+
+        for transition in transitions:
+            method_name = transition.identifier
+            method = getattr(self, method_name)
+
+            try:
+                source = transition.source
+                if not source._trigger:
+                    continue
+                if source._trigger.evaluate():
+                    method()
+            except Exception as e:
+                error = str(e)
+                logging.error("Machine - {}:{}".format(self.name, error))
+
     def _loop(self):
 
         try:
@@ -392,6 +446,8 @@ class RackioStateMachine(StateMachine):
                 #update tag write bindings
                 update_tags("write")
                 update_groups("write")
+
+            self._activate_triggers()
 
         except Exception as e:
             error = str(e)
