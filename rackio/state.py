@@ -170,6 +170,23 @@ class GroupBinding:
 
 class State(_State):
 
+    """
+    Class used to define custom states in a state machine.
+
+    This class is used to define custom states in a state machine.
+
+    **Parameters:**
+        
+    * **name** (str): state machine name.
+    * **interval** (float): machine loop time for this state in seconds.
+
+    Usage:
+
+    ```python
+    state1  = State('State1', initial=True)
+    state2  = State('State2', interval=0.5)
+    """
+
     def __init__(self, *args, **kwargs):
 
         super(State, self).__init__(*args, **kwargs)
@@ -177,14 +194,30 @@ class State(_State):
         self._trigger = None
         self.tag_engine = CVTEngine()
         
+        if "interval" in kwargs:
+            self._interval = kwargs["interval"]
+        else:
+            self._interval = float('inf')
+
         self._transition = None
 
     def to(self, another, trigger=None):
+
+        """
+        This method allows to create transitions between states,
+        you can also define trigger conditions in order to execute
+        transitions
+        """
 
         self._transition = super(State, self).to(another)
         self._trigger = trigger
 
         return self._transition
+
+    @property
+    def interval(self):
+
+        return self._interval
 
     def attach_all(self):
 
@@ -308,6 +341,10 @@ class RackioStateMachine(StateMachine):
     def get_states(self):
 
         return [state.identifier for state in self.states]
+
+    def get_interval(self):
+
+        return self.current_state.interval
     
     @classmethod
     def get_attributes(cls):
@@ -324,7 +361,8 @@ class RackioStateMachine(StateMachine):
             "get_attributes", 
             "_tag_bindings", 
             "_get_active_transitions", 
-            "_activate_triggers"
+            "_activate_triggers",
+            "get_interval"
         )
 
         for key, value in props.items():

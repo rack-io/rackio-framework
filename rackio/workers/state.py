@@ -75,6 +75,7 @@ class AsyncStateMachineWorker(BaseWorker):
 
         def loop():
             machine.loop()
+            interval = min(interval, machine.get_interval())
             scheduler.call_later(interval, loop)
 
         return loop
@@ -127,6 +128,7 @@ class StateMachineWorker(BaseWorker):
 
         def loop():
             machine.loop()
+            interval = min(interval, machine.get_interval())
             self._sync_scheduler.call_later(interval, loop)
 
         return loop
