@@ -21,6 +21,7 @@ setuptools.setup(
         'falcon',
         'falcon-multipart',
         'falcon-auth',
+        'falcon-cors',
         'pyBigParser',
         'peewee',
         'python-statemachine',

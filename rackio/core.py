@@ -489,6 +489,40 @@ class Rackio(Singleton):
 
         self._api_manager.auth_enabled()
 
+    def set_cors(self, allow_origins):
+        """
+        Sets the CORS origin rules.
+        **Parameters:**
+        * **allow_origins** (list): List of strings, all allowed origins.
+        
+        **Returns:** `None`
+
+        Usage:
+    
+        ```python
+        app.set_cors(['http://test.com:8080'])
+        ```        
+        """
+
+        self._api_manager.set_cors(allow_origins)
+
+    def get_cors(self):
+        """
+        Returns the CORS origin rules.
+        **Parameters:**
+        * **allow_origins** (list): List of strings, all allowed origins.
+        
+        **Returns:** `None`
+
+        Usage:
+    
+        ```python
+        app.get_cors()
+        ```        
+        """
+
+        return self._api_manager.get_cors()
+
     def rackit(self, period):
         """
         Decorator method to register functions plugins.

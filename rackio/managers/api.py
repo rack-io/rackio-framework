@@ -8,6 +8,7 @@ import falcon
 from falcon import api_helpers as helpers
 from falcon_auth import FalconAuthMiddleware, TokenAuthBackend
 from falcon_multipart.middleware import MultipartMiddleware
+from falcon_cors import CORS
 
 from ..api import TagResource, TagCollectionResource
 from ..api import GroupResource, GroupCollectionResource
@@ -55,6 +56,7 @@ class API(falcon.API):
             exempt_routes=['/api/login'], exempt_methods=['HEAD'])
 
         self.auth = False
+        self.cors_origins = list()
 
     def set_auth(self, enabled=False):
 
@@ -64,12 +66,24 @@ class API(falcon.API):
 
         return self.auth
 
+    def set_cors(self, allow_origins):
+
+        self.cors_origins = allow_origins
+
+    def get_cors(self):
+
+        return self.cors_origins
+
     def set_middleware(self, independent_middleware=True):
         
         middleware = [self.multipart_middleware]
 
         if self.auth:
             middleware.append(self.auth_middleware)
+        
+        if self.cors_origins:
+            cors = CORS(allow_origins_list=self.cors_origins)
+            middleware.append(cors.middleware)
 
         self._middleware = helpers.prepare_middleware(
             middleware, independent_middleware=independent_middleware)
@@ -103,6 +117,14 @@ class APIManager:
     def auth_enabled(self):
 
         return self.app.auth_enabled()
+
+    def set_cors(self, allow_origins):
+
+        self.app.set_cors(allow_origins)
+
+    def get_cors(self):
+
+        return self.app.get_cors()
 
     def set_port(self, port):
 
