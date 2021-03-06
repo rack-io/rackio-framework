@@ -1,6 +1,7 @@
 falcon==2.0.0
 falcon-multipart==0.2.0
 falcon-auth==1.1.0
+falcon-cors==1.1.7
 pyBigParser==2.1
 peewee==3.9.6
 python-statemachine==0.7.1
