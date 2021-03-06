@@ -297,6 +297,7 @@ class RackioStateMachine(StateMachine):
         self.name = name
         self._tag_bindings = list()
         self._group_bindings = list()
+        self._machine_interval = list()
 
         attrs = self.get_attributes()
 
@@ -342,10 +343,18 @@ class RackioStateMachine(StateMachine):
 
         return [state.identifier for state in self.states]
 
+    def get_state_interval(self):
+        
+        return self.current_state.interval
+
     def get_interval(self):
 
-        return self.current_state.interval
-    
+        return self._machine_interval
+
+    def set_interval(self, interval):
+
+        self._machine_interval = interval
+
     @classmethod
     def get_attributes(cls):
 
@@ -362,7 +371,10 @@ class RackioStateMachine(StateMachine):
             "_tag_bindings", 
             "_get_active_transitions", 
             "_activate_triggers",
-            "get_interval"
+            "get_state_interval",
+            "get_interval",
+            "set_interval",
+            "_machine_interval"
         )
 
         for key, value in props.items():

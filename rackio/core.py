@@ -295,7 +295,7 @@ class Rackio(Singleton):
         * **machine** (`RackioStateMachine`): a state machine object.
         * **interval** (int): Interval execution time in seconds.
         """
-
+        machine.set_interval(interval)
         self._machine_manager.append_machine(machine, interval=interval, mode=mode)
 
     def get_machine(self, name):

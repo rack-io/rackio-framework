@@ -75,7 +75,9 @@ class AsyncStateMachineWorker(BaseWorker):
 
         def loop():
             machine.loop()
-            interval = min(interval, machine.get_interval())
+            local_interval = machine.get_state_interval()
+            interval = machine.get_interval()
+            interval = min(interval, local_interval)
             scheduler.call_later(interval, loop)
 
         return loop
@@ -83,7 +85,6 @@ class AsyncStateMachineWorker(BaseWorker):
     def target(self, machine, interval):
 
         scheduler = MachineScheduler()
-
         func = self.loop_closure(machine, interval, scheduler)
         scheduler.call_soon(func)
         
@@ -128,7 +129,9 @@ class StateMachineWorker(BaseWorker):
 
         def loop():
             machine.loop()
-            interval = min(interval, machine.get_interval())
+            local_interval = machine.get_state_interval()
+            interval = machine.get_interval()
+            interval = min(interval, local_interval)
             self._sync_scheduler.call_later(interval, loop)
 
         return loop
@@ -136,7 +139,6 @@ class StateMachineWorker(BaseWorker):
     def run(self):
 
         for machine, interval, mode in self._manager.get_machines():
-            
             if mode == "async":
                 self._async_scheduler.add_machine(machine, interval)
             else:
