@@ -169,6 +169,10 @@ class Alarm:
 
     def trigger(self):
 
+        if not self._enabled:
+
+            return
+            
         self._triggered = True        
         self._tripped_timestamp = datetime.now()
         self.set_state(UNACKNOWLEDGED)
@@ -183,6 +187,10 @@ class Alarm:
 
     def acknowledge(self):
 
+        if not self._enabled:
+
+            return
+
         if self._state == UNACKNOWLEDGED:
 
             self.set_state(ACKNOWLEDGED)
@@ -195,13 +203,25 @@ class Alarm:
 
     def silence(self):
 
+        if not self._enabled:
+
+            return
+
         self._silence = True
 
     def sound(self):
 
+        if not self._enabled:
+
+            return
+        
         self._silence = False
 
     def clear(self):
+
+        if not self._enabled:
+
+            return
 
         self._triggered = False
 
@@ -263,3 +283,4 @@ class Alarm:
 
             elif _type == BOOL and not value:
                 self.set_state(NORMAL)
+
