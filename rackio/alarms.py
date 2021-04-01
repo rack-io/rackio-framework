@@ -49,6 +49,7 @@ class Alarm:
         
         self._tripped_timestamp = None
         self._acknowledged_timestamp = None
+        self._silence = False
 
     def serialize(self):
 
@@ -65,6 +66,7 @@ class Alarm:
         result["value"] = self._value
         result["tripped_value"] = self._trigger_value
         result["type"] = self._trigger_type
+        result["silence"] = self._silence
 
         return result
 
@@ -191,6 +193,14 @@ class Alarm:
 
         self._acknowledged_timestamp = datetime.now()
 
+    def silence(self):
+
+        self._silence = True
+
+    def sound(self):
+
+        self._silence = False
+
     def clear(self):
 
         self._triggered = False
@@ -209,6 +219,7 @@ class Alarm:
 
         self._tripped_timestamp = None
         self._acknowledged_timestamp = None
+        self._silence = False
 
     def update(self, value):
 
