@@ -56,20 +56,18 @@ class MachineScheduler():
                 func()
 
 
-class AsyncStateMachineWorker(BaseWorker):
+class SchedThread(Thread):
 
-    def __init__(self):
+    def __init__(self, machine, interval):
 
-        super(AsyncStateMachineWorker, self).__init__()
+        super(SchedThread, self).__init__()
 
-        self._machines = list()
-        self._schedulers = list()
+        self.machine = machine
+        self.interval = interval
 
-        self.jobs = list()
+    def stop(self):
 
-    def add_machine(self, machine, interval):
-
-        self._machines.append((machine, interval,))
+        self.scheduler.stop()
 
     def loop_closure(self, machine, interval, scheduler):
 
@@ -85,16 +83,41 @@ class AsyncStateMachineWorker(BaseWorker):
     def target(self, machine, interval):
 
         scheduler = MachineScheduler()
+        self.scheduler = scheduler
+
         func = self.loop_closure(machine, interval, scheduler)
         scheduler.call_soon(func)
         
-        scheduler.run()
+        scheduler.run()        
+
+    def run(self):
+
+        self.target(self.machine, self.interval)
+
+
+class AsyncStateMachineWorker(BaseWorker):
+
+    def __init__(self):
+
+        super(AsyncStateMachineWorker, self).__init__()
+
+        self._machines = list()
+        self._schedulers = list()
+
+        self.jobs = list()
+
+    def add_machine(self, machine, interval):
+
+        self._machines.append((machine, interval,))
+
+    
 
     def run(self):
 
         for machine, interval in self._machines:
 
-            sched = Thread(target=self.target, args=(machine, interval,))
+            # sched = SchedThread(target=self.target, args=(machine, interval,))
+            sched = SchedThread(machine, interval,)
 
             self._schedulers.append(sched)
 

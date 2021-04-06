@@ -25,7 +25,6 @@ setuptools.setup(
         'pyBigParser',
         'peewee',
         'python-statemachine',
-		'APScheduler',
         'waitress',
         'Jinja2',
         'PyYAML',

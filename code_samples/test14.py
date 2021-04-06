@@ -56,8 +56,8 @@ app = Rackio()
 machine1 = TwoStep("machine 1")
 machine2 = TwoStep("machine 2")
 
-app.append_machine(machine1, 1)
-app.append_machine(machine2, 2)
+app.append_machine(machine1, 1, "async")
+app.append_machine(machine2, 2, "async")
 
 if __name__ == "__main__":
 
