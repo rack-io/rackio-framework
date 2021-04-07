@@ -49,6 +49,7 @@ class Alarm:
         
         self._tripped_timestamp = None
         self._acknowledged_timestamp = None
+        self._silence = False
 
     def serialize(self):
 
@@ -65,6 +66,7 @@ class Alarm:
         result["value"] = self._value
         result["tripped_value"] = self._trigger_value
         result["type"] = self._trigger_type
+        result["silence"] = self._silence
 
         return result
 
@@ -167,6 +169,10 @@ class Alarm:
 
     def trigger(self):
 
+        if not self._enabled:
+
+            return
+            
         self._triggered = True        
         self._tripped_timestamp = datetime.now()
         self.set_state(UNACKNOWLEDGED)
@@ -181,6 +187,10 @@ class Alarm:
 
     def acknowledge(self):
 
+        if not self._enabled:
+
+            return
+
         if self._state == UNACKNOWLEDGED:
 
             self.set_state(ACKNOWLEDGED)
@@ -191,7 +201,27 @@ class Alarm:
 
         self._acknowledged_timestamp = datetime.now()
 
+    def silence(self):
+
+        if not self._enabled:
+
+            return
+
+        self._silence = True
+
+    def sound(self):
+
+        if not self._enabled:
+
+            return
+        
+        self._silence = False
+
     def clear(self):
+
+        if not self._enabled:
+
+            return
 
         self._triggered = False
 
@@ -209,6 +239,7 @@ class Alarm:
 
         self._tripped_timestamp = None
         self._acknowledged_timestamp = None
+        self._silence = False
 
     def update(self, value):
 
@@ -252,3 +283,4 @@ class Alarm:
 
             elif _type == BOOL and not value:
                 self.set_state(NORMAL)
+

@@ -59,4 +59,12 @@ class AlarmsDAO(RackioDAO):
 
             alarm.reset()
 
+        elif action == "Silence":
+
+            alarm.silence()
+        
+        elif action == "Sound":
+
+            alarm.sound()
+
         return alarm.serialize()
