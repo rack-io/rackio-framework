@@ -21,6 +21,7 @@ from ..api import AlarmResource, AlarmCollectionResource
 from ..api import EventCollectionResource
 from ..api import AppSummaryResource
 from ..api import BlobCollectionResource, BlobResource
+from ..api import UserCollectionResource
 
 from ..api import LoginResource, LogoutResource
 
@@ -154,6 +155,7 @@ class APIManager:
         _blob = BlobResource()
         _login = LoginResource()
         _logout = LogoutResource()
+        _users = UserCollectionResource()
 
         self.app.add_route('/api/tags/{tag_id}', _tag)
         self.app.add_route('/api/tags', _tags)
@@ -186,6 +188,8 @@ class APIManager:
 
         self.app.add_route('/api/login', _login)
         self.app.add_route('/api/logout', _logout)
+
+        self.app.add_route('/api/users', _users)
 
     def init_web(self):
 
