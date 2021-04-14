@@ -17,6 +17,7 @@ from .summary import *
 from .blobs import *
 from .logger import *
 from .users import *
+from .licenses import *
 
 from .auth import *
 from .auth_hook import authorize

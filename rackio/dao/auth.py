@@ -4,19 +4,30 @@ This module implements Authentication Data Objects Access.
 """
 from .core import RackioDAO
 
-from ..dbmodels import UserRole, User, Authentication
-from ..utils import hash_password, verify_password, generate_key
+from ..dbmodels import UserRole, User, Authentication, License
+from ..utils import hash_password, verify_password, generate_key, hash_license
 
 
 class AuthDAO(RackioDAO):
 
-    def create(self, role, **kwargs):
+    def create(self, role, lic, **kwargs):
+
+        username = kwargs['username']
+        if User.verify_username(username):
+
+            return
+
+        UserRole.select().where(UserRole.role==role).get()
 
         role = UserRole.select().where(UserRole.role==role).get()
 
+        lic = hash_license(lic)
+
+        # lic = License.select().where(License.license==lic).get()
+
         kwargs["password"] = hash_password(kwargs["password"])
 
-        user = User.create(role_id=role.id, **kwargs)
+        user = User.create(role_id=role.id, license_id=1, **kwargs)
 
         return user
 
@@ -25,6 +36,13 @@ class AuthDAO(RackioDAO):
         user = User.select().where(User.username==username).get()
 
         return user
+
+    def create_lic(self, lic):
+
+        lic = hash_license(lic)
+        lic = License.create(license=lic)
+
+        return lic
 
     def create_role(self, role):
 

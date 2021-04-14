@@ -11,6 +11,7 @@ import concurrent.futures
 
 from peewee import SqliteDatabase, MySQLDatabase, PostgresqlDatabase
 
+
 from ._singleton import Singleton
 
 from .config import RackioConfig
@@ -77,8 +78,6 @@ class Rackio(Singleton):
         self.db = None
 
         self.workers = None
-
-        
 
     def set_port(self, port):
 
@@ -359,7 +358,7 @@ class Rackio(Singleton):
 
         self._db_manager.set_root(username, password)
 
-    def define_user(self, username, password, role="Operator"):
+    def define_user(self, username, password, role="Operator", lic="None"):
         """
         Append a new user to allowed users in application.
         
@@ -370,7 +369,7 @@ class Rackio(Singleton):
         * **role** (string): User's role (**Operator** by default).
         """
 
-        self._db_manager.create_user(username, password, role)
+        self._db_manager.create_user(username, password, role, lic)
 
     def define_role(self, role):
         """

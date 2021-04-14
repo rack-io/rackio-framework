@@ -21,7 +21,9 @@ from ..api import AlarmResource, AlarmCollectionResource
 from ..api import EventCollectionResource
 from ..api import AppSummaryResource
 from ..api import BlobCollectionResource, BlobResource
-from ..api import UserCollectionResource, UsercolumnsCollectionResource
+from ..api import UserCollectionResource, UsercolumnsCollectionResource, UserColumnResource
+from ..api import UserLicenseResource
+from ..api import LicenseResource
 
 from ..api import LoginResource, LogoutResource
 
@@ -157,6 +159,9 @@ class APIManager:
         _logout = LogoutResource()
         _users = UserCollectionResource()
         _users_columns = UsercolumnsCollectionResource()
+        _users_column = UserColumnResource()
+        _users_license = UserLicenseResource()
+        _license = LicenseResource()
 
         self.app.add_route('/api/tags/{tag_id}', _tag)
         self.app.add_route('/api/tags', _tags)
@@ -192,6 +197,10 @@ class APIManager:
 
         self.app.add_route('/api/users', _users)
         self.app.add_route('/api/users/columns', _users_columns)
+        self.app.add_route('/api/users/columns/{column_name}', _users_column)
+        self.app.add_route('/api/users/license', _users_license)
+
+        self.app.add_route('/api/license', _license)
 
     def init_web(self):
 
