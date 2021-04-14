@@ -18,6 +18,11 @@ class UsersDAO(RackioDAO):
 
         return users
 
+    def get_column_names(self):
+        
+        columns_dict = User._meta.fields
+        return list(columns_dict.keys())
+
     def add(self, username, password, role, **kwargs):
 
         result = None

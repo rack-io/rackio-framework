@@ -29,4 +29,12 @@ class UserCollectionResource(BaseResource):
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 
+class UsercolumnsCollectionResource(BaseResource):
+
+    def on_get(self, req, resp):
+
+        doc = self.dao.get_column_names()
+
+        resp.body = json.dumps(doc, ensure_ascii=False)
+
     
