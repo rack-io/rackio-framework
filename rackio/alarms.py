@@ -164,7 +164,9 @@ class Alarm:
             description=description,
             classification=classification, 
             priority=priority, 
-            date_time=now
+            date_time=now,
+            name=self.get_name(),
+            state=self.get_state()
         )
 
     def trigger(self):

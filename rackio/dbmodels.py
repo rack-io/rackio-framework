@@ -54,6 +54,8 @@ class Alarm(BaseModel):
     classification = TextField()
     priority = IntegerField(default=4)
     date_time = DateTimeField()
+    name = TextField()
+    state = TextField()
 
 
 class Blob(BaseModel):
