@@ -86,6 +86,10 @@ class Rackio(Singleton):
     def set_mode(self, mode):
 
         self._mode = mode
+
+    def get_mode(self):
+
+        return self._mode
         
     def set_log(self, level=logging.INFO, file=""):
         """

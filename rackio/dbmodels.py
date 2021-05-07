@@ -132,8 +132,13 @@ class User(BaseModel):
         query = cls.update(license=license_id).where(User.username==username)
         query.execute()
 
-    
 
+class Anomaly(BaseModel):
+
+    user = CharField()
+    instrument = TextField()
+    anomaly = TextField()
+    date_time = DateTimeField()
 
 class Authentication(BaseModel):
 
