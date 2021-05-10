@@ -90,4 +90,3 @@ class UsersDAO(RackioDAO):
         }
         return result
 
-        

@@ -65,6 +65,7 @@ class Alarm:
         result["acknowledged"] = self._acknowledged
         result["value"] = self._value
         result["tripped_value"] = self._trigger_value
+        result["tripped_timestamp"] = self._tripped_timestamp.strftime('%Y-%m-%d %H:%M:%S')
         result["type"] = self._trigger_type
         result["silence"] = self._silence
 
