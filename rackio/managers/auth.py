@@ -83,7 +83,7 @@ class AuthManager:
         self.auth.create_role(role)
 
     def _create_system(self, system):
-        print(system)
+        
         self.auth.create_system(system)
 
     def _create_license(self, lic):

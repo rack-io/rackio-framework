@@ -151,27 +151,50 @@ class Reliability(BaseModel):
     timestamp = DateTimeField(default=datetime.now)
     leak = BooleanField()
     true_false = BooleanField()
-    false_True = BooleanField()
+    false_true = BooleanField(default=False)
     system = ForeignKeyField(Systems)
     user = ForeignKeyField(User)
 
     @classmethod
-    def add(cls, username, system_name, leak=True, true_false=False, false_True=False):
+    def add(cls, username, system_name, leak=True, true_false=False, false_true=False):
         r"""
         Create a new record in the Reliability table
         """
         user = User.get(username=username)
         system = Systems.get(system_name=system_name)
 
-        return Reliability.create(
-            username=user.id, 
-            system=system.id,
+        return cls.create(
+            user_id=user.id, 
+            system_id=system.id,
             leak=leak,
             true_false=true_false,
-            false_True=false_True
+            false_true=false_true
             )
+    
+    @classmethod
+    def get_true_false(cls, start, stop):
+        r"""
+        Documentation here
+        """
+        pass
 
+    @classmethod
+    def get_leak(cls, start, stop):
+        r"""
+        Documentation here
+        """
 
+        pass
+
+    @classmethod
+    def get_false_true(cls, start, stop):
+        r"""
+        Documentation here
+        """
+
+        pass
+
+    
 # class Anomaly(BaseModel):
 
 #     user = CharField()

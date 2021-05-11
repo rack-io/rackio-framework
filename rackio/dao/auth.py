@@ -4,8 +4,9 @@ This module implements Authentication Data Objects Access.
 """
 from .core import RackioDAO
 
-from ..dbmodels import UserRole, User, Authentication, License, Systems
+from ..dbmodels import UserRole, User, Authentication, License, Systems, Reliability
 from ..utils import hash_password, verify_password, generate_key, hash_license
+from ..utils import verify_password as check_password
 
 
 class AuthDAO(RackioDAO):
@@ -55,6 +56,12 @@ class AuthDAO(RackioDAO):
         system = Systems.add(system)
 
         return system
+
+    def create_reliability(self, username, system_name, leak=True, true_false=False, false_true=False):
+
+        reliability = Reliability.add(username, system_name, leak=leak, true_false=true_false, false_true=false_true)
+
+        return reliability
 
     def read_by_role(self, role):
 
@@ -180,6 +187,16 @@ class AuthDAO(RackioDAO):
         if verify_password(user.password, password):
             
             self._set_key(username)
+
+            return True
+
+        return False
+
+    def verify_password(self, username, password):
+
+        user = self.read(username)
+
+        if check_password(user.password, password):
 
             return True
 
