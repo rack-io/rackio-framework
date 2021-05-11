@@ -4,7 +4,7 @@ This module implements Authentication Data Objects Access.
 """
 from .core import RackioDAO
 
-from ..dbmodels import UserRole, User, Authentication, License
+from ..dbmodels import UserRole, User, Authentication, License, Systems
 from ..utils import hash_password, verify_password, generate_key, hash_license
 
 
@@ -49,6 +49,12 @@ class AuthDAO(RackioDAO):
         role = UserRole.create(role=role)
 
         return role
+
+    def create_system(self, system):
+
+        system = Systems.add(system)
+
+        return system
 
     def read_by_role(self, role):
 

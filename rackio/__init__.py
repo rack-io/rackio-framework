@@ -18,6 +18,6 @@ from .engine import CVTEngine as TagEngine
 from .state import RackioStateMachine, State, TagBinding, GroupBinding
 from .dbmodels import BaseModel as RackioModel
 from .dbmodels import CharField, TextField
-from .dbmodels import DateTimeField, IntegerField, FloatField
+from .dbmodels import DateTimeField, IntegerField, FloatField, BooleanField
 from .dbmodels import ForeignKeyField
 from .dbmodels import BlobField

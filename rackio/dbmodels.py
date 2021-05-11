@@ -8,7 +8,8 @@ from datetime import datetime, date
 from io import BytesIO
 from .utils import hash_license, verify_license
 
-from peewee import Proxy, Model, CharField, TextField, DateField, DateTimeField, IntegerField, FloatField, BlobField, ForeignKeyField
+from peewee import Proxy, Model, CharField, TextField, DateField, DateTimeField
+from peewee import  IntegerField, FloatField, BlobField, ForeignKeyField, BooleanField
 
 proxy = Proxy()
 
@@ -133,12 +134,50 @@ class User(BaseModel):
         query.execute()
 
 
-class Anomaly(BaseModel):
+class Systems(BaseModel):
 
-    user = CharField()
-    instrument = TextField()
-    anomaly = TextField()
-    date_time = DateTimeField()
+    system_name = TextField(unique=True)
+
+    @classmethod
+    def add(cls, system_name):
+        r"""
+        Create a new record in the Systems table
+        """
+        return Systems.create(system_name=system_name)
+        
+
+class Reliability(BaseModel):
+
+    timestamp = DateTimeField(default=datetime.now)
+    leak = BooleanField()
+    true_false = BooleanField()
+    false_True = BooleanField()
+    system = ForeignKeyField(Systems)
+    user = ForeignKeyField(User)
+
+    @classmethod
+    def add(cls, username, system_name, leak=True, true_false=False, false_True=False):
+        r"""
+        Create a new record in the Reliability table
+        """
+        user = User.get(username=username)
+        system = Systems.get(system_name=system_name)
+
+        return Reliability.create(
+            username=user.id, 
+            system=system.id,
+            leak=leak,
+            true_false=true_false,
+            false_True=false_True
+            )
+
+
+# class Anomaly(BaseModel):
+
+#     user = CharField()
+#     instrument = TextField()
+#     anomaly = TextField()
+#     date_time = DateTimeField()
 
 class Authentication(BaseModel):
 

@@ -65,7 +65,8 @@ class Alarm:
         result["acknowledged"] = self._acknowledged
         result["value"] = self._value
         result["tripped_value"] = self._trigger_value
-        result["tripped_timestamp"] = self._tripped_timestamp.strftime('%Y-%m-%d %H:%M:%S')
+        result["tripped_timestamp"] = self._tripped_timestamp
+        result["acknowledged_timestamp"] = self._acknowledged_timestamp
         result["type"] = self._trigger_type
         result["silence"] = self._silence
 
@@ -115,6 +116,8 @@ class Alarm:
             self._process = True
             self._triggered = False
             self._acknowledged = True
+            self._tripped_timestamp = None
+            self._acknowledged_timestamp = None
 
             message = "Alarm {} back to normal".format(self.get_name())
             priority = 2
@@ -126,6 +129,7 @@ class Alarm:
             self._process = False
             self._triggered = True
             self._acknowledged = False
+            self._acknowledged_timestamp = None
 
             message = "Alarm {} triggered".format(self.get_name())
             priority = 1
@@ -177,7 +181,7 @@ class Alarm:
             return
             
         self._triggered = True        
-        self._tripped_timestamp = datetime.now()
+        self._tripped_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.set_state(UNACKNOWLEDGED)
 
     def disable(self):
@@ -202,7 +206,7 @@ class Alarm:
             
             self.set_state(NORMAL)
 
-        self._acknowledged_timestamp = datetime.now()
+        self._acknowledged_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     def silence(self):
 
@@ -237,12 +241,11 @@ class Alarm:
         self._enabled = True
         self._triggered = False
         self._acknowledged = False
-
-        self.set_state(NORMAL)
-
         self._tripped_timestamp = None
         self._acknowledged_timestamp = None
         self._silence = False
+
+        self.set_state(NORMAL)
 
     def update(self, value):
 

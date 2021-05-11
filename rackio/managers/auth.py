@@ -31,6 +31,7 @@ class AuthManager:
         self.LICENSES = [LICENSE_ROOT]
 
         self.roles = list()
+        self.systems = list()
         self.users = list()
         self.licenses = list()
 
@@ -65,6 +66,10 @@ class AuthManager:
 
         self.roles.append(role)
 
+    def create_system(self, system):
+
+        self.systems.append(system)
+
     def create_license(self, lic):
 
         self.licenses.append(lic)
@@ -76,6 +81,10 @@ class AuthManager:
     def _create_role(self, role):
 
         self.auth.create_role(role)
+
+    def _create_system(self, system):
+        print(system)
+        self.auth.create_system(system)
 
     def _create_license(self, lic):
 
@@ -100,6 +109,10 @@ class AuthManager:
         for lic in self.licenses:
 
             self._create_lic(lic)
+
+        for system in self.systems:
+
+            self._create_system(system)
 
         for role in self.roles:
 

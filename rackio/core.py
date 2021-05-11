@@ -386,6 +386,17 @@ class Rackio(Singleton):
 
         self._db_manager.create_role(role)
 
+    def define_system(self, system):
+        """
+        Append a new user role to application.
+        
+        **Parameters:**
+
+        * **role** (string): User Role.
+        """
+
+        self._db_manager.create_system(system)
+
     def define_table(self, cls):
         """
         Append a database model class definition
