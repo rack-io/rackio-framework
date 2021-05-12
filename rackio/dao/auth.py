@@ -4,14 +4,14 @@ This module implements Authentication Data Objects Access.
 """
 from .core import RackioDAO
 
-from ..dbmodels import UserRole, User, Authentication, License, Systems, Reliability
-from ..utils import hash_password, verify_password, generate_key, hash_license
+from ..dbmodels import UserRole, User, Authentication
+from ..utils import hash_password, verify_password, generate_key
 from ..utils import verify_password as check_password
 
 
 class AuthDAO(RackioDAO):
 
-    def create(self, role, lic, **kwargs):
+    def create(self, role, **kwargs):
 
         username = kwargs['username']
         if User.verify_username(username):
@@ -22,13 +22,9 @@ class AuthDAO(RackioDAO):
 
         role = UserRole.select().where(UserRole.role==role).get()
 
-        lic = hash_license(lic)
-
-        # lic = License.select().where(License.license==lic).get()
-
         kwargs["password"] = hash_password(kwargs["password"])
 
-        user = User.create(role_id=role.id, license_id=1, **kwargs)
+        user = User.create(role_id=role.id, **kwargs)
 
         return user
 
@@ -38,30 +34,11 @@ class AuthDAO(RackioDAO):
 
         return user
 
-    def create_lic(self, lic):
-
-        lic = hash_license(lic)
-        lic = License.create(license=lic)
-
-        return lic
-
     def create_role(self, role):
 
         role = UserRole.create(role=role)
 
         return role
-
-    def create_system(self, system):
-
-        system = Systems.add(system)
-
-        return system
-
-    def create_reliability(self, username, system_name, leak=True, true_false=False, false_true=False):
-
-        reliability = Reliability.add(username, system_name, leak=leak, true_false=true_false, false_true=false_true)
-
-        return reliability
 
     def read_by_role(self, role):
 

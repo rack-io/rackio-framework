@@ -362,7 +362,7 @@ class Rackio(Singleton):
 
         self._db_manager.set_root(username, password)
 
-    def define_user(self, username, password, role="Operator", lic="None"):
+    def define_user(self, username, password, role="Operator"):
         """
         Append a new user to allowed users in application.
         
@@ -373,7 +373,7 @@ class Rackio(Singleton):
         * **role** (string): User's role (**Operator** by default).
         """
 
-        self._db_manager.create_user(username, password, role, lic)
+        self._db_manager.create_user(username, password, role)
 
     def define_role(self, role):
         """
@@ -385,17 +385,6 @@ class Rackio(Singleton):
         """
 
         self._db_manager.create_role(role)
-
-    def define_system(self, system):
-        """
-        Append a new user role to application.
-        
-        **Parameters:**
-
-        * **role** (string): User Role.
-        """
-
-        self._db_manager.create_system(system)
 
     def define_table(self, cls):
         """
