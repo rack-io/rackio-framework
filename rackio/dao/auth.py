@@ -89,6 +89,8 @@ class AuthDAO(RackioDAO):
 
         auth = Authentication.select().where(Authentication.key==key).get()
 
+        print(auth)
+
         user = User.select().where(User.id==auth.user_id).get()
 
         return user
