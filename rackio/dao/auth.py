@@ -87,13 +87,16 @@ class AuthDAO(RackioDAO):
 
     def read_by_key(self, key):
 
-        auth = Authentication.select().where(Authentication.key==key).get()
+        try:
+            auth = Authentication.select().where(Authentication.key==key).get()
 
-        print(auth)
+            user = User.select().where(User.id==auth.user_id).get()
 
-        user = User.select().where(User.id==auth.user_id).get()
+            return user
+        
+        except:
 
-        return user
+            return False
 
     def get_role(self, username):
 
