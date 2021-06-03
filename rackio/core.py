@@ -736,7 +736,7 @@ class Rackio(Singleton):
                 time.sleep(0.5)
 
         except (KeyboardInterrupt, SystemExit):
-            logging.info("Manual Shutting down!!!")
+            logging.warning("Manual Shutting down!!!")
             self.stop_workers()
             time.sleep(0.5)
 

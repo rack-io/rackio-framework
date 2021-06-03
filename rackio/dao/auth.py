@@ -3,6 +3,7 @@
 This module implements Authentication Data Objects Access.
 """
 from .core import RackioDAO
+import logging
 
 from ..dbmodels import UserRole, User, Authentication
 from ..utils import hash_password, verify_password, generate_key
@@ -30,7 +31,13 @@ class AuthDAO(RackioDAO):
 
     def read(self, username):
 
-        user = User.select().where(User.username==username).get()
+        try:
+
+            user = User.select().where(User.username==username).get()
+
+        except:
+
+            return False
 
         return user
 
@@ -100,11 +107,16 @@ class AuthDAO(RackioDAO):
 
     def get_role(self, username):
 
-        user = self.read(username)
+        try:
+            user = self.read(username)
 
-        role = UserRole.select().where(UserRole.id==user.role_id).get()
+            role = UserRole.select().where(UserRole.id==user.role_id).get()
 
-        return role.role
+            return role.role
+            
+        except:
+
+            return False
 
     def update(self, username, role="", **kwargs):
 
@@ -161,16 +173,16 @@ class AuthDAO(RackioDAO):
 
         user = self.read(username)
 
-        try:
-            self.logout(username)
-        except:
-            pass
+        if user:
 
-        if verify_password(user.password, password):
-            
-            self._set_key(username)
+            if verify_password(user.password, password):
+                
+                self._set_key(username)
+                logging.info("{}: has logged in".format(username))
 
-            return True
+                return True
+
+            return False
 
         return False
 
@@ -178,16 +190,18 @@ class AuthDAO(RackioDAO):
 
         user = self.read(username)
 
-        if check_password(user.password, password):
+        if user:
 
-            return True
+            if check_password(user.password, password):
+
+                return True
 
         return False
 
     def logout(self, username):
 
         self._delete_key(username)
-
+        logging.info("{}: has logged out".format(username))
         return True
     
     def verify_key(self, key):
