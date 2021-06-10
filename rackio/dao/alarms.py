@@ -57,6 +57,10 @@ class AlarmsDAO(RackioDAO):
 
         elif action == "Reset":
 
+            alarm.to_reset()
+
+        elif action == "Confirm reset":
+
             alarm.reset()
 
         elif action == "Silence":
@@ -66,5 +70,29 @@ class AlarmsDAO(RackioDAO):
         elif action == "Sound":
 
             alarm.sound()
+
+        elif action == "Shelve":
+
+            alarm.shelve()
+
+        elif action == "Unshelve":
+
+            alarm.unshelve()
+
+        elif action == "Supress by design":
+
+            alarm.supress_by_design()
+
+        elif action == "Unsupress by design":
+
+            alarm.unsupress_by_design()
+
+        elif action == "Out of service":
+
+            alarm.out_of_service()
+
+        elif action == "In service":
+
+            alarm.in_service()
 
         return alarm.serialize()
