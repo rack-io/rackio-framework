@@ -101,3 +101,42 @@ class NotifyRestartSystems(object):
 
 
 notify_restart_systems = rackio_hook.before(NotifyRestartSystems())
+
+
+class NotifyTransition(object):
+
+    def __init__(self):
+
+        self._logger = LoggerEngine()
+
+    def get_app(self):
+
+        from ..core import Rackio
+
+        return Rackio()
+
+    def __call__(self, request, response, resource, params):
+
+        app = self.get_app()
+        
+        system_name = params['system_name']
+        username = request.media.get('username')
+        machine = app.get_machine(system_name)
+        current_state = machine.current_state.name.lower()
+        action = request.media.get('action')
+        transition = getattr(machine, '{}_to_{}'.format(current_state, action))
+        target_transition = transition.target.destinations[0].identifier
+
+        event_values = {
+            'user': '{}'.format(username),
+            'message': '{} {}'.format(machine.name, target_transition),
+            'description': '{} machine was switched to {}'.format(machine.name, target_transition),
+            'classification': '{}'.format(machine.classification),
+            'priority': '{}'.format(machine.priority),
+            'date_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+        event = Event(**event_values)
+        self._logger.write_event(event)
+
+
+notify_transition = rackio_hook.before(NotifyTransition())
