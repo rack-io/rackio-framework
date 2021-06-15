@@ -20,13 +20,3 @@ def hash_password(password):
 def verify_password(_hash, password):
 
     return _hash == hash_password(password)
-
-def hash_license(lic):
-
-    _hash = md5(lic.encode())
-
-    return _hash.hexdigest()
-
-def verify_license(_hash, lic):
-
-    return _hash == hash_license(lic)
