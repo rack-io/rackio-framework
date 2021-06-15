@@ -490,7 +490,7 @@ class Rackio(Singleton):
         Return True is Authorization is enable, False otherwise.
         """
 
-        self._api_manager.auth_enabled()
+        return self._api_manager.auth_enabled()
 
     def set_cors(self, allow_origins):
         """

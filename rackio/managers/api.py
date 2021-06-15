@@ -107,7 +107,7 @@ class APIManager:
 
     def enable_auth(self):
 
-        self.app.set_auth(True)
+        self.app.set_auth(enabled=True)
 
     def disable_auth(self):
 

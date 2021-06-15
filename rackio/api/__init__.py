@@ -17,4 +17,6 @@ from .summary import *
 from .blobs import *
 from .logger import *
 from .auth import *
-from .auth_hook import authorize
+from .auth_hook import authorize, auth_token, auth_user_form
+from .log_hook import log, notify_alarm_operation, notify_restart_systems
+from .hook import rackio_hook
