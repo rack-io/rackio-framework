@@ -83,6 +83,7 @@ class Alarm:
         result["shelved"] = self._shelved
         result["supressed_by_design"] = self._supressed_by_design
         result["out_of_service"] = self._out_of_service
+        result["description"] = self.description
 
         return result
 
