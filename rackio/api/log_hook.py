@@ -94,6 +94,7 @@ class NotifyRestartSystems(object):
                     'description': '{} machine was switched to {}'.format(machine.name, "restarting"),
                     'classification': '{}'.format(machine.classification),
                     'priority': '{}'.format(machine.priority),
+                    'criticity': '{}'.format(machine.criticity),
                     'date_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     }
                 event = Event(**event_values)
@@ -133,6 +134,7 @@ class NotifyTransition(object):
             'description': '{} machine was switched to {}'.format(machine.name, target_transition),
             'classification': '{}'.format(machine.classification),
             'priority': '{}'.format(machine.priority),
+            'criticity': '{}'.format(machine.criticity),
             'date_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             }
         event = Event(**event_values)

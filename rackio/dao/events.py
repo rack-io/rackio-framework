@@ -28,11 +28,11 @@ class EventsDAO(RackioDAO):
 
         return result
 
-    def write(self, user, message, description, priority):
+    def write(self, user, message, description, priority, criticity):
 
         date_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        event  = Event(user=user, message=message, description=description, priority=priority, date_time=date_time)
+        event  = Event(user=user, message=message, description=description, priority=priority, criticity=criticity, date_time=date_time)
         
         try:
             _logger.write_event(event)

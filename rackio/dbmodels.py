@@ -42,7 +42,8 @@ class Event(BaseModel):
     message = TextField()
     description = TextField()
     classification = TextField()
-    priority = IntegerField(default=4)
+    priority = IntegerField(default=0)
+    criticity = IntegerField(default=0)
     date_time = DateTimeField()
 
 
@@ -52,7 +53,7 @@ class Alarm(BaseModel):
     message = TextField()
     description = TextField()
     classification = TextField()
-    priority = IntegerField(default=4)
+    priority = IntegerField(default=0)
     date_time = DateTimeField()
     name = TextField()
     state = TextField()

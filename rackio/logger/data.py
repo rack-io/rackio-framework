@@ -101,6 +101,7 @@ class DataLogger:
             description=event.description,
             classification=event.classification,
             priority=event.priority,
+            criticity=event.criticity,
             date_time=event.date_time
         )
 

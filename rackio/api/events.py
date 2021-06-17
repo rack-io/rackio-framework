@@ -37,8 +37,9 @@ class EventCollectionResource(BaseResource):
         message = req.media.get('message')
         description = req.media.get('description')
         priority = req.media.get('priority')
+        criticity = req.media.get('criticity')
         
-        doc = self.dao.write(user, message, description, priority)
+        doc = self.dao.write(user, message, description, priority, criticity)
 
         resp.body = json.dumps(doc, ensure_ascii=False)
         resp.status = status_code.HTTP_200
