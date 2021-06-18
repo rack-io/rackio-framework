@@ -91,7 +91,7 @@ class NotifyRestartSystems(object):
                 event_values = {
                     'user': '{}'.format(username),
                     'message': '{} {}'.format(machine.name, "restarting"),
-                    'description': '{} machine was switched to {}'.format(machine.name, "restarting"),
+                    'description': '{} engine was switched to {}'.format(machine.name, "restarting"),
                     'classification': '{}'.format(machine.classification),
                     'priority': '{}'.format(machine.priority),
                     'criticity': '{}'.format(machine.criticity),
@@ -131,7 +131,7 @@ class NotifyTransition(object):
         event_values = {
             'user': '{}'.format(username),
             'message': '{} {}'.format(machine.name, target_transition),
-            'description': '{} machine was switched to {}'.format(machine.name, target_transition),
+            'description': '{} engine was switched to {}'.format(machine.name, target_transition),
             'classification': '{}'.format(machine.classification),
             'priority': '{}'.format(machine.priority),
             'criticity': '{}'.format(machine.criticity),
@@ -140,5 +140,75 @@ class NotifyTransition(object):
         event = Event(**event_values)
         self._logger.write_event(event)
 
-
 notify_transition = rackio_hook.before(NotifyTransition())
+
+
+class NotifyPriority(object):
+
+    def __init__(self):
+
+        self._logger = LoggerEngine()
+
+    def get_app(self):
+
+        from ..core import Rackio
+
+        return Rackio()
+
+    def __call__(self, request, response, resource, params):
+
+        app = self.get_app()
+        
+        system_name = params['system_name']
+        username = request.media.get('username')
+        priority = request.media.get('priority')
+        machine = app.get_machine(system_name)
+
+        event_values = {
+            'user': '{}'.format(username),
+            'message': 'User operation',
+            'description': '{} engine priority was updated'.format(machine.name),
+            'classification': '{}'.format(machine.classification),
+            'priority': '{}'.format(priority),
+            'criticity': '{}'.format(machine.criticity),
+            'date_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+        event = Event(**event_values)
+        self._logger.write_event(event)
+
+notify_priority = rackio_hook.before(NotifyPriority())
+
+class NotifyOperationMode(object):
+
+    def __init__(self):
+
+        self._logger = LoggerEngine()
+
+    def get_app(self):
+
+        from ..core import Rackio
+
+        return Rackio()
+
+    def __call__(self, request, response, resource, params):
+
+        app = self.get_app()
+        
+        system_name = params['system_name']
+        username = request.media.get('username')
+        mode = request.media.get('mode')
+        machine = app.get_machine(system_name)
+
+        event_values = {
+            'user': '{}'.format(username),
+            'message': 'User operation',
+            'description': '{} engine operation mode was updated to'.format(machine.name, mode),
+            'classification': '{}'.format(machine.classification),
+            'priority': '{}'.format(machine.priority),
+            'criticity': '{}'.format(machine.criticity),
+            'date_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+        event = Event(**event_values)
+        self._logger.write_event(event)
+
+notify_operation_mode = rackio_hook.before(NotifyOperationMode())
