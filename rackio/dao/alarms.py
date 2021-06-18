@@ -5,8 +5,30 @@ This module implements Alarms Data Objects Access.
 """
 from .core import RackioDAO
 
+from datetime import datetime
+
 
 class AlarmsDAO(RackioDAO):
+
+    def get_all_active(self):
+        r"""
+        Documentation here
+        """
+        app = self.get_app()
+        manager = app.get_manager("alarm")
+
+        result = list()
+
+        for alarm in manager.get_alarms():
+            _alarm = alarm.serialize()
+            if _alarm['triggered']:
+                result.append(_alarm)
+
+        if len(result) > 0:
+
+            result.sort(reverse=True, key=self.sort)
+
+        return result
 
     def get_all(self):
 
@@ -96,3 +118,10 @@ class AlarmsDAO(RackioDAO):
             alarm.in_service()
 
         return alarm.serialize()
+    
+    @staticmethod
+    def sort(e):
+        r"""
+        Documentation here
+        """
+        return datetime.strptime(e['tripped_timestamp'], '%Y-%m-%d %H:%M:%S')
