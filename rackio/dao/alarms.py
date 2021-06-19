@@ -20,8 +20,11 @@ class AlarmsDAO(RackioDAO):
         result = list()
 
         for alarm in manager.get_alarms():
+           
             _alarm = alarm.serialize()
+            
             if _alarm['triggered']:
+                
                 result.append(_alarm)
 
         if len(result) > 0:

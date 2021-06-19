@@ -8,6 +8,7 @@ from datetime import datetime
 from .engine import CVTEngine
 from .events import Event
 from .dbmodels import Alarm as AlarmModel
+from .dbmodels import AlarmSummary
 from .logger import LoggerEngine
 
 NORMAL = "Normal"
@@ -146,10 +147,19 @@ class Alarm:
             self._acknowledged = False
             self._acknowledged_timestamp = None
 
-            message = "Alarm {} triggered".format(self.get_name())
+            message = "{}".format(self.description)
             priority = 1
             classification = "system"
             self.write_tag_alarm(True)
+
+            AlarmSummary.create(
+                name=self.get_name(), 
+                state=_state,
+                alarm_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                description=message,
+                classification=classification, 
+                priority=priority
+            )
 
         elif _state == ACKNOWLEDGED:
 
@@ -161,6 +171,15 @@ class Alarm:
             priority = 2
             classification = "user"
             self.write_tag_alarm(True)
+            alarm_summary = AlarmSummary.select().where(AlarmSummary.name == self.get_name()).order_by(AlarmSummary.id.desc()).get()
+            now = datetime.now()
+            alarm_summary = AlarmSummary.update(
+                {
+                    AlarmSummary.ack_time: now.strftime("%Y/%m/%d %H:%M:%S"),
+                    AlarmSummary.state: ACKNOWLEDGED
+                }
+            ).where(AlarmSummary.id == alarm_summary)
+            alarm_summary.execute()
 
         elif _state == RTN_UNACKNOWLEDGED:
 
@@ -172,6 +191,13 @@ class Alarm:
             priority = 2
             classification = "system"
             self.write_tag_alarm(False)
+            alarm_summary = AlarmSummary.select().where(AlarmSummary.name == self.get_name()).order_by(AlarmSummary.id.desc()).get()
+            alarm_summary = AlarmSummary.update(
+                {
+                    AlarmSummary.state: RTN_UNACKNOWLEDGED
+                }
+            ).where(AlarmSummary.id == alarm_summary)
+            alarm_summary.execute()
 
         elif _state == SHELVED:
 

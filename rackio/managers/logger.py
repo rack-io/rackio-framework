@@ -9,7 +9,7 @@ from datetime import datetime
 
 from ..logger import LogTable, LoggerEngine
 from ..dbmodels import TagTrend, TagValue, Event, Alarm, Blob
-from ..dbmodels import UserRole, User, Authentication
+from ..dbmodels import UserRole, User, Authentication, AlarmSummary
 from ..utils import serialize_dbo
 from .._singleton import Singleton
 
@@ -31,7 +31,7 @@ class LoggerManager:
         self._auth = AuthManager()
 
         self._tables = [TagTrend, TagValue, Event, Alarm, Blob]
-        self._tables += [UserRole, User, Authentication]
+        self._tables += [UserRole, User, Authentication, AlarmSummary]
 
     def set_db(self, db):
 

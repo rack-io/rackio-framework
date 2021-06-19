@@ -59,6 +59,17 @@ class Alarm(BaseModel):
     state = TextField()
 
 
+class AlarmSummary(BaseModel):
+    
+    name = TextField()
+    state = TextField()
+    alarm_time = DateTimeField()
+    ack_time = DateTimeField(null=True)
+    description = TextField()
+    classification = TextField()
+    priority = IntegerField(default=0)
+    
+
 class Blob(BaseModel):
 
     name = CharField()
