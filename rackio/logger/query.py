@@ -9,9 +9,11 @@ from datetime import datetime, timedelta
 
 from .engine import LoggerEngine
 from ..dbmodels import TagTrend, TagValue
+from peewee import Expression
 
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 OUTPUT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
+SAMPLING_TIME = 1 # SECONDS
 
 
 class QueryLogger:
@@ -42,7 +44,7 @@ class QueryLogger:
         
         return trend.start
 
-    def query_waveform(self, tag, start, stop):
+    def query_waveform(self, tag, start, stop, sampling_time=SAMPLING_TIME):
 
         _query = TagTrend.select().order_by(TagTrend.start)
         trend = _query.where(TagTrend.name == tag).get()
@@ -51,6 +53,7 @@ class QueryLogger:
         stop = datetime.strptime(stop, DATETIME_FORMAT)
 
         period = trend.period
+        sampling = int(sampling_time / period)
         
         _query = trend.values.select().order_by(TagValue.timestamp.asc())
         values = _query.where((TagValue.timestamp > start) & (TagValue.timestamp < stop))
@@ -58,7 +61,7 @@ class QueryLogger:
         result = dict()
 
         t0 = values[0].timestamp.strftime(DATETIME_FORMAT)
-        values = [value.value for value in values]
+        values = [value.value for count, value in enumerate(values) if count % sampling == 0]
 
         result["t0"] = t0
         result["dt"] = period
@@ -67,26 +70,29 @@ class QueryLogger:
 
         return result
 
-    def query_trend(self, tag, start, stop):
+    def query_trend(self, tag, start, stop, sampling_time=SAMPLING_TIME):
 
         _query = TagTrend.select().order_by(TagTrend.start)
         trend = _query.where(TagTrend.name == tag).get()
         
         start = datetime.strptime(start, DATETIME_FORMAT)
         stop = datetime.strptime(stop, DATETIME_FORMAT)
+
+        period = self.get_period(tag)
+        sampling = int(sampling_time / period)
         
         _query = trend.values.select().order_by(TagValue.timestamp.asc())
         values = _query.where((TagValue.timestamp > start) & (TagValue.timestamp < stop))
         
         result = dict()
 
-        values = [{"x": value.timestamp.strftime(OUTPUT_DATETIME_FORMAT), "y": value.value} for value in values]
+        values = [{"x": value.timestamp.strftime(OUTPUT_DATETIME_FORMAT), "y": value.value} for count, value in enumerate(values) if count % sampling == 0]
 
         result["values"] = values
 
         return result
 
-    def query_last(self, tag, seconds=None, values=None, waveform=False):
+    def query_last(self, tag, seconds=None, values=None, waveform=False, sampling_time=1):
 
         if seconds:
 
@@ -98,9 +104,9 @@ class QueryLogger:
 
             if waveform:
 
-                return self.query_waveform(tag, start, stop)
+                return self.query_waveform(tag, start, stop, sampling_time=sampling_time)
 
-            return self.query_trend(tag, start, stop)
+            return self.query_trend(tag, start, stop, sampling_time=sampling_time)
 
         if values:
 
@@ -113,11 +119,11 @@ class QueryLogger:
             stop = stop.strftime(DATETIME_FORMAT)
 
             if waveform:
-                return self.query_waveform(tag, start, stop)
+                return self.query_waveform(tag, start, stop, sampling_time=sampling_time)
             
-            return self.query_trend(tag, start, stop)
+            return self.query_trend(tag, start, stop, sampling_time=sampling_time)
 
-    def query_first(self, tag, seconds=None, values=None, waveform=False):
+    def query_first(self, tag, seconds=None, values=None, waveform=False, sampling_time=1):
 
         tag_values = self.get_values(tag)
 
@@ -130,9 +136,9 @@ class QueryLogger:
             stop = stop.strftime(DATETIME_FORMAT)
 
             if waveform:
-                return self.query_waveform(tag, start, stop)
+                return self.query_waveform(tag, start, stop, sampling_time=sampling_time)
             
-            return self.query_trend(tag, start, stop)
+            return self.query_trend(tag, start, stop, sampling_time=sampling_time)
 
         if values:
 
@@ -145,6 +151,12 @@ class QueryLogger:
             stop = stop.strftime(DATETIME_FORMAT)
 
             if waveform:
-                return self.query_waveform(tag, start, stop)
+                return self.query_waveform(tag, start, stop, sampling_time=sampling_time)
             
-            return self.query_trend(tag, start, stop)
+            return self.query_trend(tag, start, stop, sampling_time=sampling_time)
+
+    def mod(self, lhs, rhs):
+        r"""
+        Documentation here
+        """
+        return Expression(lhs,'%', rhs)
