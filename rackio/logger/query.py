@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from .engine import LoggerEngine
 from ..dbmodels import TagTrend, TagValue
 from peewee import Expression
+from peewee import fn
 
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 OUTPUT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
@@ -83,7 +84,7 @@ class QueryLogger:
         
         _query = trend.values.select().order_by(TagValue.timestamp.asc())
         values = _query.where((TagValue.timestamp > start) & (TagValue.timestamp < stop))
-        
+
         result = dict()
 
         values = [{"x": value.timestamp.strftime(OUTPUT_DATETIME_FORMAT), "y": value.value} for count, value in enumerate(values) if count % sampling == 0]
@@ -154,9 +155,3 @@ class QueryLogger:
                 return self.query_waveform(tag, start, stop, sampling_time=sampling_time)
             
             return self.query_trend(tag, start, stop, sampling_time=sampling_time)
-
-    def mod(self, lhs, rhs):
-        r"""
-        Documentation here
-        """
-        return Expression(lhs,'%', rhs)
