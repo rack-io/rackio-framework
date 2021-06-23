@@ -28,7 +28,8 @@ class APIWorker(BaseWorker):
 
         if self._mode == "development":
             with make_server('', self._port, app, handler_class=CustomWSGIRequestHandler) as httpd:
-                logging.info('Serving on port {}...'.format(self._port))
+                logging.info('Development mode serving on port {}...'.format(self._port))
                 httpd.serve_forever()
         else:
+            logging.info('Production mode serving on port {}...'.format(self._port))
             serve(app, host='0.0.0.0', port=self._port)

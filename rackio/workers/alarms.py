@@ -11,7 +11,7 @@ from .worker import BaseWorker
 
 class AlarmWorker(BaseWorker):
 
-    def __init__(self, manager, period=0.25):
+    def __init__(self, manager, period=0.1):
 
         super(AlarmWorker, self).__init__()
         

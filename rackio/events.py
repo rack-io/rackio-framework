@@ -13,6 +13,7 @@ class Event(Model):
     message = StringType()
     description = StringType(default="")
     classification = StringType()
-    priority = IntegerType(default=4)
+    priority = IntegerType(default=0)
+    criticity = IntegerType(default=0)
     date_time = StringType()
     

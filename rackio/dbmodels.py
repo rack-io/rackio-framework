@@ -7,7 +7,8 @@ modelling the trending process.
 from datetime import datetime, date
 from io import BytesIO
 
-from peewee import Proxy, Model, CharField, TextField, DateField, DateTimeField, IntegerField, FloatField, BlobField, ForeignKeyField
+from peewee import Proxy, Model, CharField, TextField, DateField, DateTimeField
+from peewee import  IntegerField, FloatField, BlobField, ForeignKeyField, BooleanField
 
 proxy = Proxy()
 
@@ -41,7 +42,8 @@ class Event(BaseModel):
     message = TextField()
     description = TextField()
     classification = TextField()
-    priority = IntegerField(default=4)
+    priority = IntegerField(default=0)
+    criticity = IntegerField(default=0)
     date_time = DateTimeField()
 
 
@@ -51,9 +53,22 @@ class Alarm(BaseModel):
     message = TextField()
     description = TextField()
     classification = TextField()
-    priority = IntegerField(default=4)
+    priority = IntegerField(default=0)
     date_time = DateTimeField()
+    name = TextField()
+    state = TextField()
 
+
+class AlarmSummary(BaseModel):
+    
+    name = TextField()
+    state = TextField()
+    alarm_time = DateTimeField()
+    ack_time = DateTimeField(null=True)
+    description = TextField()
+    classification = TextField()
+    priority = IntegerField(default=0)
+    
 
 class Blob(BaseModel):
 
@@ -78,9 +93,20 @@ class UserRole(BaseModel):
 
 class User(BaseModel):
 
-    username = TextField()
+    username = TextField(unique=True)
     password = TextField()
-    role = ForeignKeyField(UserRole)
+    role = ForeignKeyField(UserRole, backref='user')
+
+    @staticmethod
+    def verify_username(username):
+        
+        try:
+            User.get(User.username==username)
+            return True
+
+        except:
+
+            return False
 
 
 class Authentication(BaseModel):

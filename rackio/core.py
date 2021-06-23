@@ -11,6 +11,7 @@ import concurrent.futures
 
 from peewee import SqliteDatabase, MySQLDatabase, PostgresqlDatabase
 
+
 from ._singleton import Singleton
 
 from .config import RackioConfig
@@ -78,8 +79,6 @@ class Rackio(Singleton):
 
         self.workers = None
 
-        
-
     def set_port(self, port):
 
         self._port = port
@@ -87,6 +86,10 @@ class Rackio(Singleton):
     def set_mode(self, mode):
 
         self._mode = mode
+
+    def get_mode(self):
+
+        return self._mode
         
     def set_log(self, level=logging.INFO, file=""):
         """
@@ -487,7 +490,7 @@ class Rackio(Singleton):
         Return True is Authorization is enable, False otherwise.
         """
 
-        self._api_manager.auth_enabled()
+        return self._api_manager.auth_enabled()
 
     def set_cors(self, allow_origins):
         """
@@ -733,7 +736,7 @@ class Rackio(Singleton):
                 time.sleep(0.5)
 
         except (KeyboardInterrupt, SystemExit):
-            logging.info("Manual Shutting down!!!")
+            logging.warning("Manual Shutting down!!!")
             self.stop_workers()
             time.sleep(0.5)
 

@@ -21,7 +21,6 @@ from ..api import AlarmResource, AlarmCollectionResource
 from ..api import EventCollectionResource
 from ..api import AppSummaryResource
 from ..api import BlobCollectionResource, BlobResource
-
 from ..api import LoginResource, LogoutResource
 
 from ..web import StaticResource, resource_pairs
@@ -108,7 +107,7 @@ class APIManager:
 
     def enable_auth(self):
 
-        self.app.set_auth(True)
+        self.app.set_auth(enabled=True)
 
     def disable_auth(self):
 

@@ -8,15 +8,21 @@ from datetime import datetime
 from .engine import CVTEngine
 from .events import Event
 from .dbmodels import Alarm as AlarmModel
+from .dbmodels import AlarmSummary
 from .logger import LoggerEngine
 
 NORMAL = "Normal"
 UNACKNOWLEDGED = "Unacknowledged"
 ACKNOWLEDGED = "Acknowledged"
 RTN_UNACKNOWLEDGED = "RTN Unacknowledged"
+SHELVED = "Shelved"
+SUPRESSED_BY_DESIGN = "Supressed By Design"
+OUT_OF_SERVICE = "Out Of Service"
 
+HH = "HI - HI"
 HI = "HI"
 LO = "LO"
+LL = "LO - LO"
 BOOL = "BOOL"
 
 USER = "System"
@@ -36,20 +42,25 @@ class Alarm:
         self._value = None
 
         self._trigger_value = None
-        self._trigger_type = None  # ["HI", "LO", "BOOL"]
+        self._trigger_type = None  # ["HH", "HI", "LO", "LL", "BOOL"]
         self._tag_alarm = None
 
-        self._enabled = True       # True: Enable - False: Disable
+        self._enabled = True       # True: Enable - False: Disable (Out Of Service)
         
         self._process = True       # True: Normal - False: Abnormal
         self._triggered = False    # True: Active - False: Not Active
         self._acknowledged = True  # True: Acknowledged - False: Unacknowledged
 
-        self._state = NORMAL       # [NORMAL, UNACKNOWLEDGED, ACKNOWLEDGED, RTN_UNACKNOWLEDGED]
+        self._state = NORMAL       # [NORMAL, UNACKNOWLEDGED, ACKNOWLEDGED, RTN_UNACKNOWLEDGED, SHELVED, SUPPRESSED_BY_DESIGN, OUT_OF_SERVICE]
         
         self._tripped_timestamp = None
         self._acknowledged_timestamp = None
         self._silence = False
+        self._shelved = False
+        self._supressed_by_design = False
+        self._out_of_service = False
+
+        self._by_confirm_reset = False
 
     def serialize(self):
 
@@ -65,8 +76,15 @@ class Alarm:
         result["acknowledged"] = self._acknowledged
         result["value"] = self._value
         result["tripped_value"] = self._trigger_value
+        result["tripped_timestamp"] = self._tripped_timestamp
+        result["acknowledged_timestamp"] = self._acknowledged_timestamp
         result["type"] = self._trigger_type
         result["silence"] = self._silence
+        result["by_confirm_reset"] = self._by_confirm_reset
+        result["shelved"] = self._shelved
+        result["supressed_by_design"] = self._supressed_by_design
+        result["out_of_service"] = self._out_of_service
+        result["description"] = self.description
 
         return result
 
@@ -114,10 +132,12 @@ class Alarm:
             self._process = True
             self._triggered = False
             self._acknowledged = True
+            self._tripped_timestamp = None
+            self._acknowledged_timestamp = None
 
             message = "Alarm {} back to normal".format(self.get_name())
             priority = 2
-
+            classification = "system"
             self.write_tag_alarm(False)
 
         elif _state == UNACKNOWLEDGED:
@@ -125,11 +145,21 @@ class Alarm:
             self._process = False
             self._triggered = True
             self._acknowledged = False
+            self._acknowledged_timestamp = None
 
-            message = "Alarm {} triggered".format(self.get_name())
+            message = "{}".format(self.description)
             priority = 1
-            
+            classification = "system"
             self.write_tag_alarm(True)
+
+            AlarmSummary.create(
+                name=self.get_name(), 
+                state=_state,
+                alarm_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                description=message,
+                classification=classification, 
+                priority=priority
+            )
 
         elif _state == ACKNOWLEDGED:
 
@@ -139,8 +169,17 @@ class Alarm:
 
             message = "Alarm {} has been acknowledged".format(self.get_name())
             priority = 2
-
+            classification = "user"
             self.write_tag_alarm(True)
+            alarm_summary = AlarmSummary.select().where(AlarmSummary.name == self.get_name()).order_by(AlarmSummary.id.desc()).get()
+            now = datetime.now()
+            alarm_summary = AlarmSummary.update(
+                {
+                    AlarmSummary.ack_time: now.strftime("%Y/%m/%d %H:%M:%S"),
+                    AlarmSummary.state: ACKNOWLEDGED
+                }
+            ).where(AlarmSummary.id == alarm_summary)
+            alarm_summary.execute()
 
         elif _state == RTN_UNACKNOWLEDGED:
 
@@ -148,23 +187,64 @@ class Alarm:
             self._triggered = False
             self._acknowledged = False
 
-            message = "Alarm {} back to normal unacknowledged".format(self.get_name())
-            message = message.format(self.get_name())
+            message = "Alarm {} returned to normal unacknowledged".format(self.get_name())
             priority = 2
+            classification = "system"
+            self.write_tag_alarm(False)
+            alarm_summary = AlarmSummary.select().where(AlarmSummary.name == self.get_name()).order_by(AlarmSummary.id.desc()).get()
+            alarm_summary = AlarmSummary.update(
+                {
+                    AlarmSummary.state: RTN_UNACKNOWLEDGED
+                }
+            ).where(AlarmSummary.id == alarm_summary)
+            alarm_summary.execute()
+
+        elif _state == SHELVED:
+
+            self._process = None
+            self._triggered = None
+            self._acknowledged = None
+
+            message = "Alarm {} shelved".format(self.get_name())
+            priority = 3
+            classification = "user"
+            self.write_tag_alarm(False)
+
+        elif _state == SUPRESSED_BY_DESIGN:
+
+            self._process = None
+            self._triggered = None
+            self._acknowledged = None
+
+            message = "Alarm {} supressed by design".format(self.get_name())
+            priority = 3
+            classification = "user"
+            self.write_tag_alarm(False)
+
+        elif _state == OUT_OF_SERVICE:
+
+            self._process = None
+            self._triggered = None
+            self._acknowledged = None
+
+            message = "Alarm {} out of service".format(self.get_name())
+            priority = 3
+            classification = "user"
 
             self.write_tag_alarm(False)
 
         now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         description = self._description
-        classification = "system"
-
+        
         AlarmModel.create(
             user=USER, 
             message=message,
             description=description,
             classification=classification, 
             priority=priority, 
-            date_time=now
+            date_time=now,
+            name=self.get_name(),
+            state=self.get_state()
         )
 
     def trigger(self):
@@ -172,9 +252,21 @@ class Alarm:
         if not self._enabled:
 
             return
+
+        elif self._out_of_service:
+
+            return
+
+        elif self._supressed_by_design:
+
+            return
+
+        elif self._shelved:
+
+            return
             
         self._triggered = True        
-        self._tripped_timestamp = datetime.now()
+        self._tripped_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.set_state(UNACKNOWLEDGED)
 
     def disable(self):
@@ -199,7 +291,7 @@ class Alarm:
             
             self.set_state(NORMAL)
 
-        self._acknowledged_timestamp = datetime.now()
+        self._acknowledged_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     def silence(self):
 
@@ -234,12 +326,53 @@ class Alarm:
         self._enabled = True
         self._triggered = False
         self._acknowledged = False
-
-        self.set_state(NORMAL)
-
         self._tripped_timestamp = None
         self._acknowledged_timestamp = None
         self._silence = False
+        self._by_confirm_reset = False
+        self._shelved = False
+        self._out_of_service = False
+        self._supressed_by_design = False
+
+        self.set_state(NORMAL)
+
+    def shelve(self):
+
+        self._shelved = True
+        self.set_state(SHELVED)
+
+    def unshelve(self):
+
+        self._shelved = False
+        self.set_state(NORMAL)
+
+    def supress_by_design(self):
+
+        self._supressed_by_design = True
+        self.set_state(SUPRESSED_BY_DESIGN)
+
+    def unsupress_by_design(self):
+
+        self._supressed_by_design = False
+        self.set_state(NORMAL)
+
+    def out_of_service(self):
+
+        self._out_of_service = True
+        self.set_state(OUT_OF_SERVICE)
+    
+    def in_service(self):
+
+        self._out_of_service = False
+        self.set_state(NORMAL)
+
+    def confirm_reset(self):
+
+        self.reset()
+
+    def to_reset(self):
+
+        self._by_confirm_reset = True
 
     def update(self, value):
 

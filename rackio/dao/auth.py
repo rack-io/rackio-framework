@@ -3,14 +3,23 @@
 This module implements Authentication Data Objects Access.
 """
 from .core import RackioDAO
+import logging
 
 from ..dbmodels import UserRole, User, Authentication
 from ..utils import hash_password, verify_password, generate_key
+from ..utils import verify_password as check_password
 
 
 class AuthDAO(RackioDAO):
 
     def create(self, role, **kwargs):
+
+        username = kwargs['username']
+        if User.verify_username(username):
+
+            return
+
+        UserRole.select().where(UserRole.role==role).get()
 
         role = UserRole.select().where(UserRole.role==role).get()
 
@@ -22,7 +31,13 @@ class AuthDAO(RackioDAO):
 
     def read(self, username):
 
-        user = User.select().where(User.username==username).get()
+        try:
+
+            user = User.select().where(User.username==username).get()
+
+        except:
+
+            return False
 
         return user
 
@@ -79,19 +94,29 @@ class AuthDAO(RackioDAO):
 
     def read_by_key(self, key):
 
-        auth = Authentication.select().where(Authentication.key==key).get()
+        try:
+            auth = Authentication.select().where(Authentication.key==key).get()
 
-        user = User.select().where(User.id==auth.user_id).get()
+            user = User.select().where(User.id==auth.user_id).get()
 
-        return user
+            return user
+        
+        except:
+
+            return False
 
     def get_role(self, username):
 
-        user = self.read(username)
+        try:
+            user = self.read(username)
 
-        role = UserRole.select().where(UserRole.id==user.role_id).get()
+            role = UserRole.select().where(UserRole.id==user.role_id).get()
 
-        return role.role
+            return role.role
+            
+        except:
+
+            return False
 
     def update(self, username, role="", **kwargs):
 
@@ -148,23 +173,35 @@ class AuthDAO(RackioDAO):
 
         user = self.read(username)
 
-        try:
-            self.logout(username)
-        except:
-            pass
+        if user:
 
-        if verify_password(user.password, password):
-            
-            self._set_key(username)
+            if verify_password(user.password, password):
+                
+                self._set_key(username)
+                logging.info("{}: has logged in".format(username))
 
-            return True
+                return True
+
+            return False
+
+        return False
+
+    def verify_password(self, username, password):
+
+        user = self.read(username)
+
+        if user:
+
+            if check_password(user.password, password):
+
+                return True
 
         return False
 
     def logout(self, username):
 
         self._delete_key(username)
-
+        logging.info("{}: has logged out".format(username))
         return True
     
     def verify_key(self, key):
