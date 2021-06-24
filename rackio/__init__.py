@@ -11,7 +11,7 @@ the control and automation industry.
 See https://rackio-framework.readthedocs.io/ for complete documentation.
 """
 
-__version__ = '1.0.4'
+__version__ = '1.0.5'
 
 from .core import Rackio
 from .engine import CVTEngine as TagEngine
