@@ -76,7 +76,7 @@ class RackioConfig:
 
             try:
                 setattr(self, key, value)
-            except:
+            except Exception as e:
                 logging.error(e, exc_info=True)
 
     def __setitem__(self, key, value):

@@ -28,7 +28,9 @@ setuptools.setup(
         'waitress',
         'Jinja2',
         'PyYAML',
-        'psycopg2'
+        'psycopg2',
+        'Click==7.0',
+        'python-dotenv==0.18.0'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
