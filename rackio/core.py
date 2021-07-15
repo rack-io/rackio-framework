@@ -658,6 +658,8 @@ class Rackio(Singleton):
         _alarm_worker = AlarmWorker(self._alarm_manager)
         _api_worker = APIWorker(self._api_manager, self._port, self._mode)
 
+        _db_worker.init_database()
+        
         try:
 
             workers = [

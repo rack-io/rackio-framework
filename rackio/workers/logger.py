@@ -72,6 +72,10 @@ class LoggerWorker(BaseWorker):
 
         self.micro_workers = list()
 
+    def init_database(self):
+
+        self._manager.init_database()
+
     def verify_workload(self):
 
         tags = self._manager.get_tags()
@@ -113,7 +117,7 @@ class LoggerWorker(BaseWorker):
 
     def run(self):
 
-        self._manager.init_database()
+        # self._manager.init_database()
         
         if not self.verify_workload():
             return
