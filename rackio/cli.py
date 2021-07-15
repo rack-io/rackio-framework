@@ -20,7 +20,7 @@ def rackio_cli(keywords, port, name, context):
         dotenv_path = os.path.join(_cwd, '.env')
         load_dotenv(dotenv_path)
 
-        rackio_app = os.environ.get("RACKIO_APP").replace('.py', '')
+        rackio_app = os.environ.get("RACKIO_APP")
 
         if not rackio_app:
 
@@ -34,6 +34,8 @@ def rackio_cli(keywords, port, name, context):
             except:
                 pass
         else:
+
+            rackio_app = rackio_app.replace('.py', '')
 
             try:
                 module = __import__(rackio_app)
