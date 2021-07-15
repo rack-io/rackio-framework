@@ -12,7 +12,8 @@ sys.path.append(_cwd)
 @click.argument('keywords')
 @click.option('--port', '-p', default='8000', help='Application port')
 @click.option('--name', '-n', default='', help='Application name')
-def rackio_cli(keywords, port, name):
+@click.option('--context', '-c', default='', help='Application context')
+def rackio_cli(keywords, port, name, context):
 
     if keywords == "serve":
 
@@ -51,4 +52,4 @@ def rackio_cli(keywords, port, name):
         elif "make_app" in attrs:
             app = module.make_app()
         
-        app.run(port=port, app_name=name)
+        app.run(port=port, app_name=name, app_section=context)
