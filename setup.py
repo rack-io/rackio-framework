@@ -22,6 +22,11 @@ setuptools.setup(
     url="https://github.com/rack-io/rackio-framework",
     include_package_data=True,
     packages=setuptools.find_packages(),
+    entry_points={
+        'console_scripts': [
+            'rackio = rackio:cli',
+        ],
+    },
     install_requires=[
         'falcon==2.0.0',
         'falcon-multipart',
@@ -42,5 +47,5 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-    ],
+    ]
 )

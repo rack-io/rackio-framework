@@ -21,3 +21,4 @@ from .dbmodels import CharField, TextField
 from .dbmodels import DateTimeField, IntegerField, FloatField, BooleanField
 from .dbmodels import ForeignKeyField
 from .dbmodels import BlobField
+from .cli import rackio_cli as cli
