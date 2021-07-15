@@ -1,26 +1,33 @@
 import os
 import click
-
+import sys
 from dotenv import load_dotenv
+
+_cwd = os.getcwd()
+print(_cwd)
+sys.path.append(_cwd)
 
 # System
 
 @click.command()
 @click.argument('keywords')
-def rackio_cli(keywords):
+@click.option('--port', '-p', default='8000', help='Application port')
+@click.option('--name', '-n', default='', help='Application name')
+def rackio_cli(keywords, port, name):
 
     if keywords == "serve":
 
-        load_dotenv()
+        dotenv_path = os.path.join(_cwd, '.env')
+        load_dotenv(dotenv_path)
 
-        rackio_app = os.getenv("RACKIO_APP")
+        rackio_app = os.environ.get("RACKIO_APP").replace('.py', '')
 
         if not rackio_app:
 
             try:
                 module = __import__("app")
-            except:
-                pass
+            except Exception as e:
+                print(e)
 
             try:
                 module = __import__("wsgi")
@@ -45,4 +52,4 @@ def rackio_cli(keywords):
         elif "make_app" in attrs:
             app = module.make_app()
         
-        app.run()
+        app.run(port=port, app_name=name)
