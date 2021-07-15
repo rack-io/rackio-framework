@@ -7,7 +7,7 @@ peewee==3.9.6
 python-statemachine==0.7.1
 waitress==1.4.4
 Jinja2==2.10.3
-PyYAML==5.3.1
+PyYAML==5.4
 psycopg2==2.8.4
 Click==7.0
 python-dotenv==0.18.0 
