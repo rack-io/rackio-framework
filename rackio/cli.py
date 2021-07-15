@@ -4,7 +4,6 @@ import sys
 from dotenv import load_dotenv
 
 _cwd = os.getcwd()
-print(_cwd)
 sys.path.append(_cwd)
 
 # System
