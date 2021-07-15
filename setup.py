@@ -1,14 +1,9 @@
 # setup.py
 
 import setuptools
-import platform
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-
-system_platform = platform.system()
-
-psycopg = "psycopg2-binary" if system_platform == "Linux" else "psycopg2"
 
 setuptools.setup(
     name="Rackio",
@@ -38,8 +33,7 @@ setuptools.setup(
         'waitress',
         'Jinja2',
         'PyYAML',
-        # 'psycopg2',
-        psycopg,
+        'psycopg2-binary',
         'Click==7.0',
         'python-dotenv==0.18.0'
     ],
