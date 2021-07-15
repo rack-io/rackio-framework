@@ -66,7 +66,7 @@ class DataLogger:
         if not self._db:
             return
 
-        self._db.drop_tables(tables)
+        self._db.drop_tables(tables, safe=True, cascade=True)
 
     def write_tag(self, tag, value):
 
