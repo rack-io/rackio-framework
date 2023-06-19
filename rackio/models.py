@@ -15,9 +15,7 @@ STRING = "str"
 
 
 class Tag:
-
     def __init__(self, name, value, _type, units, desc=""):
-
         self.name = name
         self.value = value
         self.units = units
@@ -28,40 +26,31 @@ class Tag:
         self._observers = set()
 
     def set_value(self, value):
-
         self.value = value
         self.notify()
-    
+
     def get_value(self):
-        
         return self.value
 
     def get_type(self):
-        
         return self._type
 
     def get_units(self):
-
         return self.units
 
     def get_description(self):
-
         return self.description
-    
-    def attach(self, observer):
 
+    def attach(self, observer):
         observer._subject = self
         self._observers.add(observer)
 
     def detach(self, observer):
-
         observer._subject = None
         self._observers.discard(observer)
 
     def notify(self):
-
         for observer in self._observers:
-
             observer.update()
 
 
@@ -71,18 +60,17 @@ class TagObserver(Observer):
     consistent with the subject's.
     Store state that should stay consistent with the subject's.
     """
-    def __init__(self, tag_queue):
 
+    def __init__(self, tag_queue):
         super(TagObserver, self).__init__()
         self._tag_queue = tag_queue
 
     def update(self):
-
         """
-        This methods inserts the changing Tag into a 
+        This methods inserts the changing Tag into a
         Producer-Consumer Queue Design Pattern
         """
-        
+
         result = dict()
 
         result["tag"] = self._subject.name
@@ -101,7 +89,6 @@ class PropertyType:
     """
 
     def __init__(self, _type, default=None):
-
         self._type = _type
         self.default = default
 
@@ -113,7 +100,6 @@ class StringType(PropertyType):
     """
 
     def __init__(self, default=None):
-
         super(StringType, self).__init__(STRING, default)
 
 
@@ -124,7 +110,6 @@ class FloatType(PropertyType):
     """
 
     def __init__(self, default=None):
-
         super(FloatType, self).__init__(FLOAT, default)
 
 
@@ -135,10 +120,9 @@ class IntegerType(PropertyType):
     """
 
     def __init__(self, default=None):
-
         super(IntegerType, self).__init__(INTEGER, default)
 
-        
+
 class BooleanType(PropertyType):
 
     """
@@ -146,7 +130,6 @@ class BooleanType(PropertyType):
     """
 
     def __init__(self, default=None):
-
         super(BooleanType, self).__init__(BOOL, default)
 
 
@@ -157,11 +140,9 @@ class Model(object):
     """
 
     def __init__(self, **kwargs):
-
         attrs = self.get_attributes()
 
         for key, value in attrs.items():
-
             if key in kwargs:
                 default = kwargs[key]
             else:
@@ -186,16 +167,14 @@ class Model(object):
         self.attrs = attrs
 
     def __getattribute__(self, attr):
-        
         method = object.__getattribute__(self, attr)
-        
+
         if not method:
             return method
 
         if callable(method):
-             
+
             def new_method(*args, **kwargs):
-                 
                 result = method(*args, **kwargs)
                 name = method.__name__
 
@@ -206,6 +185,7 @@ class Model(object):
                         pass
 
                 return result
+
             return new_method
         else:
             return method
@@ -217,30 +197,26 @@ class Model(object):
 
     @classmethod
     def get_attributes(cls):
-
         result = dict()
-        
+
         props = cls.__dict__
 
         for key, value in props.items():
-            
-            if hasattr(value, '__call__'):
+            if hasattr(value, "__call__"):
                 continue
             if isinstance(value, cls):
                 continue
             if not ismethod(value):
-
                 if "__" not in key:
                     result[key] = value
 
         return result
-    
-    def commit(self):
 
+    def commit(self):
         from .engine import CVTEngine
 
         _cvt = CVTEngine()
-        
+
         try:
             _cvt.write_tag(self.tag, self)
             return True
@@ -248,22 +224,18 @@ class Model(object):
             return False
 
     def set_attr(self, name, value):
-        
         setattr(self, name, value)
 
     def get_attr(self, name):
-
         result = getattr(self, name)
         return result
 
     @classmethod
     def set(cls, tag, obj):
-
         obj.tag = tag
 
     @classmethod
     def get(cls, tag):
-
         from .engine import CVTEngine
 
         _cvt = CVTEngine()
@@ -271,7 +243,6 @@ class Model(object):
         return _cvt.read_tag(tag)
 
     def save(self):
-
         from .engine import CVTEngine
 
         _cvt = CVTEngine()
@@ -284,7 +255,6 @@ class Model(object):
             raise KeyError
 
     def serialize(self):
-
         result = dict()
 
         attrs = self.get_attributes()
@@ -296,7 +266,5 @@ class Model(object):
         return result
 
     def _load(self, values):
-
         for key, value in values.items():
-
             setattr(self, key, value)

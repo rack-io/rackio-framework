@@ -29,12 +29,10 @@ USER = "System"
 
 
 class Alarm:
-
     tag_engine = CVTEngine()
     logger_engine = LoggerEngine()
 
     def __init__(self, name, tag, description):
-
         self._name = name
         self._tag = tag
         self._description = description
@@ -45,14 +43,14 @@ class Alarm:
         self._trigger_type = None  # ["HH", "HI", "LO", "LL", "BOOL"]
         self._tag_alarm = None
 
-        self._enabled = True       # True: Enable - False: Disable (Out Of Service)
-        
-        self._process = True       # True: Normal - False: Abnormal
-        self._triggered = False    # True: Active - False: Not Active
+        self._enabled = True  # True: Enable - False: Disable (Out Of Service)
+
+        self._process = True  # True: Normal - False: Abnormal
+        self._triggered = False  # True: Active - False: Not Active
         self._acknowledged = True  # True: Acknowledged - False: Unacknowledged
 
-        self._state = NORMAL       # [NORMAL, UNACKNOWLEDGED, ACKNOWLEDGED, RTN_UNACKNOWLEDGED, SHELVED, SUPPRESSED_BY_DESIGN, OUT_OF_SERVICE]
-        
+        self._state = NORMAL  # [NORMAL, UNACKNOWLEDGED, ACKNOWLEDGED, RTN_UNACKNOWLEDGED, SHELVED, SUPPRESSED_BY_DESIGN, OUT_OF_SERVICE]
+
         self._tripped_timestamp = None
         self._acknowledged_timestamp = None
         self._silence = False
@@ -63,9 +61,8 @@ class Alarm:
         self._by_confirm_reset = False
 
     def serialize(self):
-
         result = dict()
-        
+
         result["name"] = self.get_name()
         result["tag"] = self.get_tag()
         result["tag_alarm"] = self._tag_alarm
@@ -89,26 +86,20 @@ class Alarm:
         return result
 
     def set_trigger(self, value, _type):
-
         self._trigger_value = value
         self._trigger_type = _type
 
     def set_tag_alarm(self, tag):
-
         self._tag_alarm = tag
 
     def write_tag_alarm(self, value):
-
         if self._tag_alarm:
-
             self.tag_engine.write_tag(self._tag_alarm, value)
-    
-    def get_name(self):
 
+    def get_name(self):
         return self._name
 
     def get_tag(self):
-
         return self._tag
 
     @property
@@ -120,15 +111,12 @@ class Alarm:
         self._description = value
 
     def get_state(self):
-
         return self._state
 
     def set_state(self, _state):
-
         self._state = _state
 
         if _state == NORMAL:
-            
             self._process = True
             self._triggered = False
             self._acknowledged = True
@@ -141,7 +129,6 @@ class Alarm:
             self.write_tag_alarm(False)
 
         elif _state == UNACKNOWLEDGED:
-
             self._process = False
             self._triggered = True
             self._acknowledged = False
@@ -153,16 +140,15 @@ class Alarm:
             self.write_tag_alarm(True)
 
             AlarmSummary.create(
-                name=self.get_name(), 
+                name=self.get_name(),
                 state=_state,
-                alarm_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                alarm_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 description=message,
-                classification=classification, 
-                priority=priority
+                classification=classification,
+                priority=priority,
             )
 
         elif _state == ACKNOWLEDGED:
-
             self._process = False
             self._triggered = True
             self._acknowledged = True
@@ -171,36 +157,44 @@ class Alarm:
             priority = 2
             classification = "user"
             self.write_tag_alarm(True)
-            alarm_summary = AlarmSummary.select().where(AlarmSummary.name == self.get_name()).order_by(AlarmSummary.id.desc()).get()
+            alarm_summary = (
+                AlarmSummary.select()
+                .where(AlarmSummary.name == self.get_name())
+                .order_by(AlarmSummary.id.desc())
+                .get()
+            )
             now = datetime.now()
             alarm_summary = AlarmSummary.update(
                 {
                     AlarmSummary.ack_time: now.strftime("%Y/%m/%d %H:%M:%S"),
-                    AlarmSummary.state: ACKNOWLEDGED
+                    AlarmSummary.state: ACKNOWLEDGED,
                 }
             ).where(AlarmSummary.id == alarm_summary)
             alarm_summary.execute()
 
         elif _state == RTN_UNACKNOWLEDGED:
-
             self._process = True
             self._triggered = False
             self._acknowledged = False
 
-            message = "Alarm {} returned to normal unacknowledged".format(self.get_name())
+            message = "Alarm {} returned to normal unacknowledged".format(
+                self.get_name()
+            )
             priority = 2
             classification = "system"
             self.write_tag_alarm(False)
-            alarm_summary = AlarmSummary.select().where(AlarmSummary.name == self.get_name()).order_by(AlarmSummary.id.desc()).get()
+            alarm_summary = (
+                AlarmSummary.select()
+                .where(AlarmSummary.name == self.get_name())
+                .order_by(AlarmSummary.id.desc())
+                .get()
+            )
             alarm_summary = AlarmSummary.update(
-                {
-                    AlarmSummary.state: RTN_UNACKNOWLEDGED
-                }
+                {AlarmSummary.state: RTN_UNACKNOWLEDGED}
             ).where(AlarmSummary.id == alarm_summary)
             alarm_summary.execute()
 
         elif _state == SHELVED:
-
             self._process = None
             self._triggered = None
             self._acknowledged = None
@@ -211,7 +205,6 @@ class Alarm:
             self.write_tag_alarm(False)
 
         elif _state == SUPRESSED_BY_DESIGN:
-
             self._process = None
             self._triggered = None
             self._acknowledged = None
@@ -222,7 +215,6 @@ class Alarm:
             self.write_tag_alarm(False)
 
         elif _state == OUT_OF_SERVICE:
-
             self._process = None
             self._triggered = None
             self._acknowledged = None
@@ -233,96 +225,77 @@ class Alarm:
 
             self.write_tag_alarm(False)
 
-        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         description = self._description
-        
+
         AlarmModel.create(
-            user=USER, 
+            user=USER,
             message=message,
             description=description,
-            classification=classification, 
-            priority=priority, 
+            classification=classification,
+            priority=priority,
             date_time=now,
             name=self.get_name(),
-            state=self.get_state()
+            state=self.get_state(),
         )
 
     def trigger(self):
-
         if not self._enabled:
-
             return
 
         elif self._out_of_service:
-
             return
 
         elif self._supressed_by_design:
-
             return
 
         elif self._shelved:
-
             return
-            
-        self._triggered = True        
-        self._tripped_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        self._triggered = True
+        self._tripped_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.set_state(UNACKNOWLEDGED)
 
     def disable(self):
-
         self._enabled = False
 
     def enable(self):
-
         self._enabled = True
 
     def acknowledge(self):
-
         if not self._enabled:
-
             return
 
         if self._state == UNACKNOWLEDGED:
-
             self.set_state(ACKNOWLEDGED)
-        
+
         if self._state == RTN_UNACKNOWLEDGED:
-            
             self.set_state(NORMAL)
 
-        self._acknowledged_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self._acknowledged_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     def silence(self):
-
         if not self._enabled:
-
             return
 
         self._silence = True
 
     def sound(self):
-
         if not self._enabled:
-
             return
-        
+
         self._silence = False
 
     def clear(self):
-
         if not self._enabled:
-
             return
 
         self._triggered = False
 
         if self._tag_alarm:
-
             self.tag_engine.write_tag(self._tag_alarm, False)
-        
-    def reset(self):
 
+    def reset(self):
         self._enabled = True
         self._triggered = False
         self._acknowledged = False
@@ -337,45 +310,36 @@ class Alarm:
         self.set_state(NORMAL)
 
     def shelve(self):
-
         self._shelved = True
         self.set_state(SHELVED)
 
     def unshelve(self):
-
         self._shelved = False
         self.set_state(NORMAL)
 
     def supress_by_design(self):
-
         self._supressed_by_design = True
         self.set_state(SUPRESSED_BY_DESIGN)
 
     def unsupress_by_design(self):
-
         self._supressed_by_design = False
         self.set_state(NORMAL)
 
     def out_of_service(self):
-
         self._out_of_service = True
         self.set_state(OUT_OF_SERVICE)
-    
-    def in_service(self):
 
+    def in_service(self):
         self._out_of_service = False
         self.set_state(NORMAL)
 
     def confirm_reset(self):
-
         self.reset()
 
     def to_reset(self):
-
         self._by_confirm_reset = True
 
     def update(self, value):
-
         self._value = value
 
         if not self._enabled:
@@ -385,7 +349,6 @@ class Alarm:
         _type = self._trigger_type
 
         if _state in (NORMAL, RTN_UNACKNOWLEDGED):
-
             if _type == HI and value >= self._trigger_value:
                 self.trigger()
 
@@ -396,7 +359,6 @@ class Alarm:
                 self.trigger()
 
         elif _state == UNACKNOWLEDGED:
-
             if _type == HI and value < self._trigger_value:
                 self.set_state(RTN_UNACKNOWLEDGED)
 
@@ -407,7 +369,6 @@ class Alarm:
                 self.set_state(RTN_UNACKNOWLEDGED)
 
         elif _state == ACKNOWLEDGED:
-
             if _type == HI and value < self._trigger_value:
                 self.set_state(NORMAL)
 
@@ -416,4 +377,3 @@ class Alarm:
 
             elif _type == BOOL and not value:
                 self.set_state(NORMAL)
-

@@ -8,13 +8,13 @@ from datetime import datetime, date
 from io import BytesIO
 
 from peewee import Proxy, Model, CharField, TextField, DateField, DateTimeField
-from peewee import  IntegerField, FloatField, BlobField, ForeignKeyField, BooleanField
+from peewee import IntegerField, FloatField, BlobField, ForeignKeyField, BooleanField
 
 proxy = Proxy()
 
-SQLITE = 'sqlite'
-MYSQL = 'mysql'
-POSTGRESQL = 'postgresql'
+SQLITE = "sqlite"
+MYSQL = "mysql"
+POSTGRESQL = "postgresql"
 
 
 class BaseModel(Model):
@@ -23,21 +23,18 @@ class BaseModel(Model):
 
 
 class TagTrend(BaseModel):
-
     name = CharField()
     start = DateTimeField()
     period = FloatField()
 
 
 class TagValue(BaseModel):
-
-    tag = ForeignKeyField(TagTrend, backref='values')
+    tag = ForeignKeyField(TagTrend, backref="values")
     value = FloatField()
     timestamp = DateTimeField(default=datetime.now)
 
 
 class Event(BaseModel):
-
     user = CharField()
     message = TextField()
     description = TextField()
@@ -48,7 +45,6 @@ class Event(BaseModel):
 
 
 class Alarm(BaseModel):
-    
     user = CharField()
     message = TextField()
     description = TextField()
@@ -60,7 +56,6 @@ class Alarm(BaseModel):
 
 
 class AlarmSummary(BaseModel):
-    
     name = TextField()
     state = TextField()
     alarm_time = DateTimeField()
@@ -68,17 +63,15 @@ class AlarmSummary(BaseModel):
     description = TextField()
     classification = TextField()
     priority = IntegerField(default=0)
-    
+
 
 class Blob(BaseModel):
-
     name = CharField()
     blob = BlobField()
 
     @classmethod
     def get_value(cls, blob_name):
-
-        blob = Blob.select().where(Blob.name==blob_name).get()
+        blob = Blob.select().where(Blob.name == blob_name).get()
         blob = BytesIO(blob.blob)
 
         blob.seek(0)
@@ -87,30 +80,25 @@ class Blob(BaseModel):
 
 
 class UserRole(BaseModel):
-
     role = CharField()
 
 
 class User(BaseModel):
-
     username = TextField(unique=True)
     password = TextField()
-    role = ForeignKeyField(UserRole, backref='user')
+    role = ForeignKeyField(UserRole, backref="user")
 
     @staticmethod
     def verify_username(username):
-        
         try:
-            User.get(User.username==username)
+            User.get(User.username == username)
             return True
 
         except:
-
             return False
 
 
 class Authentication(BaseModel):
-
     user = ForeignKeyField(User)
     key = TextField()
 

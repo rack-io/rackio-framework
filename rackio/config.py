@@ -12,7 +12,6 @@ from .dbmodels import SQLITE, MYSQL, POSTGRESQL
 
 
 class RackioConfig:
-
     # main app settings
 
     MODE = "development"
@@ -34,34 +33,30 @@ class RackioConfig:
 
     LOG_DELAY = 1.0
 
-    # 
+    #
 
     def __init__(self):
-
         pass
 
     def from_yaml(self, config_file):
-
         with open(config_file) as f:
             c = yaml.load(f)
-            
+
         for key in c.iterkeys():
             if key.isupper():
                 self[key] = c[key]
 
     def from_json(self, config_file):
-
         with open(config_file) as f:
             data = f.read()
 
         c = json.loads(data)
-            
+
         for key in c.iterkeys():
             if key.isupper():
                 self[key] = c[key]
 
     def from_ini(self, config_file):
-
         config = configparser.ConfigParser()
         config.read(config_file)
 
@@ -71,19 +66,15 @@ class RackioConfig:
                     self[key] = value
 
     def update(self, **kwargs):
-
         for key, value in kwargs:
-
             try:
                 setattr(self, key, value)
             except Exception as e:
                 logging.error(e, exc_info=True)
 
     def __setitem__(self, key, value):
-        
         values = {key: value}
         self.update(**values)
 
     def __getitem__(self, key):
-        
         return getattr(self, key)

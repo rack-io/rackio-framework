@@ -5,11 +5,9 @@ This module implements Logger Data Objects Access.
 """
 from .core import RackioDAO
 
+
 class LoggerDAO(RackioDAO):
-
     def get_all(self):
-
         app = self.get_app()
 
         return app.get_dbtags()
-        

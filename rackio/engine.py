@@ -16,12 +16,12 @@ from .models import Tag
 class CVT:
     """Current Value Table class for Tag based repository.
 
-    This class is intended hold in memory tag based values and 
+    This class is intended hold in memory tag based values and
     observers for those required tags, this class is intended to be
     used by Rackio itself and not for other purposes
 
     Usage:
-    
+
     ```python
     >>> from rackio.engine import CVT
     >>> _cvt = CVT()
@@ -30,31 +30,27 @@ class CVT:
     """
 
     def __init__(self):
-
         self._tags = dict()
         self._types = ["float", "int", "bool", "str"]
 
     def set_type(self, _type):
-
         self._types.append(_type)
         self._types = list(set(self._types))
 
     def tag_defined(self, name):
-
         return name in self._tags.keys()
 
     def set_tag(self, name, _type, units="", desc=""):
         """Initialize a new Tag object in the _tags dictionary.
-        
+
         # Parameters
         name (str):
             Tag name.
-        _type (str): 
+        _type (str):
             Tag value type ("int", "float", "bool", "str")
         """
 
         if isinstance(_type, str):
-        
             if _type in self._types:
                 if _type == "float":
                     value = 0.0
@@ -77,7 +73,7 @@ class CVT:
 
     def set_tags(self, tags):
         """Initialize a list of new Tags object in the _tags dictionary.
-        
+
         # Parameters
         tags (list):
             List of (tag, _type).
@@ -87,18 +83,17 @@ class CVT:
             self.set_tag(name, _type)
 
     def get_tags(self):
-        """Returns a list of the defined tags names.
-        """
+        """Returns a list of the defined tags names."""
 
         return self._tags.keys()
 
     def set_value(self, name, value):
         """Sets a new value for a defined tag.
-        
+
         # Parameters
         name (str):
             Tag name.
-        value (float, int, bool): 
+        value (float, int, bool):
             Tag value ("int", "float", "bool")
         """
 
@@ -107,7 +102,7 @@ class CVT:
             tag_name = values[0]
         else:
             tag_name = name
-        
+
         if tag_name not in self._tags:
             raise KeyError
 
@@ -124,17 +119,17 @@ class CVT:
             if _type not in self._types:
                 value = copy.copy(value)
                 value.tag = name
-                
+
             self._tags[name].set_value(value)
 
     def get_value(self, name):
         """Returns a tag value defined by name.
-        
+
         # Parameters
         name (str):
             Tag name.
         """
-        
+
         if "." in name:
             values = name.split(".")
             name = values[0]
@@ -142,12 +137,12 @@ class CVT:
             _new_object = copy.copy(getattr(self._tags[name].value, _property))
         else:
             _new_object = copy.copy(self._tags[name].get_value())
-        
+
         return _new_object
 
     def get_type(self, name):
         """Returns a tag type defined by name.
-        
+
         # Parameters
         name (str):
             Tag name.
@@ -156,9 +151,8 @@ class CVT:
         return self._tags[name].get_type()
 
     def get_units(self, name):
-
         """Returns the units defined by name.
-        
+
         # Parameters
         name (str):
             Tag name.
@@ -167,9 +161,8 @@ class CVT:
         return self._tags[name].get_units()
 
     def get_description(self, name):
-
         """Returns the description defined by name.
-        
+
         # Parameters
         name (str):
             Tag name.
@@ -179,7 +172,7 @@ class CVT:
 
     def get_types(self):
         """Returns all tag types.
-        
+
         # Parameters
         """
 
@@ -187,11 +180,11 @@ class CVT:
 
     def attach_observer(self, name, observer):
         """Attaches a new observer to a tag object defined by name.
-        
+
         # Parameters
         name (str):
             Tag name.
-        observer (TagObserver): 
+        observer (TagObserver):
             Tag observer object, will update once a tag object is changed.
         """
 
@@ -199,11 +192,11 @@ class CVT:
 
     def detach_observer(self, name, observer):
         """Detaches an observer from a tag object defined by name.
-        
+
         # Parameters
         name (str):
             Tag name.
-        observer (TagObserver): 
+        observer (TagObserver):
             Tag observer object.
         """
         self._tags[name].attach(observer)
@@ -212,13 +205,13 @@ class CVT:
 class CVTEngine(Singleton):
     """Current Value Table Engine class for Tag thread-safe based repository.
 
-    This class is intended hold in memory tag based values and 
+    This class is intended hold in memory tag based values and
     observers for those required tags, it is implemented as a singleton
     so each sub-thread within the Rackio application can access tags
     in a thread-safe mechanism.
 
     Usage:
-    
+
     ```python
     >>> from rackio.engine import CVTEngine
     >>> tag_egine = CVTEngine()
@@ -231,7 +224,6 @@ class CVTEngine(Singleton):
     """
 
     def __init__(self):
-
         super(CVTEngine, self).__init__()
 
         self._cvt = CVT()
@@ -246,7 +238,7 @@ class CVTEngine(Singleton):
     def set_type(self, _type):
         """
         Sets a new type as string format.
-        
+
         **Parameters:**
         * **_type** (str): Type.
         """
@@ -256,7 +248,7 @@ class CVTEngine(Singleton):
     def get_type(self, name):
         """
         Gets a tag type as string format.
-        
+
         **Parameters:**
 
         * **name** (str): Tag name.
@@ -267,9 +259,9 @@ class CVTEngine(Singleton):
     def get_units(self, name):
         """
         Gets the units defined for a tag.
-        
+
         **Parameters:**
-        
+
         * **name** (str): Tag name.
         """
 
@@ -278,9 +270,9 @@ class CVTEngine(Singleton):
     def get_description(self, name):
         """
         Gets the descriptions defined for a tag.
-        
+
         **Parameters:**
-        
+
         * **name** (str): Tag name.
         """
 
@@ -289,7 +281,7 @@ class CVTEngine(Singleton):
     def tag_defined(self, name):
         """
         Checks if a tag name is already defined.
-        
+
         **Parameters:**
 
         * **name** (str): Tag name.
@@ -297,11 +289,10 @@ class CVTEngine(Singleton):
 
         return self._cvt.tag_defined(name)
 
-
     def set_tag(self, name, _type, units="", desc=""):
         """
         Sets a new value for a defined tag, in thread-safe mechanism.
-        
+
         **Parameters:**
 
         * **name** (str): Tag name.
@@ -309,22 +300,22 @@ class CVTEngine(Singleton):
         * **units** (str): Engineering units.
 
         Usage:
-    
+
         ```python
         >>> tag_engine.set_tag("speed", "float", "km/h")
         ```
         """
-        
+
         if not self.tag_defined(name):
             self._cvt.set_tag(name, _type, units, desc)
 
     def set_tags(self, tags):
         """
-        Sets new values for a defined list of tags, 
+        Sets new values for a defined list of tags,
         in thread-safe mechanism.
-        
+
         **Parameters:**
-        
+
         * **tags** (list): List of tag name, type units and description.
         """
 
@@ -335,9 +326,9 @@ class CVTEngine(Singleton):
         """
         Sets new tags group, which can be retrieved
         by group name.
-        
+
         **Parameters:**
-        
+
         * **group** (str): Group name.
         * **tags** (list): List of defined tag names.
         """
@@ -358,9 +349,9 @@ class CVTEngine(Singleton):
     def get_group(self, group):
         """
         Returns the tag list of the a defined group.
-        
+
         **Parameters:**
-        
+
         * **group** (str): Group name.
 
         """
@@ -384,7 +375,7 @@ class CVTEngine(Singleton):
     def write_tag(self, name, value):
         """
         Writes a new value for a defined tag, in thread-safe mechanism.
-        
+
         **Parameters:**
 
         * **name** (str): Tag name.
@@ -406,7 +397,7 @@ class CVTEngine(Singleton):
     def read_tag(self, name):
         """
         Returns a tag value defined by name, in thread-safe mechanism.
-        
+
         **Parameters:**
 
         * **name** (str): Tag name.
@@ -427,7 +418,7 @@ class CVTEngine(Singleton):
     def attach(self, name, observer):
         """
         Attaches an observer object to a Tag, observer gets notified when the Tag value changes.
-        
+
         **Parameters:**
 
         * **name** (str): Tag name.
@@ -450,13 +441,13 @@ class CVTEngine(Singleton):
     def detach(self, name, observer):
         """
         Detaches an observer object from a Tag, observer no longer gets notified when the Tag value changes.
-        
+
         **Parameters:**
 
         * **name** (str): Tag name.
         * **observer** (str): TagObserver instance.
         """
-        
+
         _query = dict()
         _query["action"] = "detach"
 
@@ -473,7 +464,7 @@ class CVTEngine(Singleton):
     def read_type(self, name):
         """
         Returns a tag type defined by name, in thread-safe mechanism.
-        
+
         **Parameters:**
 
         * **name** (str): Tag name.
@@ -494,9 +485,9 @@ class CVTEngine(Singleton):
     def read_units(self, name):
         """
         Returns the units defined for a tag name, in thread-safe mechanism.
-        
+
         **Parameters:**
-        
+
         * **name** (str): Tag name.
         """
 
@@ -513,13 +504,11 @@ class CVTEngine(Singleton):
             return result["response"]
 
     def request(self, _query):
-
         self._request_lock.acquire()
 
         action = _query["action"]
 
         if action == "set_tag":
-
             try:
                 parameters = _query["parameters"]
 
@@ -528,131 +517,82 @@ class CVTEngine(Singleton):
 
                 self._cvt.set_tag(name, _type)
 
-                self._response = {
-                    "result": True
-                }
+                self._response = {"result": True}
             except Exception as e:
-                self._response = {
-                    "result": False
-                }
-        
+                self._response = {"result": False}
+
         elif action == "get_tags":
-
             try:
-
                 tags = self._cvt.get_tags()
 
-                self._response = {
-                    "result": True,
-                    "response": tags
-                }
+                self._response = {"result": True, "response": tags}
             except Exception as e:
-                self._response = {
-                    "result": False,
-                    "response": None
-                }
+                self._response = {"result": False, "response": None}
 
         elif action == "get_value":
-
             try:
-
                 parameters = _query["parameters"]
 
                 name = parameters["name"]
                 value = self._cvt.get_value(name)
 
-                self._response = {
-                    "result": True,
-                    "response": value
-                }
+                self._response = {"result": True, "response": value}
             except Exception as e:
-                self._response = {
-                    "result": False,
-                    "response": None
-                }
+                self._response = {"result": False, "response": None}
 
         elif action == "get_type":
-
             try:
-
                 parameters = _query["parameters"]
 
                 name = parameters["name"]
                 value = self._cvt.get_type(name)
 
-                self._response = {
-                    "result": True,
-                    "response": value
-                }
+                self._response = {"result": True, "response": value}
             except Exception as e:
-                self._response = {
-                    "result": False,
-                    "response": None
-                }
+                self._response = {"result": False, "response": None}
 
         elif action == "get_units":
-
             try:
-
                 parameters = _query["parameters"]
 
                 name = parameters["name"]
                 value = self._cvt.get_units(name)
 
-                self._response = {
-                    "result": True,
-                    "response": value
-                }
+                self._response = {"result": True, "response": value}
             except Exception as e:
-                self._response = {
-                    "result": False,
-                    "response": None
-                }
+                self._response = {"result": False, "response": None}
 
         elif action == "set_value":
-
             try:
-
                 parameters = _query["parameters"]
 
                 name = parameters["name"]
                 value = parameters["value"]
                 self._cvt.set_value(name, value)
 
-                self._response = {
-                    "result": True
-                }
+                self._response = {"result": True}
             except Exception as e:
-                self._response = {
-                    "result": False
-                }
-        
-        elif action in ("attach", "detach"):
+                self._response = {"result": False}
 
+        elif action in ("attach", "detach"):
             try:
                 parameters = _query["parameters"]
                 name = parameters["name"]
                 observer = parameters["observer"]
-                
+
                 if action == "attach":
                     self._cvt.attach_observer(name, observer)
                 else:
                     self._cvt.detach_observer(name, observer)
 
-                self._response = {
-                    "result": True
-                }
+                self._response = {"result": True}
 
             except Exception as e:
+                self._response = {"result": False}
 
-                self._response = {
-                    "result": False
-                }
-                
         self._response_lock.release()
 
     def response(self):
-
         self._response_lock.acquire()
 
         result = self._response
@@ -662,36 +602,28 @@ class CVTEngine(Singleton):
         return result
 
     def serialize_tag(self, tag):
-
         value = self.read_tag(tag)
         _type = self.get_type(tag)
         _units = self.get_units(tag)
 
         try:
             result = {
-                'tag': tag,
-                'value': value.serialize(),
-                'type': _type,
-                'units': _units
+                "tag": tag,
+                "value": value.serialize(),
+                "type": _type,
+                "units": _units,
             }
         except:
-            result = {
-                'tag': tag,
-                'value': value,
-                'type': _type,
-                'units': _units
-            }
+            result = {"tag": tag, "value": value, "type": _type, "units": _units}
 
         return result
 
     def serialize(self):
-
         result = list()
 
         tags = self.get_tags()
 
         for _tag in tags:
-
             record = self.serialize_tag(_tag)
 
             result.append(record)
@@ -699,13 +631,11 @@ class CVTEngine(Singleton):
         return result
 
     def serialize_group(self, name):
-
         result = list()
 
         tags = self.get_group(name)
 
         for _tag in tags:
-
             record = self.serialize_tag(_tag)
 
             result.append(record)
@@ -713,15 +643,13 @@ class CVTEngine(Singleton):
         return result
 
     def __getstate__(self):
-
         self._response_lock.release()
         state = self.__dict__.copy()
-        del state['_request_lock']
-        del state['_response_lock']
+        del state["_request_lock"]
+        del state["_response_lock"]
         return state
 
     def __setstate__(self, state):
-        
         self.__dict__.update(state)
         self._request_lock = threading.Lock()
         self._response_lock = threading.Lock()

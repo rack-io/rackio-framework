@@ -12,9 +12,7 @@ from ..utils import chunks, log_detailed
 
 
 class MicroLoggerWorker(BaseWorker):
-
     def __init__(self, tags, period):
-
         super(MicroLoggerWorker, self).__init__()
 
         self.tags = tags
@@ -25,11 +23,9 @@ class MicroLoggerWorker(BaseWorker):
         self._logger = LoggerEngine()
 
     def set_last(self):
-
         self.last = time.time()
 
     def sleep_elapsed(self):
-
         elapsed = time.time() - self.last
 
         if elapsed < self._period:
@@ -40,19 +36,16 @@ class MicroLoggerWorker(BaseWorker):
         self.set_last()
 
     def write_tags(self):
-
         for _tag in self.tags:
             value = self.tag_engine.read_tag(_tag)
             self._logger.write_tag(_tag, value)
 
     def run(self):
-
         time.sleep(self._period)
 
         self.set_last()
 
         while True:
-
             self.write_tags()
             self.sleep_elapsed()
 
@@ -61,11 +54,9 @@ class MicroLoggerWorker(BaseWorker):
 
 
 class LoggerWorker(BaseWorker):
-
     def __init__(self, manager):
-
         super(LoggerWorker, self).__init__()
-        
+
         self._manager = manager
         self._period = manager.get_period()
         self._delay = manager.get_delay()
@@ -73,11 +64,9 @@ class LoggerWorker(BaseWorker):
         self.micro_workers = list()
 
     def init_database(self):
-
         self._manager.init_database()
 
     def verify_workload(self):
-
         tags = self._manager.get_tags()
 
         if not tags:
@@ -91,16 +80,13 @@ class LoggerWorker(BaseWorker):
         return True
 
     def start_workers(self):
-
         log_table = self._manager.get_table()
 
         for period in log_table.get_groups():
-
             tags = log_table.get_tags(period)
             tags = list(chunks(tags, 3))
-            
+
             for group in tags:
-                
                 worker = MicroLoggerWorker(group, period)
                 worker.daemon = True
                 self.micro_workers.append(worker)
@@ -109,30 +95,27 @@ class LoggerWorker(BaseWorker):
             worker.start()
 
     def stop(self):
-
         for worker in self.micro_workers:
             worker.stop()
 
         self.stop_event.set()
 
     def run(self):
-
         # self._manager.init_database()
-        
+
         if not self.verify_workload():
             return
-        
+
         time.sleep(self._delay)
 
-        try:    
-            self.start_workers()     
-            
-            while True:
+        try:
+            self.start_workers()
 
+            while True:
                 if self.stop_event.is_set():
                     self.stop()
                     break
-                
+
                 time.sleep(0.5)
 
             logging.info("Logger worker shutdown successfully!")

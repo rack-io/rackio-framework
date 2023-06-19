@@ -13,11 +13,9 @@ from ..managers.auth import SYSTEM_ROLE, ADMIN_ROLE, VISITOR_ROLE
 
 
 class AppSummaryResource(RackioResource):
-
     @authorize([SYSTEM_ROLE, ADMIN_ROLE, VISITOR_ROLE])
     def on_get(self, req, resp):
-
         app = self.get_app()
         doc = app.summary()
-        
+
         resp.body = json.dumps(doc, ensure_ascii=False)

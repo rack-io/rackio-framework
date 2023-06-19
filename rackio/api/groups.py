@@ -11,37 +11,28 @@ from ..dao import GroupsDAO
 
 
 class BaseResource(RackioResource):
-
     dao = GroupsDAO()
-    
+
 
 class GroupCollectionResource(BaseResource):
-
     def on_get(self, req, resp):
-
         doc = self.dao.get_all()
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 
     def on_post(self, req, resp):
-
-        groups = req.media.get('groups')
+        groups = req.media.get("groups")
 
         doc = list()
 
         for group in groups:
-
             doc += self.dao.get(group)
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 
 
 class GroupResource(BaseResource):
-
     def on_get(self, req, resp, group_id):
-
         doc = self.dao.get(group_id)
 
         resp.body = json.dumps(doc, ensure_ascii=False)
-
-    

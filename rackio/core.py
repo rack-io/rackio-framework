@@ -52,9 +52,8 @@ class Rackio(Singleton):
     """
 
     def __init__(self, context=None):
-
         super(Rackio, self).__init__()
-        
+
         self._context = context
 
         self.max_workers = 10
@@ -74,29 +73,26 @@ class Rackio(Singleton):
         self._function_manager = FunctionManager()
         self._api_manager = APIManager()
         self._db_manager = LoggerManager()
-        
+
         self.db = None
 
         self.workers = None
 
     def set_port(self, port):
-
         self._port = port
 
     def set_mode(self, mode):
-
         self._mode = mode
 
     def get_mode(self):
-
         return self._mode
-        
+
     def set_log(self, level=logging.INFO, file=""):
         """
         Sets the log file and level.
-        
+
         **Parameters:**
-        
+
         * **level** (str): `logging.LEVEL`.
         * **file** (str): log filename.
 
@@ -110,7 +106,7 @@ class Rackio(Singleton):
         """
 
         self._logging_level = level
-        
+
         if file:
             self._log_file = file
 
@@ -118,7 +114,7 @@ class Rackio(Singleton):
         """
         Sets the database, it supports SQLite and Postgres,
         in case of SQLite, the filename must be provided.
-        
+
         **Parameters:**
 
         * **dbfile** (str): a path to database file.
@@ -136,30 +132,30 @@ class Rackio(Singleton):
         from .dbmodels import proxy
 
         if dbtype == SQLITE:
-
             dbfile = kwargs.get("dbfile", ":memory:")
-            
-            self._db = SqliteDatabase(dbfile, pragmas={
-                'journal_mode': 'wal',
-                'journal_size_limit': 1024,
-                'cache_size': -1024 * 64,  # 64MB
-                'foreign_keys': 1,
-                'ignore_check_constraints': 0,
-                'synchronous': 0}
+
+            self._db = SqliteDatabase(
+                dbfile,
+                pragmas={
+                    "journal_mode": "wal",
+                    "journal_size_limit": 1024,
+                    "cache_size": -1024 * 64,  # 64MB
+                    "foreign_keys": 1,
+                    "ignore_check_constraints": 0,
+                    "synchronous": 0,
+                },
             )
 
         elif dbtype == MYSQL:
-            
-            app = kwargs['app']
-            del kwargs['app']
+            app = kwargs["app"]
+            del kwargs["app"]
             self._db = MySQLDatabase(app, **kwargs)
 
         elif dbtype == POSTGRESQL:
-            
-            app = kwargs['app']
-            del kwargs['app']
+            app = kwargs["app"]
+            del kwargs["app"]
             self._db = PostgresqlDatabase(app, **kwargs)
-        
+
         proxy.initialize(self._db)
         self._db_manager.set_db(self._db)
         self._db_manager.set_dropped(drop_table)
@@ -167,7 +163,7 @@ class Rackio(Singleton):
     def set_workers(self, nworkers):
         """
         Sets the maximum workers in the ThreadPoolExecutor.
-        
+
         **Parameters:**
 
         * **nworkers** (int): Number of workers.
@@ -180,7 +176,7 @@ class Rackio(Singleton):
     def set_dbtags(self, tags, period=0.5, delay=1.0):
         """
         Sets the database tags for logging.
-        
+
         **Parameters:**
 
         * **tags** (list): A list of the tags.
@@ -211,7 +207,7 @@ class Rackio(Singleton):
     def append_rule(self, rule):
         """
         Append a rule to the control manager.
-        
+
         **Parameters:**
 
         * **rule** (`Rule`): a rule object.
@@ -222,9 +218,9 @@ class Rackio(Singleton):
     def get_rule(self, name):
         """
         Returns a Rule defined by its name.
-        
+
         **Parameters:**
-        
+
         * **name** (str): a rackio rule.
         """
 
@@ -233,18 +229,18 @@ class Rackio(Singleton):
     def append_control(self, control):
         """
         Append a control to the control manager.
-        
+
         **Parameters:**
 
         * **control** (`Control`): a control object.
         """
 
         self._control_manager.append_control(control)
-    
+
     def get_control(self, name):
         """
         Returns a Control defined by its name.
-        
+
         **Parameters:**
 
         * **name** (str): a rackio control.
@@ -255,7 +251,7 @@ class Rackio(Singleton):
     def append_alarm(self, alarm):
         """
         Append an alarm to the alarm manager.
-        
+
         **Parameters:**
 
         * **alarm** (`Alarm`): an alarm object.
@@ -266,7 +262,7 @@ class Rackio(Singleton):
     def get_alarm(self, name):
         """
         Returns a Alarm defined by its name.
-        
+
         **Parameters:**
 
         * **name** (str): an alarm name.
@@ -292,7 +288,7 @@ class Rackio(Singleton):
     def append_machine(self, machine, interval=1, mode="sync"):
         """
         Append a state machine to the state machine manager.
-        
+
         **Parameters:**
 
         * **machine** (`RackioStateMachine`): a state machine object.
@@ -304,9 +300,9 @@ class Rackio(Singleton):
     def get_machine(self, name):
         """
         Returns a Rackio State Machine defined by its name.
-        
+
         **Parameters:**
-        
+
         * **name** (str): a rackio state machine name.
         """
 
@@ -323,16 +319,15 @@ class Rackio(Singleton):
         """
         Append a state machine to the state machine manager
         by a class decoration.
-        
+
         **Parameters:**
-        
+
         * **interval** (int): Interval execution time in seconds.
         """
 
         def decorator(cls):
-
             machine = cls(name, **kwargs)
-            
+
             self.append_machine(machine, interval=interval, mode=mode)
 
             return cls
@@ -342,7 +337,7 @@ class Rackio(Singleton):
     def append_table(self, table):
         """
         Append a database model class definition.
-        
+
         **Parameters:**
 
         * **table** (BaseModel): A Base Model Inheritance.
@@ -353,7 +348,7 @@ class Rackio(Singleton):
     def define_root(self, username, password):
         """
         Overrides the default Rackio root credentials.
-        
+
         **Parameters:**
 
         * **username** (string): Root's username.
@@ -365,7 +360,7 @@ class Rackio(Singleton):
     def define_user(self, username, password, role="Operator"):
         """
         Append a new user to allowed users in application.
-        
+
         **Parameters:**
 
         * **username** (string): User's username.
@@ -378,7 +373,7 @@ class Rackio(Singleton):
     def define_role(self, role):
         """
         Append a new user role to application.
-        
+
         **Parameters:**
 
         * **role** (string): User Role.
@@ -399,9 +394,9 @@ class Rackio(Singleton):
     def get_manager(self, name):
         """
         Returns a specified application manager.
-        
+
         **Parameters:**
-        
+
         * **name** (str): a manager name.
         """
 
@@ -417,7 +412,6 @@ class Rackio(Singleton):
         return manager
 
     def summary(self):
-
         """
         Returns a Rackio Application Summary (dict).
         """
@@ -435,7 +429,7 @@ class Rackio(Singleton):
     def add_route(self, route, resource):
         """
         Append a resource and route the api.
-        
+
         **Parameters:**
 
         * **route** (str): The url route for this resource.
@@ -452,19 +446,18 @@ class Rackio(Singleton):
         """
         Append a resource and route the api
         by a class decoration..
-        
+
         **Parameters:**
-        
+
         * **route** (str): The url route for this resource.
         """
 
         def decorator(cls):
-
             if is_class(cls):
                 resource = cls(**kwargs)
             else:
                 resource = cls
-            
+
             self.add_route(route, resource)
 
             return cls
@@ -497,14 +490,14 @@ class Rackio(Singleton):
         Sets the CORS origin rules.
         **Parameters:**
         * **allow_origins** (list): List of strings, all allowed origins.
-        
+
         **Returns:** `None`
 
         Usage:
-    
+
         ```python
         app.set_cors(['http://test.com:8080'])
-        ```        
+        ```
         """
 
         self._api_manager.set_cors(allow_origins)
@@ -514,14 +507,14 @@ class Rackio(Singleton):
         Returns the CORS origin rules.
         **Parameters:**
         * **allow_origins** (list): List of strings, all allowed origins.
-        
+
         **Returns:** `None`
 
         Usage:
-    
+
         ```python
         app.get_cors()
-        ```        
+        ```
         """
 
         return self._api_manager.get_cors()
@@ -529,26 +522,25 @@ class Rackio(Singleton):
     def rackit(self, period):
         """
         Decorator method to register functions plugins.
-        
+
         This method will register into the Rackio application
         a new function to be executed by the Thread Pool Executor
 
         **Parameters:**
         * **period** (float): Value of the default loop execution time.
-        
+
         **Returns:** `None`
 
         Usage:
-    
+
         ```python
         @app.rackit
         def hello():
             print("Hello!!!")
-        ```        
+        ```
         """
 
         def decorator(f):
-
             def wrapper():
                 try:
                     f()
@@ -556,28 +548,28 @@ class Rackio(Singleton):
                     error = str(e)
                     message = "{}:{}".format(f.__name__, error)
                     log_detailed(e, message)
-                    
+
             _worker_function = (wrapper, period)
             self._worker_functions.append(_worker_function)
             return f
-        
+
         return decorator
 
     def rackit_on(self, function=None, **kwargs):
         """
         Decorator to register functions plugins with continous execution.
-        
+
         This method will register into the Rackio application
         a new function to be executed by the Thread Pool Executor
 
         **Parameters:**
-        * **period** (float): Value of the default loop execution time, 
+        * **period** (float): Value of the default loop execution time,
         if period is not defined `0.5` seconds is used by default.
-        
+
         **Returns:** `None`
 
         Usage:
-    
+
         ```python
         @app.rackit_on(period=0.5)
         def hello():
@@ -588,7 +580,7 @@ class Rackio(Singleton):
             print("Hello World!!!")
         ```
         """
-    
+
         if function:
             return _ContinuosWorker(function)
         else:
@@ -601,10 +593,10 @@ class Rackio(Singleton):
     def observe(self, tag):
         """
         Decorator method to register functions as tag observers.
-        
+
         This method will register into the Rackio application
-        a new function as a custom observer to be executed by 
-        the Thread Pool Executor. If the tag associated changes 
+        a new function as a custom observer to be executed by
+        the Thread Pool Executor. If the tag associated changes
         its value, the function registered will be executed.
 
         **Parameters:**
@@ -613,7 +605,7 @@ class Rackio(Singleton):
         **Returns:** `None`
 
         Usage:
-    
+
         ```python
         @app.observer
         def hello("T1"):
@@ -622,7 +614,6 @@ class Rackio(Singleton):
         """
 
         def decorator(f):
-
             def wrapper():
                 try:
                     f()
@@ -633,11 +624,10 @@ class Rackio(Singleton):
 
             self._function_manager.append_function(tag, wrapper)
             return f
-        
+
         return decorator
 
     def _start_logger(self):
-
         log_format = "%(asctime)s:%(levelname)s:%(message)s"
 
         level = self._logging_level
@@ -646,11 +636,10 @@ class Rackio(Singleton):
         if not log_file:
             logging.basicConfig(level=level, format=log_format)
             return
-        
+
         logging.basicConfig(filename=log_file, level=level, format=log_format)
 
     def _start_workers(self):
-
         _db_worker = LoggerWorker(self._db_manager)
         _control_worker = ControlWorker(self._control_manager)
         _function_worker = FunctionWorker(self._function_manager)
@@ -659,20 +648,18 @@ class Rackio(Singleton):
         _api_worker = APIWorker(self._api_manager, self._port, self._mode)
 
         _db_worker.init_database()
-        
-        try:
 
+        try:
             workers = [
-                _db_worker, 
-                _control_worker, 
-                _function_worker, 
-                _machine_worker, 
-                _alarm_worker, 
-                _api_worker
+                _db_worker,
+                _control_worker,
+                _function_worker,
+                _machine_worker,
+                _alarm_worker,
+                _api_worker,
             ]
 
             for worker in workers:
-
                 worker.daemon = True
                 worker.start()
 
@@ -683,7 +670,6 @@ class Rackio(Singleton):
         self.workers = workers
 
     def stop_workers(self):
-
         for worker in self.workers:
             try:
                 worker.stop()
@@ -692,12 +678,10 @@ class Rackio(Singleton):
                 log_detailed(e, message)
 
     def _start_scheduler(self):
-        
         _max = self.max_workers
         scheduler = concurrent.futures.ThreadPoolExecutor(max_workers=_max)
 
         for _f, period in self._worker_functions:
-
             try:
                 scheduler.submit(_f)
             except Exception as e:
@@ -705,7 +689,6 @@ class Rackio(Singleton):
                 log_detailed(e, message)
 
         for _f in self._continous_functions:
-
             try:
                 scheduler.submit(_f)
             except Exception as e:
@@ -715,13 +698,13 @@ class Rackio(Singleton):
     def run(self, port=8000):
         """
         Runs the main execution for the application to start serving.
-        
+
         This will put all the components of the application at run
 
         **Returns:** `None`
 
         Usage:
-    
+
         ```python
         >>> app.run()
         ```
@@ -733,7 +716,7 @@ class Rackio(Singleton):
         self._start_workers()
         self._start_scheduler()
 
-        try:         
+        try:
             while True:
                 time.sleep(0.5)
 
@@ -743,4 +726,3 @@ class Rackio(Singleton):
             time.sleep(0.5)
 
             sys.exit()
-            

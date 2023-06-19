@@ -14,15 +14,12 @@ from ..managers.auth import SYSTEM_ROLE, ADMIN_ROLE, VISITOR_ROLE
 
 
 class BaseResource(RackioResource):
-    
     dao = LoggerDAO()
 
 
 class LoggerResource(BaseResource):
-
     @auth_token
     def on_get(self, req, resp):
-
         tags = self.dao.get_all()
 
         resp.body = json.dumps(tags, ensure_ascii=False)
