@@ -9,13 +9,11 @@ from ..logger import QueryLogger, LoggerEngine
 
 
 class RackioResource:
-
     tag_engine = CVTEngine()
     logger_engine = LoggerEngine()
     query_logger = QueryLogger()
-    
-    def get_app(self):
 
+    def get_app(self):
         from ..core import Rackio
 
         return Rackio()
