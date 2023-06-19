@@ -8,22 +8,20 @@ sys.path.append(_cwd)
 
 # System
 
+
 @click.command()
-@click.argument('keywords')
-@click.option('--port', '-p', default='8000', help='Application port')
-@click.option('--name', '-n', default='', help='Application name')
-@click.option('--context', '-c', default='', help='Application context')
+@click.argument("keywords")
+@click.option("--port", "-p", default="8000", help="Application port")
+@click.option("--name", "-n", default="", help="Application name")
+@click.option("--context", "-c", default="", help="Application context")
 def rackio_cli(keywords, port, name, context):
-
     if keywords == "serve":
-
-        dotenv_path = os.path.join(_cwd, '.env')
+        dotenv_path = os.path.join(_cwd, ".env")
         load_dotenv(dotenv_path)
 
         rackio_app = os.environ.get("RACKIO_APP")
 
         if not rackio_app:
-
             try:
                 module = __import__("app")
             except Exception as e:
@@ -34,15 +32,14 @@ def rackio_cli(keywords, port, name, context):
             except:
                 pass
         else:
-
-            rackio_app = rackio_app.replace('.py', '')
+            rackio_app = rackio_app.replace(".py", "")
 
             try:
                 module = __import__(rackio_app)
             except Exception as e:
                 print(e)
                 return
-        
+
         attrs = dir(module)
 
         if "app" in attrs:
@@ -53,5 +50,5 @@ def rackio_cli(keywords, port, name, context):
             app = module.create_app()
         elif "make_app" in attrs:
             app = module.make_app()
-        
+
         app.run(port=port, app_name=name, app_section=context)
