@@ -8,7 +8,6 @@ from .models import Model, IntegerType, StringType
 
 
 class Event(Model):
-
     user = StringType()
     message = StringType()
     description = StringType(default="")
@@ -16,4 +15,3 @@ class Event(Model):
     priority = IntegerType(default=0)
     criticity = IntegerType(default=0)
     date_time = StringType()
-    
