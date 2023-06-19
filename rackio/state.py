@@ -26,6 +26,7 @@ STRING = "str"
 READ = "read"
 WRITE = "write"
 
+
 def detailed_exception():
     exc_type, exc_obj, tb = sys.exc_info()
     f = tb.tb_frame
@@ -33,7 +34,9 @@ def detailed_exception():
     filename = f.f_code.co_filename
     linecache.checkcache(filename)
     line = linecache.getline(filename, lineno, f.f_globals)
-    message =  'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(filename, lineno, line.strip(), exc_obj)
+    message = 'EXCEPTION IN ({}, LINE {} "{}"): {}'.format(
+        filename, lineno, line.strip(), exc_obj
+    )
 
     return message
 
@@ -43,13 +46,13 @@ class TagBinding:
     """
     Class used within Rackio State Machine.
 
-    This class is used to bind tag values with 
+    This class is used to bind tag values with
     an instance of a Rackio State Machine object,
     in the machine loop, before executing current
     state, tag bindings of an object are updated
-    with last values from the Tag Engine, 
+    with last values from the Tag Engine,
     after execution, the Tag Engine is updated,
-    the direction of the binding must be provided, 
+    the direction of the binding must be provided,
     otherwise `read` direction is used.
 
     Usage:
@@ -63,7 +66,7 @@ class TagBinding:
         state2  = State('State2')
 
         # transitions
-    
+
         forward = state1.to(state2)
         back = state2.to(state1)
 
@@ -77,23 +80,19 @@ class TagBinding:
     tag_engine = CVTEngine()
 
     def __init__(self, tag, direction="read"):
-        
         self.tag = tag
         self.direction = direction
         self.value = None
 
     def update(self):
-
         if self.direction == WRITE:
-
             self.tag_engine.write_tag(self.tag, self.value)
 
         if self.direction == READ:
-
             self.value = self.tag_engine.read_tag(self.tag)
 
-class Group:
 
+class Group:
     pass
 
 
@@ -102,13 +101,13 @@ class GroupBinding:
     """
     Class used within Rackio State Machine.
 
-    This class is used to bind a tag group values 
+    This class is used to bind a tag group values
     with an instance of a Rackio State Machine object,
     in the machine loop, before executing current
     state, group bindings of an object are updated
-    with last values of all tags in that group from 
-    the Tag Engine, after execution, the Tag Engine 
-    is updated, the direction of the binding must be 
+    with last values of all tags in that group from
+    the Tag Engine, after execution, the Tag Engine
+    is updated, the direction of the binding must be
     provided, otherwise `read` direction is used.
 
     Usage:
@@ -122,7 +121,7 @@ class GroupBinding:
         state2  = State('State2')
 
         # transitions
-    
+
         forward = state1.to(state2)
         back = state2.to(state1)
 
@@ -132,11 +131,10 @@ class GroupBinding:
         g2 = GroupBinding("G2", direction="write")
     ```
     """
-    
+
     tag_engine = CVTEngine()
 
     def __init__(self, group, direction="read"):
-        
         self.group = group
         self.direction = direction
         self.values = Group()
@@ -146,23 +144,18 @@ class GroupBinding:
         self._init_group()
 
     def _init_group(self):
-
         for tag in self.tags:
             tag_value = self.tag_engine.read_tag(tag)
             setattr(self.values, tag, tag_value)
 
     def update(self):
-
         for tag in self.tags:
-
             if self.direction == WRITE:
-
                 value = getattr(self.values, tag)
 
                 self.tag_engine.write_tag(tag, value)
 
             if self.direction == READ:
-
                 value = self.tag_engine.read_tag(tag)
 
                 setattr(self.values, tag, value)
@@ -176,7 +169,7 @@ class State(_State):
     This class is used to define custom states in a state machine.
 
     **Parameters:**
-        
+
     * **name** (str): state machine name.
     * **interval** (float): machine loop time for this state in seconds.
 
@@ -188,21 +181,19 @@ class State(_State):
     """
 
     def __init__(self, *args, **kwargs):
-
         super(State, self).__init__(*args, **kwargs)
 
         self._trigger = None
         self.tag_engine = CVTEngine()
-        
+
         if "interval" in kwargs:
             self._interval = kwargs["interval"]
         else:
-            self._interval = float('inf')
+            self._interval = float("inf")
 
         self._transition = None
 
     def to(self, another, trigger=None):
-
         """
         This method allows to create transitions between states,
         you can also define trigger conditions in order to execute
@@ -216,11 +207,9 @@ class State(_State):
 
     @property
     def interval(self):
-
         return self._interval
 
     def attach_all(self):
-
         if not self._trigger:
             return
 
@@ -228,7 +217,7 @@ class State(_State):
 
         for tag in tags:
             self.tag_engine.attach(tag, self._trigger)
-    
+
 
 class RackioStateMachine(StateMachine):
 
@@ -236,11 +225,11 @@ class RackioStateMachine(StateMachine):
     Class used to define custom state machines.
 
     This class is used to define custom machines,
-    by defining parameters, states, transitions and 
+    by defining parameters, states, transitions and
     by defining methods state behaviour can de defined.
 
     **Parameters:**
-        
+
     * **name** (str): state machine name.
 
     Usage:
@@ -248,7 +237,7 @@ class RackioStateMachine(StateMachine):
     ```python
     from rackio import RackioStateMachine, State
 
-    
+
     class TwoStep(RackioStateMachine):
 
         # states
@@ -257,7 +246,7 @@ class RackioStateMachine(StateMachine):
         state2  = State('State2')
 
         # transitions
-    
+
         forward = state1.to(state2)
         back = state2.to(state1)
 
@@ -292,7 +281,6 @@ class RackioStateMachine(StateMachine):
     query_logger = QueryLogger()
 
     def __init__(self, name, **kwargs):
-        
         super(RackioStateMachine, self).__init__()
         self.name = name
         self._tag_bindings = list()
@@ -302,9 +290,7 @@ class RackioStateMachine(StateMachine):
         attrs = self.get_attributes()
 
         for key, value in attrs.items():
-
             try:
-
                 if isinstance(value, TagBinding):
                     self._tag_bindings.append((key, value))
                     _value = self.tag_engine.read_tag(value.tag)
@@ -338,107 +324,96 @@ class RackioStateMachine(StateMachine):
                 continue
 
         self.attrs = attrs
-    
-    def get_states(self):
 
+    def get_states(self):
         return [state.identifier for state in self.states]
 
     def get_state_interval(self):
-        
         return self.current_state.interval
 
     def get_interval(self):
-
         return self._machine_interval
 
     def set_interval(self, interval):
-
         self._machine_interval = interval
 
     @classmethod
     def get_attributes(cls):
-
         result = dict()
-        
+
         props = cls.__dict__
 
         forbidden_attributes = (
-            "states", 
-            "transitions", 
-            "states_map", 
-            "_loop", 
-            "get_attributes", 
-            "_tag_bindings", 
-            "_get_active_transitions", 
+            "states",
+            "transitions",
+            "states_map",
+            "_loop",
+            "get_attributes",
+            "_tag_bindings",
+            "_get_active_transitions",
             "_activate_triggers",
             "get_state_interval",
             "get_interval",
             "set_interval",
-            "_machine_interval"
+            "_machine_interval",
         )
 
         for key, value in props.items():
-
             if key in forbidden_attributes:
                 continue
-            if hasattr(value, '__call__'):
+            if hasattr(value, "__call__"):
                 continue
             if isinstance(value, cls):
                 continue
             if isinstance(value, State):
                 continue
             if not ismethod(value):
-
                 if not "__" in key:
                     result[key] = value
 
         return result
 
     def _update_tags(self, direction=READ):
-
         for attr, _binding in self._tag_bindings:
-
             try:
                 if direction == READ and _binding.direction == READ:
-                
                     tag = _binding.tag
                     value = self.tag_engine.read_tag(tag)
                     value = setattr(self, attr, value)
-                
+
                 elif direction == WRITE and _binding.direction == WRITE:
                     tag = _binding.tag
                     value = getattr(self, attr)
                     self.tag_engine.write_tag(tag, value)
-            
+
             except Exception as e:
-                message = "Machine - {}: Error on machine tag-bindings".format(self.name)
+                message = "Machine - {}: Error on machine tag-bindings".format(
+                    self.name
+                )
                 log_detailed(e, message)
 
     def _update_groups(self, direction=READ):
-    
         for attr, _binding in self._group_bindings:
-
             try:
                 if direction == READ and _binding.direction == READ:
-                
                     _binding.update()
 
                     setattr(self, attr, _binding.values)
-                
+
                 elif direction == WRITE and _binding.direction == WRITE:
-                    
                     values = getattr(self, attr)
-                    
+
                     _binding.values = values
 
                     _binding.update()
-            
+
             except Exception as e:
-                message = "Machine - {}: Error on machine group-bindings".format(self.name)
+                message = "Machine - {}: Error on machine group-bindings".format(
+                    self.name
+                )
                 log_detailed(e, message)
 
     def _get_active_transitions(self):
-
         result = list()
 
         current_state = self.current_state
@@ -446,15 +421,12 @@ class RackioStateMachine(StateMachine):
         transitions = self.transitions
 
         for transition in transitions:
-
             if transition.source == current_state:
-
                 result.append(transition)
 
         return result
 
     def _activate_triggers(self):
-
         transitions = self._get_active_transitions()
 
         for transition in transitions:
@@ -472,16 +444,15 @@ class RackioStateMachine(StateMachine):
                 logging.error("Machine - {}:{}".format(self.name, error))
 
     def _loop(self):
-
         try:
             state_name = self.current_state.identifier.lower()
             method_name = "while_" + state_name
 
             if method_name in dir(self):
-                update_tags = getattr(self, '_update_tags')
-                update_groups = getattr(self, '_update_groups')
+                update_tags = getattr(self, "_update_tags")
+                update_groups = getattr(self, "_update_groups")
                 method = getattr(self, method_name)
-                
+
                 # update tag read bindings
                 update_tags()
                 update_groups()
@@ -493,7 +464,7 @@ class RackioStateMachine(StateMachine):
                     message = "Machine - {}: Error on machine loop".format(self.name)
                     log_detailed(e, message)
 
-                #update tag write bindings
+                # update tag write bindings
                 update_tags("write")
                 update_groups("write")
 
@@ -504,13 +475,10 @@ class RackioStateMachine(StateMachine):
             logging.error("Machine - {}:{}".format(self.name, error))
 
     def loop(self):
-
         self._loop()
-    
+
     def serialize(self):
-
         def is_serializable(value):
-
             if isinstance(value, float):
                 return True
 
@@ -526,7 +494,6 @@ class RackioStateMachine(StateMachine):
             return False
 
         def ismodel_instance(obj):
-
             for cls in [FloatType, IntegerType, BooleanType, StringType]:
                 if isinstance(obj, cls):
                     return True
@@ -541,7 +508,7 @@ class RackioStateMachine(StateMachine):
         methods = ["while_" + state for state in states]
 
         attrs = self.get_attributes()
-        
+
         for key in attrs.keys():
             if key in checkers:
                 continue
@@ -549,7 +516,7 @@ class RackioStateMachine(StateMachine):
                 continue
             if not ismodel_instance(attrs[key]):
                 continue
-            
+
             value = getattr(self, key)
 
             if not is_serializable(value):
@@ -566,7 +533,6 @@ class RackioStateMachine(StateMachine):
                         value = str(value)
 
                 except Exception as e:
-                    
                     error = str(e)
 
                     logging.error("Machine - {}:{}".format(self.name, error))
@@ -575,4 +541,3 @@ class RackioStateMachine(StateMachine):
             result[key] = value
 
         return result
-        
