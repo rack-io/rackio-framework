@@ -14,33 +14,27 @@ from ..managers.auth import SYSTEM_ROLE, ADMIN_ROLE, VISITOR_ROLE
 
 
 class BaseResource(RackioResource):
-
     dao = TagsDAO()
-    
+
 
 class TagCollectionResource(BaseResource):
-
     @authorize([SYSTEM_ROLE, ADMIN_ROLE, VISITOR_ROLE])
     def on_get(self, req, resp):
-
         doc = self.dao.get_all()
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 
 
 class TagResource(BaseResource):
-
     @authorize([SYSTEM_ROLE, ADMIN_ROLE, VISITOR_ROLE])
     def on_get(self, req, resp, tag_id):
-
         doc = self.dao.get(tag_id)
 
         resp.body = json.dumps(doc, ensure_ascii=False)
 
     @authorize([SYSTEM_ROLE, ADMIN_ROLE])
     def on_post(self, req, resp, tag_id):
-        
-        value = req.media.get('value')
+        value = req.media.get("value")
 
         _cvt = self.tag_engine
         _type = _cvt.read_type(tag_id)
@@ -63,16 +57,9 @@ class TagResource(BaseResource):
         result = self.dao.write(tag_id, value)
 
         if result["result"]:
-
-            doc = {
-                'result': True
-            }
+            doc = {"result": True}
 
         else:
+            doc = {"result": False}
 
-            doc = {
-                'result': False
-            }
-        
         resp.body = json.dumps(doc, ensure_ascii=False)
-        
